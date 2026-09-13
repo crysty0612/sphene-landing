@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Download Sphene — Cross-Platform Standalone Apps & Engine</title>
-  <meta name="description" content="Download Sphene Knowledge Hub for Linux, Windows, Android, macOS, and Docker. 100% sovereign, local-first second brain.">
+  <title>Get Sphene — Sovereign Knowledge Substrate & Engine</title>
+  <meta name="description" content="Deploy Sphene Knowledge Hub on Linux, macOS, Windows, or Docker. 100% sovereign, local-first second brain with client-side Aegis encryption.">
   <link rel="icon" type="image/png" href="/assets/icons/favicon.png">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0b0f19">
@@ -23,11 +23,11 @@
         <li><a href="/#features">Features</a></li>
         <li><a href="/#architecture">Architecture</a></li>
         <li><a href="/#comparison">Compare</a></li>
-        <li><a href="/pricing.html">Pricing & Cloud</a></li>
-        <li><a href="/download.html" class="active">Downloads</a></li>
+        <li><a href="/pricing.html">Pricing & Roadmap</a></li>
+        <li><a href="/download.html" class="active">Get Sphene</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="/download.html" class="btn btn-secondary btn-sm">Get App</a>
+        <a href="/download.html" class="btn btn-secondary btn-sm">Get Sphene</a>
         <a href="http://localhost:8743" target="_blank" class="btn btn-primary btn-sm">Launch Web App</a>
       </div>
     </div>
@@ -39,144 +39,169 @@
         <div class="section-header">
           <div class="badge">
             <span class="badge-dot"></span>
-            Version 1.1.0 • All Platforms Supported
+            Version 1.1.0 • Sovereign Local-First Release
           </div>
-          <h1>Download Sphene for Any Environment</h1>
+          <h1>Deploy Sphene in Any Environment</h1>
           <p>
-            Zero marketplace gatekeepers, zero proprietary DRM. Run Sphene as a standalone desktop app, 
-            a fullscreen mobile app, or an autonomous Docker daemon.
+            Run Sphene locally with 100% data sovereignty. Choose between the automated one-line Docker installer, 
+            the zero-install Standalone PWA, or autonomous agent skill packages.
           </p>
         </div>
 
-        <!-- Downloads Grid -->
-        <div class="grid-3" style="gap: 24px; margin-bottom: 60px;">
-          <!-- Linux Card -->
-          <div class="download-card">
-            <div>
-              <div class="download-icon">🐧</div>
-              <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Linux</h3>
-              <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
-                Debian, Ubuntu, Pop!_OS, Arch, Fedora. Complete with desktop menu launcher and icon.
-              </p>
-              <div class="terminal-copy" style="width: 100%; padding: 8px 12px; font-size: 12px; margin-bottom: 20px;">
-                <code>sudo dpkg -i sphene_1.1.0_all.deb</code>
-              </div>
+        <!-- Real Active Deployments Grid -->
+        <div class="grid-2" style="gap: 28px; margin-bottom: 60px;">
+          
+          <!-- Method 1: Docker One-Liner (Primary Engine) -->
+          <div class="feature-card" style="border-color: var(--accent-cyan); background: linear-gradient(180deg, rgba(14, 165, 233, 0.06) 0%, rgba(15, 23, 42, 0.8) 100%);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <div class="feature-icon" style="background: rgba(56, 189, 248, 0.15);">🐳</div>
+              <span class="badge" style="margin-bottom: 0; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4);">Recommended</span>
             </div>
-            <a href="/downloads/sphene_1.1.0_all.deb" download class="btn btn-primary" style="width: 100%;">
-              <span>Download .deb (v1.1.0)</span>
+            <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Docker Local Hub (All Platforms)</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+              The complete, hardened Sphene Knowledge Hub engine in an isolated container. 
+              Runs on <strong>Linux, macOS, Windows (WSL2/Docker Desktop), TrueNAS, and Raspberry Pi</strong>. 
+              Mounts a local <code>./vault</code> folder where all your notes are stored as plain Markdown.
+            </p>
+            <div class="terminal-copy" style="width: 100%; padding: 12px 14px; font-size: 13px; margin-bottom: 20px;">
+              <code>curl -sSL https://cimpean.com/sphene/install.sh | bash</code>
+              <button class="copy-btn" data-target="cmd-install-full">Copy</button>
+              <span id="cmd-install-full" style="display:none;">curl -sSL https://cimpean.com/sphene/install.sh | bash</span>
+            </div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <a href="https://cimpean.com/sphene/install.sh" target="_blank" class="btn btn-secondary btn-sm">Inspect install.sh</a>
+              <a href="https://cimpean.com/sphene/docker-compose.yml" target="_blank" class="btn btn-secondary btn-sm">View docker-compose.yml</a>
+            </div>
+          </div>
+
+          <!-- Method 2: PWA Standalone App -->
+          <div class="feature-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <div class="feature-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3);">📱</div>
+              <span class="badge" style="margin-bottom: 0; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: var(--accent-emerald);">Native Window</span>
+            </div>
+            <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Progressive Web App (PWA)</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+              Get a true standalone, borderless app window on <strong>Windows, macOS, Linux, and Android</strong> with zero app store gatekeepers. 
+              Provides custom window titlebars, dock/taskbar icons, and offline asset caching.
+            </p>
+            <div style="background: rgba(0, 0, 0, 0.3); padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border-subtle); margin-bottom: 20px; font-size: 13px; color: var(--text-secondary);">
+              <p style="margin-bottom: 6px;"><strong>How to Install:</strong></p>
+              <ul style="padding-left: 18px; line-height: 1.6;">
+                <li><strong>Chrome / Edge (PC/Mac):</strong> Open your Sphene URL, click the <em>Install Sphene</em> icon in the URL bar.</li>
+                <li><strong>Android:</strong> Open in Chrome/Brave → tap Menu (⋮) → <em>Add to Home screen</em>.</li>
+                <li><strong>iOS / Safari:</strong> Tap Share icon → <em>Add to Home Screen</em>.</li>
+              </ul>
+            </div>
+            <a href="http://localhost:8743" target="_blank" class="btn btn-primary" style="width: 100%;">
+              <span>Launch Local Sphene & Install PWA</span>
             </a>
           </div>
 
-          <!-- Windows Card -->
-          <div class="download-card">
-            <div>
-              <div class="download-icon">🪟</div>
-              <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Windows</h3>
-              <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
-                Windows 10 / 11 Desktop launcher package with PowerShell desktop shortcut generator.
-              </p>
-              <div class="terminal-copy" style="width: 100%; padding: 8px 12px; font-size: 12px; margin-bottom: 20px;">
-                <code>powershell .\Install-Sphene-Desktop.ps1</code>
-              </div>
+          <!-- Method 3: Hermes Agent Autonomous Skill -->
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border-color: rgba(168, 85, 247, 0.3);">🤖</div>
+            <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Hermes Autonomous Agent Skill</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+              Equips any Nous Hermes or local LLM agent with autonomous second-brain capabilities (Documents IN & OUT via the Karpathy LLM OS substrate).
+            </p>
+            <div class="terminal-copy" style="width: 100%; padding: 10px 14px; font-size: 12px; margin-bottom: 20px;">
+              <code>curl -sSL https://cimpean.com/sphene/hermes-skill.tar.gz | tar -xz -C ~/.hermes/skills/</code>
+              <button class="copy-btn" data-target="cmd-hermes">Copy</button>
+              <span id="cmd-hermes" style="display:none;">curl -sSL https://cimpean.com/sphene/hermes-skill.tar.gz | tar -xz -C ~/.hermes/skills/</span>
             </div>
-            <a href="/downloads/sphene-windows-launcher-v1.1.0.zip" download class="btn btn-primary" style="width: 100%;">
-              <span>Download Windows Zip (v1.1.0)</span>
+            <a href="https://cimpean.com/sphene/hermes-skill.tar.gz" download class="btn btn-secondary" style="width: 100%;">
+              <span>Download hermes-skill.tar.gz</span>
             </a>
           </div>
 
-          <!-- Android & Mobile Card -->
-          <div class="download-card">
-            <div>
-              <div class="download-icon">📱</div>
-              <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Android & Mobile</h3>
-              <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
-                Direct Progressive Web App (PWA) install. Runs in standalone fullscreen mode without app store censorship.
-              </p>
-              <div class="terminal-copy" style="width: 100%; padding: 8px 12px; font-size: 12px; margin-bottom: 20px;">
-                <code>Tap Menu -> Add to Home Screen</code>
-              </div>
+          <!-- Method 4: Sovereign Cryptographic Utilities -->
+          <div class="feature-card">
+            <div class="feature-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border-color: rgba(245, 158, 11, 0.3);">🔐</div>
+            <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Zero-Dependency Crypto & Migration Tools</h3>
+            <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+              Standalone Bash and Python utilities for 100% data sovereignty. Decrypt or encrypt your vault in-place without Sphene installed, or migrate existing desktop PKMs.
+            </p>
+            <div style="display: flex; gap: 10px; flex-direction: column;">
+              <a href="https://cimpean.com/sphene/decrypt_vault.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between;">
+                <span>decrypt_vault.sh (Offline OpenSSL Decryptor)</span>
+                <span>⬇</span>
+              </a>
+              <a href="https://cimpean.com/sphene/encrypt_vault.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between;">
+                <span>encrypt_vault.sh (Offline OpenSSL Encryptor)</span>
+                <span>⬇</span>
+              </a>
+              <a href="https://cimpean.com/sphene/migrate_vault.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between;">
+                <span>migrate_vault.sh (1-Click Vault Importer)</span>
+                <span>⬇</span>
+              </a>
             </div>
-            <button class="btn btn-primary btn-pwa-install" style="width: 100%;">
-              <span>Install Standalone App</span>
-            </button>
           </div>
 
-          <!-- macOS Card -->
-          <div class="download-card">
-            <div>
-              <div class="download-icon">🍎</div>
-              <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">macOS</h3>
-              <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
-                Apple Silicon & Intel. Install via Chrome/Safari as a native windowed macOS desktop app.
-              </p>
-              <div class="terminal-copy" style="width: 100%; padding: 8px 12px; font-size: 12px; margin-bottom: 20px;">
-                <code>Safari: File -> Add to Dock</code>
-              </div>
-            </div>
-            <button class="btn btn-secondary btn-pwa-install" style="width: 100%;">
-              <span>Install for macOS</span>
-            </button>
-          </div>
+        </div>
 
-          <!-- Docker Hub -->
-          <div class="download-card" style="grid-column: span 2;">
-            <div>
-              <div class="download-icon">🐳</div>
-              <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">Docker & Self-Hosted Engine</h3>
-              <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
-                Run on your home server, TrueNAS, Unraid, Raspberry Pi, or cloud VPS. One command sets up the encrypted container and mounts your local markdown vault.
-              </p>
-              <div class="terminal-copy" style="width: 100%; padding: 12px 16px; margin-bottom: 20px;">
-                <code>curl -sSL https://sphene.app/install.sh | bash</code>
-                <button class="copy-btn" data-target="cmd-docker">Copy</button>
-                <span id="cmd-docker" style="display:none;">curl -sSL https://sphene.app/install.sh | bash</span>
-              </div>
-            </div>
-            <a href="https://cimpean.com/sphene/install.sh" target="_blank" class="btn btn-secondary" style="align-self: flex-start;">
-              <span>Inspect install.sh Script</span>
+        <!-- Desktop Binaries Roadmap (Transparent & Honest) -->
+        <div style="padding: 36px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle); border-radius: 16px; margin-bottom: 60px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 14px;">
+            <h3 style="font-size: 22px; font-weight: 700; color: var(--text-primary);">
+              Native Desktop Binaries (.dmg / .exe / .AppImage)
+            </h3>
+            <span class="badge" style="margin-bottom: 0; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: var(--accent-amber);">
+              🚧 In Development • Target v1.2.0
+            </span>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6; margin-bottom: 20px;">
+            We are currently building single-binary desktop wrappers (powered by Tauri/Rust) that bundle an embedded local runtime, 
+            allowing you to double-click a single <code>.exe</code> or <code>.dmg</code> file without needing Docker installed. 
+            Until v1.2.0 launches, the <strong>Docker + Standalone PWA</strong> combination provides the full native windowed experience today.
+          </p>
+          <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+            <a href="https://cimpean.com/sphene/" target="_blank" class="btn btn-secondary btn-sm">
+              <span>View Technical Architecture & Handover Specs</span>
             </a>
           </div>
         </div>
 
-        <!-- Release Hashes & Verification -->
-        <div class="table-card" style="margin-top: 60px;">
+        <!-- Release Hashes & Verification Table -->
+        <div class="table-card">
           <table class="comp-table">
             <thead>
               <tr>
                 <th>Artifact</th>
                 <th>Target Platform</th>
                 <th>Format</th>
-                <th>Checksum (MD5)</th>
+                <th>Verified Checksum (MD5)</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td><code>sphene_1.1.0_all.deb</code></td>
-                <td>Debian / Ubuntu / Linux</td>
-                <td>Debian Package</td>
-                <td><code style="color: var(--accent-cyan);">a2f918e908b981ca8c</code></td>
-              </tr>
-              <tr>
-                <td><code>sphene-windows-launcher-v1.1.0.zip</code></td>
-                <td>Windows 10 / 11</td>
-                <td>Portable Zip</td>
-                <td><code style="color: var(--accent-cyan);">e4d1b827ac70984f12</code></td>
-              </tr>
-              <tr>
                 <td><code>sphene-image.tar.gz</code></td>
                 <td>Docker Engine (Linux/x86_64)</td>
-                <td>Docker Tarball</td>
-                <td><code style="color: var(--accent-cyan);">bc0d7f9a069354a789</code></td>
+                <td>Hardened Encrypted Image</td>
+                <td><code style="color: var(--accent-cyan);">bc0d7f9a069354a789fb5fa6455084be</code></td>
               </tr>
               <tr>
                 <td><code>hermes-skill.tar.gz</code></td>
-                <td>Hermes Autonomous Agent</td>
+                <td>Nous Hermes Autonomous Agent</td>
                 <td>Agent Skill Bundle</td>
-                <td><code style="color: var(--accent-cyan);">5e89d1b092aef4317c</code></td>
+                <td><code style="color: var(--accent-cyan);">e6e58dc18001d234857bdf8f23714652</code></td>
+              </tr>
+              <tr>
+                <td><code>install.sh</code></td>
+                <td>POSIX Bash (Linux/macOS/WSL)</td>
+                <td>Automated Installer</td>
+                <td><code style="color: var(--accent-cyan);">a24cf92b8d009b11910efda560127231</code></td>
+              </tr>
+              <tr>
+                <td><code>decrypt_vault.sh</code></td>
+                <td>Any OS (Standard OpenSSL)</td>
+                <td>Zero-Dependency Unsealer</td>
+                <td><code style="color: var(--accent-cyan);">805121607ef8936270ebc54a32cf1bda</code></td>
               </tr>
             </tbody>
           </table>
         </div>
+
       </div>
     </section>
   </main>
@@ -189,8 +214,8 @@
         <span class="footer-copy">© 2026 Sphene. Sovereign Data. All rights reserved.</span>
       </div>
       <ul class="footer-links">
-        <li><a href="/download.html">Downloads</a></li>
-        <li><a href="/pricing.html">Pricing <li><a href="/pricing.html">Pricing</a></li> Roadmap</a></li>
+        <li><a href="/download.html">Get Sphene</a></li>
+        <li><a href="/pricing.html">Pricing & Roadmap</a></li>
         <li><a href="https://cimpean.com/sphene/" target="_blank">Docs & Skills</a></li>
         <li><a href="https://github.com" target="_blank">GitHub</a></li>
       </ul>
