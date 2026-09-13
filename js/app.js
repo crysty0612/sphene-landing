@@ -49,35 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Pricing Cycle Switcher (Monthly / Annually)
-  const cycleToggle = document.getElementById('billingCycleToggle');
-  if (cycleToggle) {
-    const proAmount = document.getElementById('proAmount');
-    const proPeriod = document.getElementById('proPeriod');
-    const enterpriseAmount = document.getElementById('enterpriseAmount');
-    const enterprisePeriod = document.getElementById('enterprisePeriod');
-
-    cycleToggle.addEventListener('change', () => {
-      if (cycleToggle.checked) {
-        // Annual (20% off)
-        if (proAmount) proAmount.innerText = '$4';
-        if (proPeriod) proPeriod.innerText = '/ month (billed annually)';
-        if (enterpriseAmount) enterpriseAmount.innerText = '$15';
-        if (enterprisePeriod) enterprisePeriod.innerText = '/ month (billed annually)';
-      } else {
-        // Monthly
-        if (proAmount) proAmount.innerText = '$5';
-        if (proPeriod) proPeriod.innerText = '/ month';
-        if (enterpriseAmount) enterpriseAmount.innerText = '$19';
-        if (enterprisePeriod) enterprisePeriod.innerText = '/ month';
-      }
-    });
-  }
-
-  // Stripe Checkout Modal
+  // Early Access / Waitlist Modal
   const checkoutModal = document.getElementById('checkoutModal');
   const openModalBtns = document.querySelectorAll('.btn-open-checkout');
   const closeModalBtns = document.querySelectorAll('.modal-close, .modal-backdrop');
+  const waitlistForm = document.getElementById('waitlistForm');
+  const waitlistFormContainer = document.getElementById('waitlistFormContainer');
+  const waitlistSuccess = document.getElementById('waitlistSuccess');
 
   openModalBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -87,8 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const modalPlanTitle = document.getElementById('modalPlanTitle');
       const modalPlanPrice = document.getElementById('modalPlanPrice');
-      if (modalPlanTitle) modalPlanTitle.innerText = planName;
-      if (modalPlanPrice) modalPlanPrice.innerText = planPrice;
+      if (modalPlanTitle) modalPlanTitle.innerText = planName + ' Early Access';
+      if (modalPlanPrice) modalPlanPrice.innerText = 'Private Beta Queue • Target ' + planPrice;
+
+      if (waitlistFormContainer) waitlistFormContainer.style.display = 'block';
+      if (waitlistSuccess) waitlistSuccess.style.display = 'none';
 
       if (checkoutModal) checkoutModal.classList.add('active');
     });
@@ -101,4 +82,20 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  if (waitlistForm) {
+    waitlistForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('waitlistEmail').value;
+      const useCase = document.getElementById('waitlistUseCase').value;
+      
+      // Store in local storage queue
+      const queue = JSON.parse(localStorage.getItem('sphene_waitlist') || '[]');
+      queue.push({ email, useCase, date: new Date().toISOString() });
+      localStorage.setItem('sphene_waitlist', JSON.stringify(queue));
+
+      if (waitlistFormContainer) waitlistFormContainer.style.display = 'none';
+      if (waitlistSuccess) waitlistSuccess.style.display = 'block';
+    });
+  }
 });

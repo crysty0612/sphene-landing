@@ -1,5 +1,6 @@
 # Cloudflare clean routes
 /pricing      /pricing.html   200
+/roadmap      /pricing.html   200
 /download     /download.html  200
 /downloads    /download.html  301
 /install.sh   https://cimpean.com/sphene/install.sh 302
