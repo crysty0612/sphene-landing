@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sphene — The Sovereign Knowledge Substrate for Humans & AI</title>
+  <meta name="description" content="Deterministic, local-first Markdown knowledge hub with client-side Aegis encryption, interactive force-directed graph, and native Hermes Agent integration.">
+  <link rel="icon" type="image/png" href="/assets/icons/favicon.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0b0f19">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <!-- Navigation -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Emblem">
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#comparison">Compare</a></li>
+        <li><a href="/pricing.html">Pricing & Cloud</a></li>
+        <li><a href="/download.html">Downloads</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="/download.html" class="btn btn-secondary btn-sm">Get App</a>
+        <a href="http://localhost:8743" target="_blank" class="btn btn-primary btn-sm">Launch Web App</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="badge">
+          <span class="badge-dot"></span>
+          Sphene v1.1.0 Released • 1-Click Vault Migration & Aegis Crypto
+        </div>
+        <h1>
+          The Sovereign Knowledge Substrate <br>
+          <span class="gradient-text">for Humans & Autonomous AI</span>
+        </h1>
+        <p class="hero-subtitle">
+          A high-performance, local-first second brain powered by unencrypted-at-rest Markdown, 
+          zero-knowledge client-side Aegis encryption, interactive force graphs, and native autonomous agent memory.
+        </p>
+
+        <div class="hero-cta">
+          <a href="/download.html" class="btn btn-primary btn-lg">
+            <span>Download Standalone Apps</span>
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </a>
+          <a href="/pricing.html" class="btn btn-secondary btn-lg">
+            <span>Explore Cloud & Pro</span>
+          </a>
+        </div>
+
+        <div class="terminal-copy">
+          <span>⚡ One-line install:</span>
+          <code>curl -sSL https://sphene.app/install.sh | bash</code>
+          <button class="copy-btn" data-target="cmd-install">Copy</button>
+          <span id="cmd-install" style="display:none;">curl -sSL https://sphene.app/install.sh | bash</span>
+        </div>
+
+        <!-- Interactive Canvas Graph -->
+        <div class="canvas-wrapper">
+          <canvas id="heroGraphCanvas"></canvas>
+          <div class="canvas-overlay">
+            <div class="status-indicator">
+              <span class="badge-dot"></span> Live Force-Directed Graph Substrate
+            </div>
+          </div>
+          <div class="canvas-hint">Drag nodes to explore dynamic connections</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Pillars Section -->
+    <section id="features" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Engineered for Absolute Sovereignty</h2>
+          <p>Reconciling human deep-thinking workflows with autonomous LLM operating systems.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <h3>Sovereign Aegis Encryption</h3>
+            <p>
+              Lock individual notes or seal entire vaults using military-grade client-side <strong>AES-256-CBC PBKDF2</strong>. 
+              Zero cloud escrow, zero backdoors. Includes a standalone zero-dependency Bash script for in-place offline recovery anywhere.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>Hermes Agent Native</h3>
+            <p>
+              Functions as the primary secondary storage hard drive for autonomous AI agents (the "Karpathy LLM OS" architecture). 
+              Agents read, search, and write structured Markdown notes without hallucinating opaque vector embeddings.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📦</div>
+            <h3>1-Click Vault Migration</h3>
+            <p>
+              Seamlessly drag-and-drop existing Obsidian, Logseq, or Foam vault folders or <code>.zip</code> archives. 
+              Imports nested hierarchies, preserves <code>[[Wikilinks]]</code>, transcludes media attachments, and converts visual canvases instantly.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🧭</div>
+            <h3>Multi-Tier Cognitive Sandboxing</h3>
+            <p>
+              Enforces strict governance boundaries between human reflection and automated agents. 
+              Agents are restricted to machine directories (<code>00_System/</code>, <code>10_SecondBrain/</code>) while personal journals (<code>20_Human_Thinking/</code>) remain strictly protected.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">✅</div>
+            <h3>Interactive Task Checklists</h3>
+            <p>
+              Clickable <code>- [ ]</code> and <code>- [x]</code> checkboxes in the browser that update your raw Markdown files 
+              atomically in-place on local disk with zero desktop app overhead.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <h3>Zero-Install Web App</h3>
+            <p>
+              Access your complete knowledge graph and markdown editor from any mobile phone, tablet, or desktop browser. 
+              Install as a native standalone PWA on Android and Windows with zero app store gatekeepers.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Karpathy Tri-Perspective Architecture -->
+    <section id="architecture" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>The Tri-Perspective Knowledge Architecture</h2>
+          <p>How Sphene resolves the tension between human focus and AI scalability.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; margin-bottom: 8px;">Perspective 1</div>
+            <h3>The Pragmatic "LLM OS"</h3>
+            <p>
+              Treats the local filesystem as permanent hard-drive storage for LLMs. High-volume documentation, architectures, 
+              and incident post-mortems live on disk, keeping active context windows lightweight and cost-efficient.
+            </p>
+          </div>
+
+          <div class="feature-card" style="border-top: 3px solid var(--accent-purple);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; margin-bottom: 8px;">Perspective 2</div>
+            <h3>Auditable Agentic Memory</h3>
+            <p>
+              Replaces opaque, drift-prone vector databases (LanceDB, Chroma) with transparent, human-auditable Markdown files. 
+              When an agent records a wrong assumption, open the file and edit the line. Zero database corruption.
+            </p>
+          </div>
+
+          <div class="feature-card" style="border-top: 3px solid var(--accent-emerald);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; margin-bottom: 8px;">Perspective 3</div>
+            <h3>Human-First Zettelkasten</h3>
+            <p>
+              Guarantees digital permanence. Plain, unstyled Markdown files remain readable 40 years from now. 
+              No proprietary database engines, no discontinued APIs, and no cloud vendor lock-in.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section id="comparison" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>How Sphene Compares</h2>
+          <p>Why modern power users and AI builders choose Sphene over traditional desktop silos.</p>
+        </div>
+
+        <div class="table-card">
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Traditional Desktop PKM</th>
+                <th>Opaque Vector Stores</th>
+                <th>Sphene Knowledge Hub</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Primary Storage Format</strong></td>
+                <td>Local Plaintext (.md)</td>
+                <td>Binary Embeddings / SQLite</td>
+                <td><span class="check">✓ 100% Plaintext Markdown</span></td>
+              </tr>
+              <tr>
+                <td><strong>Client-Side Local Encryption</strong></td>
+                <td>Paid Sync Cloud Only</td>
+                <td><span class="cross">✗ None</span></td>
+                <td><span class="check">✓ Sovereign Aegis AES-256</span></td>
+              </tr>
+              <tr>
+                <td><strong>Autonomous Agent Interoperability</strong></td>
+                <td>Community Plugins (Fragile)</td>
+                <td>API Only (Opaque)</td>
+                <td><span class="check">✓ Hermes Native (REST + CLI)</span></td>
+              </tr>
+              <tr>
+                <td><strong>Human Memory Auditability</strong></td>
+                <td><span class="check">✓ High</span></td>
+                <td><span class="cross">✗ Impossible without wiping</span></td>
+                <td><span class="check">✓ 100% Human-Auditable</span></td>
+              </tr>
+              <tr>
+                <td><strong>Interactive Tasks In-Browser</strong></td>
+                <td><span class="cross">✗ Desktop App Required</span></td>
+                <td><span class="cross">✗ None</span></td>
+                <td><span class="check">✓ Live In-Place Syncing</span></td>
+              </tr>
+              <tr>
+                <td><strong>Mobile & Zero-Install Access</strong></td>
+                <td>Proprietary Mobile App Install</td>
+                <td><span class="cross">✗ CLI / SDK Only</span></td>
+                <td><span class="check">✓ Responsive Web & Standalone PWA</span></td>
+              </tr>
+              <tr>
+                <td><strong>1-Click Vault Migration</strong></td>
+                <td>Manual Setup</td>
+                <td><span class="cross">✗ Incompatible</span></td>
+                <td><span class="check">✓ 1-Click .zip Import</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="section" style="padding-bottom: 120px;">
+      <div class="container">
+        <div class="feature-card" style="text-align: center; padding: 60px 40px; background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(7, 9, 14, 0.95)); border-color: var(--border-highlight);">
+          <h2 style="font-size: 38px; font-weight: 800; margin-bottom: 16px;">Take Full Ownership of Your Second Brain</h2>
+          <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto 32px; font-size: 18px;">
+            Deploy locally in 60 seconds. Free and open-format forever. Expand to managed cloud sync when you are ready.
+          </p>
+          <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+            <a href="/download.html" class="btn btn-primary btn-lg">Get Sphene Free</a>
+            <a href="/pricing.html" class="btn btn-secondary btn-lg">View Cloud Plans</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Logo">
+        <span class="footer-copy">© 2026 Sphene. Sovereign Data. All rights reserved.</span>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/download.html">Downloads</a></li>
+        <li><a href="/pricing.html">Pricing</a></li>
+        <li><a href="https://cimpean.com/sphene/" target="_blank">Docs & Skills</a></li>
+        <li><a href="https://github.com" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="/js/graph-preview.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
