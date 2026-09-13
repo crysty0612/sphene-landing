@@ -1,0 +1,9 @@
+services:
+  sphene:
+    image: sphene:1.0.0
+    container_name: sphene-engine
+    restart: unless-stopped
+    ports:
+      - "8743:80"
+    volumes:
+      - ./vault:/var/www/html/user/pages/02.knowledge:rw
