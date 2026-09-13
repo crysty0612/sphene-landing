@@ -15,7 +15,7 @@
     { id: 'mesh', label: 'Distributed Mesh', x: 0, y: 0, vx: 0, vy: 0, radius: 10, color: '#38bdf8', category: 'architecture' },
     { id: 'db', label: 'Database Migration', x: 0, y: 0, vx: 0, vy: 0, radius: 8, color: '#10b981', category: 'lessons' },
     { id: 'hermes', label: 'Hermes Agent Memory', x: 0, y: 0, vx: 0, vy: 0, radius: 12, color: '#a855f7', category: 'agent' },
-    { id: 'aegis', label: 'Aegis Crypto Shield', x: 0, y: 0, vx: 0, vy: 0, radius: 9, color: '#f59e0b', category: 'security' },
+    { id: 'aegis', label: 'Client Encryption', x: 0, y: 0, vx: 0, vy: 0, radius: 9, color: '#f59e0b', category: 'security' },
     { id: 'daily', label: 'Daily Note: Today', x: 0, y: 0, vx: 0, vy: 0, radius: 7, color: '#ec4899', category: 'daily' },
     { id: 'zettel', label: 'Zettelkasten Method', x: 0, y: 0, vx: 0, vy: 0, radius: 8, color: '#38bdf8', category: 'concept' },
     { id: 'ingest', label: 'Ingestion Worker', x: 0, y: 0, vx: 0, vy: 0, radius: 7, color: '#a855f7', category: 'agent' },
