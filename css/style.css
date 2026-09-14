@@ -81,11 +81,20 @@ body {
   gap: 12px;
   text-decoration: none;
   color: inherit;
+  perspective: 800px;
 }
 
 .brand img {
-  height: 38px;
+  height: 42px;
   width: auto;
+  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1), filter 0.35s ease;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 12px rgba(56, 189, 248, 0.25));
+}
+
+.brand:hover img {
+  transform: rotateY(-10deg) rotateX(6deg) scale(1.04);
+  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 24px rgba(56, 189, 248, 0.7)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.45));
 }
 
 .nav-links {
@@ -166,9 +175,80 @@ body {
   border-radius: 12px;
 }
 
+/* Interactive 3D Crystal Hero Component */
+.hero-gem-container {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 28px;
+  perspective: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.hero-gem-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.4) 0%, rgba(168, 85, 247, 0.28) 40%, rgba(16, 185, 129, 0.15) 60%, transparent 75%);
+  filter: blur(28px);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: pulseGemGlow 4s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+@keyframes pulseGemGlow {
+  0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.75; }
+  100% { transform: translate(-50%, -50%) scale(1.18); opacity: 1; }
+}
+
+.hero-gem {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  transform-style: preserve-3d;
+  will-change: transform;
+  z-index: 2;
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 24px rgba(56, 189, 248, 0.5));
+  animation: floatGem 5s ease-in-out infinite;
+}
+
+@keyframes floatGem {
+  0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+  50% { transform: translateY(-7px) rotateZ(1deg); }
+}
+
+.hero-gem img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.gem-glare {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.65) 0%, transparent 55%);
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.3s ease;
+}
+
 /* Hero Section */
 .hero {
-  padding: 90px 0 60px;
+  padding: 70px 0 60px;
   text-align: center;
 }
 

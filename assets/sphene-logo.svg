@@ -1,36 +1,186 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 120" width="100%" height="100%">
   <defs>
-    <linearGradient id="facetTop" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38bdf8" />
+    <!-- Background Ambient Glow -->
+    <filter id="coreGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <filter id="specularGleam" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="soft" />
+      <feMerge>
+        <feMergeNode in="soft" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Top Crown Facet (Direct Key Light) -->
+    <linearGradient id="crownFacet" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#e0f2fe" />
+      <stop offset="30%" stop-color="#7dd3fc" />
       <stop offset="100%" stop-color="#0284c7" />
     </linearGradient>
-    <linearGradient id="facetLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2dd4bf" />
-      <stop offset="100%" stop-color="#059669" />
+
+    <!-- Upper Left Facet -->
+    <linearGradient id="upperLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="60%" stop-color="#0369a1" />
+      <stop offset="100%" stop-color="#082f49" />
     </linearGradient>
-    <linearGradient id="facetRight" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f59e0b" />
-      <stop offset="100%" stop-color="#d97706" />
-    </linearGradient>
-    <linearGradient id="facetCore" x1="0%" y1="0%" x2="100%" y2="100%">
+
+    <!-- Upper Right Facet -->
+    <linearGradient id="upperRight" x1="100%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#a855f7" />
-      <stop offset="100%" stop-color="#6366f1" />
+      <stop offset="70%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+
+    <!-- Center Table Facet (Sphene Adamantine Core) -->
+    <linearGradient id="centerTable" x1="30%" y1="0%" x2="70%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.95" />
+      <stop offset="45%" stop-color="#818cf8" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#4f46e5" stop-opacity="0.95" />
+    </linearGradient>
+
+    <!-- Deep Pavilion Left (Emerald Dichroism) -->
+    <linearGradient id="pavilionLeft" x1="0%" y1="0%" x2="100%" y2="80%">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="50%" stop-color="#0d9488" />
+      <stop offset="100%" stop-color="#042f2e" />
+    </linearGradient>
+
+    <!-- Deep Pavilion Right (Amethyst Shadow) -->
+    <linearGradient id="pavilionRight" x1="100%" y1="0%" x2="0%" y2="80%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="50%" stop-color="#7e22ce" />
+      <stop offset="100%" stop-color="#2e1065" />
+    </linearGradient>
+
+    <!-- Lower Wedge Tip Left -->
+    <linearGradient id="wedgeLeft" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488" />
+      <stop offset="100%" stop-color="#022c22" />
+    </linearGradient>
+
+    <!-- Lower Wedge Tip Right -->
+    <linearGradient id="wedgeRight" x1="80%" y1="0%" x2="20%" y2="100%">
+      <stop offset="0%" stop-color="#7e22ce" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+
+    <!-- Front Bevel Keel (Light Splitter) -->
+    <linearGradient id="keelFacet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#67e8f9" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+
+    <!-- Internal Fire Flare (Golden Dispersion of Sphene) -->
+    <radialGradient id="spheneFire" cx="48%" cy="45%" r="40%">
+      <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.8" />
+      <stop offset="40%" stop-color="#f43f5e" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#0b0f19" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Specular Ridge Strokes -->
+    <linearGradient id="ridgeBright" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="50%" stop-color="#a5f3fc" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.1" />
+    </linearGradient>
+    <linearGradient id="ridgePurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3e8ff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#9333ea" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Wordmark Typography Gradient -->
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#94a3b8" />
     </linearGradient>
   </defs>
-  <g transform="translate(10, 10)">
-    <polygon points="50,5 90,32 50,45 10,32" fill="url(#facetTop)" opacity="0.95" />
-    <polygon points="10,32 50,45 50,95 10,75" fill="url(#facetLeft)" opacity="0.9" />
-    <polygon points="50,45 68,40 68,88 50,95" fill="url(#facetCore)" opacity="0.95" />
-    <polygon points="68,40 90,32 90,75 68,88" fill="url(#facetRight)" opacity="0.9" />
-    <line x1="50" y1="5" x2="50" y2="45" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.6" />
-    <line x1="10" y1="32" x2="50" y2="45" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.4" />
-    <line x1="90" y1="32" x2="50" y2="45" stroke="#ffffff" stroke-width="1.2" stroke-opacity="0.4" />
-    <line x1="50" y1="45" x2="50" y2="95" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.5" />
+
+  <!-- 3D Gemstone Symbol (Grouped with Soft Ambient Blur) -->
+  <g transform="translate(10, 4) scale(0.94)">
+    <!-- Ambient Glow Behind Gem -->
+    <circle cx="60" cy="58" r="42" fill="#0284c7" opacity="0.3" filter="url(#coreGlow)" />
+    <circle cx="60" cy="58" r="28" fill="#a855f7" opacity="0.35" filter="url(#coreGlow)" />
+
+    <!-- 3D Faceted Crystal Geometry -->
+    <g id="gemGeometry">
+      <!-- Back Deep Shadow Cavity -->
+      <polygon points="60,8 102,38 88,88 60,112 32,88 18,38" fill="#030712" />
+
+      <!-- 1. Upper Left Crown -->
+      <polygon points="60,8 60,34 18,38" fill="url(#upperLeft)" />
+      <!-- 2. Upper Right Crown -->
+      <polygon points="60,8 102,38 60,34" fill="url(#upperRight)" />
+      <!-- 3. Top Specular Crown Table -->
+      <polygon points="60,8 78,28 60,34 42,28" fill="url(#crownFacet)" />
+
+      <!-- 4. Left Girdle -->
+      <polygon points="18,38 40,54 32,88" fill="url(#pavilionLeft)" />
+      <!-- 5. Right Girdle -->
+      <polygon points="102,38 88,88 80,54" fill="url(#pavilionRight)" />
+
+      <!-- 6. Internal Fire Glow Layer -->
+      <polygon points="42,28 78,28 80,54 60,78 40,54" fill="url(#spheneFire)" />
+
+      <!-- 7. Center Upper Table (Adamantine Core) -->
+      <polygon points="42,28 78,28 60,56" fill="url(#centerTable)" />
+
+      <!-- 8. Mid Left Bevel Facet -->
+      <polygon points="42,28 60,56 40,54" fill="url(#upperLeft)" opacity="0.9" />
+      <!-- 9. Mid Right Bevel Facet -->
+      <polygon points="78,28 80,54 60,56" fill="url(#upperRight)" opacity="0.9" />
+
+      <!-- 10. Front Keel Left Facet (Light Catcher) -->
+      <polygon points="60,56 40,54 60,78" fill="url(#keelFacet)" />
+      <!-- 11. Front Keel Right Facet -->
+      <polygon points="60,56 60,78 80,54" fill="url(#pavilionRight)" opacity="0.85" />
+
+      <!-- 12. Lower Pavilion Left -->
+      <polygon points="40,54 32,88 60,78" fill="url(#wedgeLeft)" />
+      <!-- 13. Lower Pavilion Right -->
+      <polygon points="80,54 60,78 88,88" fill="url(#wedgeRight)" />
+
+      <!-- 14. Bottom Wedge Apex Left -->
+      <polygon points="32,88 60,78 60,112" fill="url(#wedgeLeft)" opacity="0.95" />
+      <!-- 15. Bottom Wedge Apex Right -->
+      <polygon points="88,88 60,112 60,78" fill="url(#wedgeRight)" opacity="0.95" />
+
+      <!-- 3D Specular Ridge Lines (Razor Sharp Bevels) -->
+      <line x1="60" y1="8" x2="18" y2="38" stroke="url(#ridgeBright)" stroke-width="1.2" stroke-linecap="round" />
+      <line x1="60" y1="8" x2="102" y2="38" stroke="url(#ridgePurple)" stroke-width="1.2" stroke-linecap="round" />
+      <line x1="60" y1="8" x2="60" y2="34" stroke="#ffffff" stroke-width="1.5" stroke-opacity="0.9" />
+
+      <!-- Table Facet Borders -->
+      <line x1="42" y1="28" x2="78" y2="28" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.8" />
+      <line x1="18" y1="38" x2="40" y2="54" stroke="url(#ridgeBright)" stroke-width="1.0" />
+      <line x1="102" y1="38" x2="80" y2="54" stroke="url(#ridgePurple)" stroke-width="1.0" />
+
+      <!-- Center Keel Ridge (The Spine of the Gem) -->
+      <line x1="60" y1="56" x2="60" y2="112" stroke="#ffffff" stroke-width="1.8" stroke-opacity="0.85" filter="url(#specularGleam)" />
+      <line x1="40" y1="54" x2="60" y2="78" stroke="#67e8f9" stroke-width="1.2" stroke-opacity="0.7" />
+      <line x1="80" y1="54" x2="60" y2="78" stroke="#c084fc" stroke-width="1.2" stroke-opacity="0.7" />
+
+      <!-- Outer Perimeter Silhouette -->
+      <polygon points="60,8 102,38 88,88 60,112 32,88 18,38" fill="none" stroke="url(#ridgeBright)" stroke-width="1.2" stroke-linejoin="round" opacity="0.8" />
+
+      <!-- Apex Specular Sparkle Points -->
+      <circle cx="60" cy="8" r="2.2" fill="#ffffff" filter="url(#specularGleam)" />
+      <circle cx="60" cy="56" r="1.8" fill="#ffffff" filter="url(#specularGleam)" />
+      <circle cx="60" cy="112" r="1.5" fill="#a5f3fc" filter="url(#specularGleam)" />
+      <circle cx="42" cy="28" r="1.2" fill="#ffffff" />
+      <circle cx="78" cy="28" r="1.2" fill="#f3e8ff" />
+    </g>
   </g>
-  <text x="130" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="0.18em" fill="#f8fafc">
+
+  <!-- Wordmark & Subtitle -->
+  <text x="142" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="0.18em" fill="url(#titleGrad)">
     SPHENE
   </text>
-  <text x="133" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" letter-spacing="0.32em" fill="#94a3b8">
+  <text x="145" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11.5" font-weight="700" letter-spacing="0.32em" fill="#38bdf8">
     SOVEREIGN KNOWLEDGE SUBSTRATE
   </text>
 </svg>
