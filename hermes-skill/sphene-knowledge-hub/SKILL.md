@@ -42,42 +42,27 @@ When the user asks **how to view, browse, or visually navigate their notes, docu
 ## How Hermes Interacts with Sphene (CLI & REST)
 The `sphene` CLI command is globally available in your environment (`sphene`). All operations route through the local Sphene Engine (running on http://127.0.0.1:8743), which mounts the physical vault.
 
-### Critical Guideline: Shell Quoting & Markdown Formatting
-When writing multi-line documents containing backticks (```), code blocks, math symbols ($), or quotes, **NEVER pass long markdown in `--body "..."` directly on the command line**, because bash will strip backticks and interpolate variables.
+### Writing Notes (The Canonical 1-Shot Pattern)
+Always pipe Markdown into `sphene write` using a single quoted heredoc (`cat << 'EOF'`). This preserves all backticks, code blocks, math symbols, and quotes with zero bash interpolation:
 
-Always use one of the two shell-safe patterns:
-
-#### Method 1: Using --file / -f (Recommended for research & long notes)
-Write your content to a temporary file using a quoted heredoc (`cat << 'EOF'`), then pass it via `--file`:
 ```bash
-cat << 'NOTE_EOF' > /tmp/note.md
+cat << 'EOF' | sphene write "Note Title" --tags "tag1,tag2"
 # Note Title
 
-Markdown content with `inline code`, code blocks:
-```python
-def example():
-    return "Safe from bash interpretation"
+Full markdown content here with `code`, tables, and [[Wikilinks]]...
+EOF
 ```
 
-- Links: [[Related Concept]]
-NOTE_EOF
-sphene write "Note Title" --file /tmp/note.md --tags "tag1,tag2"
-rm -f /tmp/note.md
-```
+> **Rules for 1-Shot Writing:**
+> 1. **Do NOT mix pipe and `--file`**: When piping with `cat << 'EOF' |`, do NOT pass `--file`.
+> 2. **Authentication**: Authentication is handled automatically via the internal engine key. No manual login or UI password is needed.
+> 3. **Instant Indexing**: New notes are created directly in `Workspace/` and instantly indexed in SQLite FTS5 (<1ms).
+> 4. **Verify Note**: Immediately verify your note with `sphene read "Note Title" --raw` or `sphene search "query"`.
 
-#### Method 2: Piping via STDIN
-You can pipe directly into `sphene write`:
+#### Alternative: Write From An Existing File
+If a file already exists on disk (e.g. `/tmp/summary.md`):
 ```bash
-cat << 'NOTE_EOF' | sphene write "Note Title" --tags "tag1,tag2"
-# Note Title
-Full markdown content here...
-NOTE_EOF
-```
-
-#### Method 3: Short inline notes only
-For simple single-sentence notes without code or backticks:
-```bash
-sphene write "Quick Idea" --body "Short note linking to [[Architecture]]." --tags "quick"
+sphene write "Note Title" --file /tmp/summary.md --tags "tag1,tag2"
 ```
 
 ---

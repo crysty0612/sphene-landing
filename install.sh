@@ -368,7 +368,7 @@ Sphene stores all documents as standard plaintext Markdown (`.md`) on disk at:
 ### Primary: Native Sphene CLI & REST API
 - **Search Notes:** `sphene search "<query>"`
 - **Read Note:** `sphene read "<path_or_slug>"`
-- **Create Note:** `cat << 'EOF' | sphene write Workspace/<NoteName>.md --direct`
+- **Create Note:** `cat << 'EOF' | sphene write "Note Title" --tags "a,b"`
 - **Knowledge Graph:** `sphene graph`
 - **Append Daily Note:** `sphene daily "<Summary>"`
 
@@ -406,25 +406,6 @@ if os.path.isfile(cfg_file):
         echo "Obsidian skill left untouched. Sphene is configured as an independent sovereign substrate."
         ;;
     esac
-  fi
-
-  # Prompt 6c: Restart Hermes to apply changes immediately
-  if [ $SKILL_INSTALLED -eq 1 ] || [ $OBSIDIAN_REPLACED -eq 1 ]; then
-    if [ "$HERMES_TYPE" = "docker" ]; then
-      PROMPT_RESTART="Restart Hermes container now to activate Sphene skill immediately? [Y/n]: "
-      RESTART_CHOICE=$(read_input "$PROMPT_RESTART" "Y")
-      case "$RESTART_CHOICE" in
-        [yY][eE][sS]|[yY]|"")
-          echo -e "Restarting Hermes container '${HERMES_CONTAINER}'..."
-          docker restart "${HERMES_CONTAINER}" >/dev/null
-          sleep 2
-          echo -e "${GREEN}✓ Hermes container restarted. Skill definitions are now live in Hermes!${NC}"
-          ;;
-        *)
-          echo -e "${YELLOW}Notice: Remember to run 'docker restart ${HERMES_CONTAINER}' later to reload skills.${NC}"
-          ;;
-      esac
-    fi
   fi
 fi
 
@@ -478,7 +459,7 @@ EOF_COMPOSE
   MAX_RETRIES=20
   echo -ne "Waiting for Sphene container to become ready"
   while [ $COUNTER -lt $MAX_RETRIES ]; do
-    if curl -s "http://127.0.0.1:${PORT}/login" >/dev/null 2>&1 || curl -s "http://127.0.0.1:${PORT}/api/notes" >/dev/null 2>&1; then
+    if curl -s "http://127.0.0.1:${PORT}/login" >/dev/null 2>&1 || curl -s "http://127.0.0.1:${PORT}/api/v1/health" >/dev/null 2>&1; then
       echo -e "\n${GREEN}✓ Sphene container is healthy and responding on http://localhost:${PORT}!${NC}"
       break
     fi
@@ -499,6 +480,57 @@ else
     sleep 1
     echo -e "${GREEN}✓ Sphene background daemon active on http://localhost:${PORT}${NC}"
     SPHENE_VAULT_DIR="$VAULT_DIR" "$SPHENE_HOST_BIN" auth setup
+  fi
+fi
+
+# 8. Sync Internal API Key to Host and Hermes Agent Container
+KEY_FILE="$VAULT_DIR/.sphene/api.key"
+if [ ! -f "$KEY_FILE" ] && [ $HAS_DOCKER -eq 1 ]; then
+  docker exec sphene cat /vault/.sphene/api.key > "$TMP_DIR/api.key" 2>/dev/null || true
+  if [ -s "$TMP_DIR/api.key" ]; then
+    mkdir -p "$(dirname "$KEY_FILE")"
+    cp "$TMP_DIR/api.key" "$KEY_FILE"
+  fi
+fi
+
+if [ -f "$KEY_FILE" ]; then
+  mkdir -p /etc/sphene "$HOME/.sphene" 2>/dev/null || true
+  if [ -w /etc/sphene ]; then
+    cp "$KEY_FILE" /etc/sphene/api.key
+    chmod 644 /etc/sphene/api.key
+  elif command -v sudo >/dev/null 2>&1; then
+    sudo mkdir -p /etc/sphene 2>/dev/null || true
+    sudo cp "$KEY_FILE" /etc/sphene/api.key 2>/dev/null || true
+    sudo chmod 644 /etc/sphene/api.key 2>/dev/null || true
+  fi
+  cp "$KEY_FILE" "$HOME/.sphene/api.key" 2>/dev/null || true
+  chmod 644 "$HOME/.sphene/api.key" 2>/dev/null || true
+
+  if [ -n "$HERMES_CONTAINER" ] && docker ps --format '{{.Names}}' | grep -q "^${HERMES_CONTAINER}$"; then
+    docker exec "${HERMES_CONTAINER}" mkdir -p /etc/sphene /opt/data/.sphene 2>/dev/null || true
+    docker cp "$KEY_FILE" "${HERMES_CONTAINER}:/etc/sphene/api.key" 2>/dev/null || true
+    docker cp "$KEY_FILE" "${HERMES_CONTAINER}:/opt/data/.sphene/api.key" 2>/dev/null || true
+    docker exec "${HERMES_CONTAINER}" sh -c "chmod 644 /etc/sphene/api.key /opt/data/.sphene/api.key 2>/dev/null || true; chown -R hermes:hermes /opt/data/.sphene 2>/dev/null || true"
+    echo -e "${GREEN}✓ Synced internal sovereign API key into Hermes Agent container!${NC}"
+  fi
+fi
+
+# 9. Prompt to restart Hermes container once Sphene is live and authenticated
+if [ $SKILL_INSTALLED -eq 1 ] || [ $OBSIDIAN_REPLACED -eq 1 ]; then
+  if [ "$HERMES_TYPE" = "docker" ]; then
+    PROMPT_RESTART="Restart Hermes container now to activate Sphene skill immediately? [Y/n]: "
+    RESTART_CHOICE=$(read_input "$PROMPT_RESTART" "Y")
+    case "$RESTART_CHOICE" in
+      [yY][eE][sS]|[yY]|"")
+        echo -e "Restarting Hermes container '${HERMES_CONTAINER}'..."
+        docker restart "${HERMES_CONTAINER}" >/dev/null
+        sleep 2
+        echo -e "${GREEN}✓ Hermes container restarted. Sphene skill is live and authenticated!${NC}"
+        ;;
+      *)
+        echo -e "${YELLOW}Notice: Remember to run 'docker restart ${HERMES_CONTAINER}' later to reload skills.${NC}"
+        ;;
+    esac
   fi
 fi
 
