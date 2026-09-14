@@ -84,7 +84,7 @@ def migrate_vault(source_path: str, dest_knowledge_dir: str, clean_dest: bool = 
                 src_file = os.path.join(root, f)
                 target_media = os.path.join(dest_attachments_dir, f)
                 shutil.copy2(src_file, target_media)
-                attachment_map[f] = f"/user/pages/02.knowledge/attachments/{f}"
+                attachment_map[f] = f"attachments/{f}"
                 stats["attachments_imported"] += 1
 
     # Pass 2: Process all Markdown & Canvas documents
@@ -95,7 +95,7 @@ def migrate_vault(source_path: str, dest_knowledge_dir: str, clean_dest: bool = 
         if rel_path == ".":
             current_dest_base = dest_knowledge_dir
         else:
-            path_parts = [slugify(p) for p in rel_path.split(os.sep) if p and p not in IGNORE_DIRS]
+            path_parts = [p for p in rel_path.split(os.sep) if p and p not in IGNORE_DIRS]
             current_dest_base = os.path.join(dest_knowledge_dir, *path_parts)
             stats["folders_mapped"] += 1
 
@@ -125,7 +125,7 @@ def migrate_vault(source_path: str, dest_knowledge_dir: str, clean_dest: bool = 
                     alt = parts[1].strip() if len(parts) > 1 else media_name
                     if media_name in attachment_map:
                         return f"![{alt}]({attachment_map[media_name]})"
-                    return f"![{alt}](/user/pages/02.knowledge/attachments/{media_name})"
+                    return f"![{alt}](attachments/{media_name})"
 
                 body = re.sub(r"!\[\[(.*?)\]\]", replace_media_transclusion, body)
 
@@ -138,10 +138,8 @@ def migrate_vault(source_path: str, dest_knowledge_dir: str, clean_dest: bool = 
                 else:
                     frontmatter = f"title: \"{title}\"\ndate: {file_mtime}\ntaxonomy:\n  tag: [imported]"
 
-                note_slug = slugify(raw_basename)
-                note_dir = os.path.join(current_dest_base, note_slug)
-                os.makedirs(note_dir, exist_ok=True)
-                dest_file = os.path.join(note_dir, "item.md")
+                os.makedirs(current_dest_base, exist_ok=True)
+                dest_file = os.path.join(current_dest_base, f)
 
                 with open(dest_file, "w", encoding="utf-8") as out:
                     out.write(f"---\n{frontmatter.strip()}\n---\n\n{body.lstrip()}")
@@ -149,17 +147,15 @@ def migrate_vault(source_path: str, dest_knowledge_dir: str, clean_dest: bool = 
                 stats["notes_imported"] += 1
 
             elif ext == ".canvas":
-                note_slug = slugify(raw_basename) + "-canvas"
-                note_dir = os.path.join(current_dest_base, note_slug)
-                os.makedirs(note_dir, exist_ok=True)
-                dest_file = os.path.join(note_dir, "item.md")
-
                 file_mtime = datetime.fromtimestamp(os.path.getmtime(src_file)).strftime("%Y-%m-%d")
                 frontmatter = f"title: \"{raw_basename} (Canvas Map)\"\ndate: {file_mtime}\ntaxonomy:\n  tag: [canvas, visual-map]"
                 body = f"# {raw_basename} (Visual Canvas Map)\n\nConverted from visual canvas layout.\n\n```json\n"
                 with open(src_file, "r", encoding="utf-8", errors="replace") as fh:
                     body += fh.read()
                 body += "\n```\n"
+
+                os.makedirs(current_dest_base, exist_ok=True)
+                dest_file = os.path.join(current_dest_base, f"{raw_basename}-canvas.md")
 
                 with open(dest_file, "w", encoding="utf-8") as out:
                     out.write(f"---\n{frontmatter}\n---\n\n{body}")
@@ -174,7 +170,7 @@ def migrate_vault(source_path: str, dest_knowledge_dir: str, clean_dest: bool = 
 def main():
     parser = argparse.ArgumentParser(description="Sphene 1-Click Vault Migration Engine")
     parser.add_argument("source", help="Path to existing vault directory or .zip archive")
-    parser.add_argument("--dest", default=os.environ.get("SPHENE_VAULT_DIR", "/DATA/AppData/sphene/sphene-data/user/pages/02.knowledge"),
+    parser.add_argument("--dest", default=os.environ.get("SPHENE_VAULT_DIR", "/DATA/AppData/sphene/vault"),
                         help="Destination knowledge directory")
     parser.add_argument("--clean", action="store_true", help="Clean destination directory prior to migration")
     args = parser.parse_args()

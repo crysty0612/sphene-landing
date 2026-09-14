@@ -1,16 +1,18 @@
-# Sphene — The Sovereign Knowledge Substrate for Humans & AI
+# Sphene — The Sovereign Second Brain for Humans & Autonomous AI
 
-> Sphene is a sovereign, local-first knowledge substrate designed for deep human reflection and autonomous AI agent memory. It runs locally on your hardware with zero-knowledge AES-256-GCM encryption, plaintext Markdown vaults, bidirectional graph linking, and native Hermes agent toolsets.
+> Sphene is a local-first, ultra-lightweight second brain (<25MB RAM) engineered for sub-millisecond retrieval (<2ms), zero-trust security, and native human-agent harmony. It combines plaintext Markdown files on your disk with an embedded SQLite/FTS5 index, native Model Context Protocol (MCP) server, interactive web dashboard, and differential human-in-the-loop review for agent edits.
 
-Sphene bridges the divide between human deep thought and autonomous machine intelligence. All notes remain on your disk in standard plaintext Markdown (.md), completely unencumbered by proprietary cloud databases or vendor lock-in.
+Sphene eliminates the bloat of Electron desktop wrappers and the privacy risks of unsandboxed community plugins. All notes remain on disk in clean, standard plaintext Markdown (.md) with zero vendor lock-in.
+
+## The Triangle of Truth
+- **LIGHT**: <25MB RAM at rest, zero Electron bloat, compiled native daemon deployable from Raspberry Pi to workstation.
+- **FAST**: Native sub-millisecond retrieval (<2ms) via embedded SQLite/FTS5 relational index without burning LLM context tokens on raw file parsing.
+- **SECURE**: Zero-trust plugin security model with Ed25519 cryptographic signatures and authenticated AES-256-GCM encryption at rest.
 
 ## Documentation & Primary Resources
-- [Home / Architecture Overview](https://sphene.app/): Core architectural pillars, zero-knowledge encryption model, and comparison with Obsidian and Notion.
-- [Deploy & Download](https://sphene.app/download): One-line automated Docker installer, standalone web app, and agent tool package.
-- [Vision & Roadmap](https://sphene.app/pricing): Self-hosted open engine guarantees and future zero-knowledge cloud sync roadmap.
-- [One-Line Installer Script](https://sphene.app/install.sh): Hardened bash deployment script that installs Sphene Engine and connects local vaults.
-- [Docker Compose Spec](https://sphene.app/docker-compose.yml): Complete container definition for homelab, TrueNAS, and server deployments.
-- [Hermes Agent Skill Package](https://sphene.app/hermes-skill.tar.gz): Agent skill containing tool definitions, natural language prompt hooks, and REST API bindings.
+- [Home / Architecture Overview](https://sphene.app/): The Triangle of Truth, native MCP gateway, and direct comparison with Obsidian and Notion.
+- [Deploy & Download](https://sphene.app/download): One-line automated installer, headless daemon setup, and MCP configuration.
+- [Vision & Roadmap](https://sphene.app/pricing): Self-hosted open engine guarantees, sandboxed plugin ecosystem, and upcoming cloud relay.
+- [One-Line Installer Script](https://sphene.app/install.sh): Hardened bash deployment script with automated port conflict resolution and MCP auto-configuration.
+- [Full Technical Documentation](https://sphene.app/llms-full.txt): Complete technical architecture, MCP tool schemas, REST API reference, cryptographic specifications, and CLI manual.
 
-## Technical Specifications
-- [Full Technical Documentation](https://sphene.app/llms-full.txt): Complete technical architecture, REST API reference, cryptographic specifications, CLI reference, and agent tool bindings in single markdown format.

@@ -12,13 +12,14 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 SOURCE="${1}"
-DEST="${2:-/DATA/AppData/sphene/sphene-data/user/pages/02.knowledge}"
+DEFAULT_DEST="${SPHENE_VAULT_DIR:-/DATA/AppData/sphene/vault}"
+DEST="${2:-$DEFAULT_DEST}"
 
 echo -e "${CYAN}${BOLD}=== SPHENE 1-CLICK VAULT MIGRATION ===${NC}"
 
 if [ -z "$SOURCE" ]; then
   echo -e "${RED}[ERROR] Please provide source directory or .zip file.${NC}"
-  echo "Usage: $0 <path_to_vault_or_zip> [destination_knowledge_dir]"
+  echo "Usage: $0 <path_to_vault_or_zip> [destination_vault_dir]"
   exit 1
 fi
 
@@ -30,10 +31,10 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 python3 "$SCRIPT_DIR/migrate_vault.py" "$SOURCE" --dest "$DEST"
 
-# Invalidate cache if docker container is running
-if docker ps --filter "name=sphene-knowledge-hub" --format "{{.Names}}" | grep -q "sphene-knowledge-hub"; then
-  docker exec sphene-knowledge-hub sh -c "rm -rf /var/www/html/cache/twig/*" 2>/dev/null || true
-  echo -e "${GREEN}✓ Live cache refreshed.${NC}"
+# Rebuild search index if sphene CLI is available
+if command -v sphene >/dev/null 2>&1; then
+  sphene index 2>/dev/null || true
+  echo -e "${GREEN}✓ Sphene search index rebuilt.${NC}"
 fi
 
 echo -e "${GREEN}${BOLD}✓ Migration complete! Refresh your browser to view your notes.${NC}"

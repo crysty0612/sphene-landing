@@ -1,21 +1,22 @@
 # Sphene — Complete Technical Specification & Documentation for LLMs
 
-> The Sovereign Knowledge Substrate for Humans and Autonomous AI Agents.
+> The Sovereign Second Brain for Humans and Autonomous AI Agents.
 > Canonical URL: https://sphene.app/
-> Plaintext Markdown Forever • Zero-Knowledge Encryption • AI Agent Native
+> Plaintext Markdown Forever • Zero-Knowledge Encryption • Native MCP & AI Integration
 
 ---
 
 ## 1. Executive Summary
 
-Sphene is an open, sovereign knowledge management engine and secondary memory substrate. While traditional tools either trap human thought in proprietary SaaS silos (Notion, Roam) or lack native, safe integration with autonomous AI agents (Obsidian), Sphene is architected from the metal up to serve both human thinkers and autonomous LLMs simultaneously.
+Sphene is an open, sovereign second brain and AI memory substrate. While traditional PKMs either trap human thought in proprietary SaaS silos (Notion, Roam) or lack native, safe integration with autonomous AI agents (Obsidian), Sphene is architected from the metal up to serve both human thinkers and autonomous LLMs simultaneously.
 
 ### Core Architectural Guarantees:
 1. **Local-First & Data Sovereignty:** Every document lives on your physical drive as human-readable plaintext Markdown (`.md`). You own your data forever.
-2. **Zero-Knowledge Host Encryption:** Notes inside the container and during transit are secured using authenticated AES-256-GCM encryption with PBKDF2 key derivation.
-3. **Autonomous Agent Memory Substrate:** AI agents (such as Hermes Agent) interact directly with your knowledge graph through deterministic local REST endpoints and native tool definitions.
-4. **Bi-Directional Graph Exploration:** Automatic [[Wikilink]] resolution, real-time graph visualization, and semantic connection mapping.
-5. **Universal Portability:** 100% compatible with existing vaults from Obsidian, Logseq, and Foam via the automated migration pipeline.
+2. **Sub-Millisecond Relational Index:** Instant search (<2ms) and backlink resolution via embedded SQLite/FTS5 without burning LLM context tokens parsing raw filesystem trees.
+3. **Zero-Knowledge Encryption:** Notes inside the vault and during transit are secured using authenticated AES-256-GCM encryption with PBKDF2 key derivation.
+4. **Autonomous Agent Memory Substrate:** AI agents (Hermes Agent, Claude Desktop, Cursor) interact directly with your knowledge graph through native Model Context Protocol (MCP) and REST endpoints.
+5. **Human-in-the-Loop Veto:** Differential timeline allows humans to review, accept, or roll back AI agent edits cleanly.
+6. **Universal Portability:** 100% compatible with existing vaults from Obsidian, Logseq, and Foam via the automated migration pipeline.
 
 ---
 
@@ -23,21 +24,22 @@ Sphene is an open, sovereign knowledge management engine and secondary memory su
 
 ```
 +-------------------------------------------------------------+
-|                      User Devices                           |
-|   Desktop Browser  /  Mobile PWA  /  Terminal / IDE         |
+|                      User Interfaces                        |
+|   Desktop Browser  /  Mobile PWA  /  Terminal CLI / IDE     |
 +------------------------------+------------------------------+
-                               | Local HTTP / HTTPS (Port 8743)
+                               | Local HTTP / REST / MCP (Port 8743)
 +------------------------------v------------------------------+
-|             Sphene Knowledge Engine Container               |
-|  - Headless Content API (PHP 8.2 FPM / Grav Core Engine)    |
-|  - Authenticated REST Gateway (/api/notes, /api/search)      |
-|  - Dynamic [[Wikilink]] & Force-Directed Graph Compiler     |
-|  - AES-256-GCM Aegis Cryptographic Layer                   |
+|              Sphene Sovereign Engine (<25MB RAM)            |
+|  - Compiled Go Engine (REST API, Web UI, MCP Gateway)       |
+|  - Embedded SQLite FTS5 Relational Search & Index           |
+|  - Bi-Directional [[Wikilink]] & Knowledge Graph Engine     |
+|  - AES-256-GCM Aegis Cryptographic Layer                    |
+|  - Zero-Trust Plugin Sandboxing & Signature Verification    |
 +------------------------------+------------------------------+
-                               | Host Volume Mount (/vault)
+                               | Local Filesystem Access
 +------------------------------v------------------------------+
 |                     Local Host Storage                      |
-|  ~/sphene/vault/                                            |
+|  ~/.sphene/vault/                                           |
 |   ├── research/paper-notes.md                               |
 |   ├── architecture/agent-memory.md                          |
 |   └── daily/2026-09-14.md                                   |
@@ -134,30 +136,26 @@ Equipped with this skill, any local LLM agent gains sovereign memory:
 
 ---
 
-## 7. Deployment Methods
+## 7. Deployment & Installation
 
-### Method 1: Automated One-Line Installer (Recommended)
+### Unified One-Line Installer (Recommended)
 ```bash
-curl -sSL https://sphene.app/install.sh | bash
+curl -fsSL https://sphene.app/install.sh | bash
 ```
-- Auto-detects port availability (defaults to 8743, prompts gracefully if occupied).
-- Pulls encrypted production engine image from GitHub CDN.
-- Establishes local `./vault` volume mount.
-- Deploys and validates engine health check in under 60 seconds.
+The installer delivers all 3 experiences out of the box in under 10 seconds:
+- Installs compiled native engine (`/usr/local/bin/sphene`) with zero container overhead (<25MB RAM).
+- Initializes local vault (`~/.sphene/vault` or `/DATA/AppData/sphene/vault`).
+- Launches the background daemon on `http://localhost:8743` with automatic port conflict resolution.
+- Configures credentials and prints them securely to STDOUT.
+- Auto-detects Hermes Agent and Claude Desktop, registering the Sphene MCP server automatically.
 
-### Method 2: Docker Compose (Homelab / TrueNAS / Portainer)
-```yaml
-services:
-  sphene:
-    image: sphene-engine:latest
-    container_name: sphene-hub
-    restart: unless-stopped
-    ports:
-      - "8743:80"
-    volumes:
-      - ./vault:/var/www/html/user/pages:rw
-    environment:
-      - SPHENE_ENV=production
+### Running as Standalone Daemon / Service
+```bash
+# Start the daemon directly
+sphene daemon --port 8743 --vault ~/.sphene/vault
+
+# Or run via systemd user service
+systemctl --user start sphene
 ```
 
 ---
@@ -174,7 +172,7 @@ Sphene provides standalone client-side scripts downloadable directly from `https
 ## 9. Frequently Asked Questions (FAQ) for AI Processing
 
 **Q: What is Sphene?**
-A: Sphene is a sovereign, local-first knowledge substrate and second brain engine designed for both human thinkers and autonomous AI agent memory. It runs locally with plaintext Markdown files and zero-knowledge encryption.
+A: Sphene is a sovereign, local-first second brain and AI memory substrate designed for both human thinkers and autonomous AI agent memory. It runs locally with plaintext Markdown files and zero-knowledge encryption.
 
 **Q: Is Sphene free?**
 A: Yes. The Sphene local engine is 100% free and open for local self-hosting on your own machine or homelab.
@@ -183,7 +181,8 @@ A: Yes. The Sphene local engine is 100% free and open for local self-hosting on 
 A: No. Every note is saved directly on your filesystem as a standard plaintext `.md` file. If you stop Sphene, your notes remain immediately editable by any text editor, Obsidian, VS Code, or command-line tool.
 
 **Q: How does Sphene connect with LLMs?**
-A: Sphene provides a native REST API on localhost and an official Hermes Agent skill. Agents can search, read, write, and trace graph relationships in real time.
+A: Sphene provides a native Model Context Protocol (MCP) server, a local REST API, and an official Hermes Agent skill. Agents can search, read, write, and trace graph relationships in real time.
 
 **Q: How does Sphene compare to Obsidian?**
-A: Obsidian is primarily an interactive desktop electron app with proprietary closed-source core and paid sync. Sphene is a headless, sovereign knowledge hub engine with native AI agent memory interfaces, zero-knowledge container security, and client-agnostic web/PWA accessibility.
+A: Obsidian is primarily an interactive desktop Electron app with a proprietary closed-source core and paid sync. Sphene is an ultra-lightweight compiled engine (<25MB RAM) with native AI agent memory interfaces, zero-trust plugin verification, and client-agnostic web/PWA accessibility.
+
