@@ -137,7 +137,116 @@ VAULT_DIR="${SPHENE_VAULT_DIR:-$DEFAULT_VAULT}"
 mkdir -p "${VAULT_DIR}/Workspace" "${VAULT_DIR}/Reference" "${VAULT_DIR}/Private"
 echo -e "${GREEN}✓ Knowledge vault initialized at: ${VAULT_DIR}${NC}"
 
-# 4. Hermes Agent Detection & Integration
+# 4. Existing Obsidian Notes Auto-Discovery & Seamless Migration
+echo -e "\n${BOLD}Scanning for existing Obsidian notes...${NC}"
+DISCOVERED_VAULTS=()
+
+# 4a. Check Obsidian desktop config files
+OBS_CONF=""
+if [ -f "$HOME/.config/obsidian/obsidian.json" ]; then
+  OBS_CONF="$HOME/.config/obsidian/obsidian.json"
+elif [ -f "$HOME/Library/Application Support/obsidian/obsidian.json" ]; then
+  OBS_CONF="$HOME/Library/Application Support/obsidian/obsidian.json"
+elif [ -n "$APPDATA" ] && [ -f "$APPDATA/obsidian/obsidian.json" ]; then
+  OBS_CONF="$APPDATA/obsidian/obsidian.json"
+fi
+
+if [ -n "$OBS_CONF" ] && [ -r "$OBS_CONF" ]; then
+  if command -v python3 >/dev/null 2>&1; then
+    while IFS= read -r vpath; do
+      [ -d "$vpath" ] && DISCOVERED_VAULTS+=("$vpath")
+    done < <(python3 -c 'import json, sys; d=json.load(open(sys.argv[1])); print("\n".join(v["path"] for v in d.get("vaults",{}).values() if "path" in v))' "$OBS_CONF" 2>/dev/null || true)
+  fi
+  if [ ${#DISCOVERED_VAULTS[@]} -eq 0 ]; then
+    while IFS= read -r vpath; do
+      [ -d "$vpath" ] && DISCOVERED_VAULTS+=("$vpath")
+    done < <(grep -o '"path"[[:space:]]*:[[:space:]]*"[^"]*"' "$OBS_CONF" 2>/dev/null | sed -E 's/.*:[[:space:]]*"([^"]*)"/\1/' || true)
+  fi
+fi
+
+# 4b. Check environment variable
+if [ -n "$OBSIDIAN_VAULT_PATH" ] && [ -d "$OBSIDIAN_VAULT_PATH" ]; then
+  DISCOVERED_VAULTS+=("$OBSIDIAN_VAULT_PATH")
+fi
+
+# 4c. Check common folder patterns
+for common_path in \
+  "$HOME/Documents/Obsidian Vault" \
+  "$HOME/Documents/Obsidian" \
+  "$HOME/Documents/Notes" \
+  "$HOME/Obsidian" \
+  "$HOME/Vault" \
+  "$HOME/Documents/Vault"; do
+  if [ -d "$common_path" ]; then
+    DISCOVERED_VAULTS+=("$common_path")
+  fi
+done
+
+# 4d. Deduplicate discovered vaults
+UNIQUE_VAULTS=()
+for v in "${DISCOVERED_VAULTS[@]}"; do
+  v_norm="$(cd "$v" 2>/dev/null && pwd || echo "$v")"
+  already=0
+  for u in "${UNIQUE_VAULTS[@]}"; do
+    if [ "$u" = "$v_norm" ]; then already=1; break; fi
+  done
+  if [ "$already" -eq 0 ] && [ -d "$v_norm" ]; then
+    UNIQUE_VAULTS+=("$v_norm")
+  fi
+done
+
+FOUND_OBSIDIAN=0
+if [ ${#UNIQUE_VAULTS[@]} -gt 0 ]; then
+  for vault_path in "${UNIQUE_VAULTS[@]}"; do
+    note_count=$(find "$vault_path" -type f -name "*.md" ! -path "*/.*" 2>/dev/null | wc -l)
+    if [ "$note_count" -gt 0 ]; then
+      FOUND_OBSIDIAN=1
+      echo -e "\n${CYAN}══════════════════════════════════════════════════════════════════${NC}"
+      echo -e "${GREEN}${BOLD}  ★ Existing Obsidian Notes Detected!${NC}"
+      echo -e "${CYAN}══════════════════════════════════════════════════════════════════${NC}"
+      echo -e "  • Path:        ${BOLD}${vault_path}${NC}"
+      echo -e "  • Documents:   ${CYAN}${note_count} Markdown notes found${NC}"
+      echo -e "  • Sample notes:"
+      find "$vault_path" -type f -name "*.md" ! -path "*/.*" 2>/dev/null | head -n 3 | while read -r sample_file; do
+        echo -e "      - $(basename "$sample_file")"
+      done
+      if [ "$note_count" -gt 3 ]; then
+        echo -e "      ... and $((note_count - 3)) more."
+      fi
+      echo ""
+      echo -e "${YELLOW}  Non-Destructive Guarantee:${NC}"
+      echo "  Sphene will safely copy your markdown notes into your sovereign vault"
+      echo "  and build an instant SQLite FTS5 search index. Your original Obsidian files"
+      echo "  will remain 100% untouched and unmodified."
+      echo ""
+
+      IMPORT_CHOICE="Y"
+      if [ "$1" = "--import-obsidian" ] || [ "$SPHENE_IMPORT_OBSIDIAN" = "1" ]; then
+        IMPORT_CHOICE="Y"
+      elif [ -t 0 ]; then
+        read -r -p "  Do you want Sphene to import a copy of these Obsidian notes? [Y/n]: " USER_IMP || true
+        [ -n "$USER_IMP" ] && IMPORT_CHOICE="$USER_IMP"
+      fi
+
+      case "$IMPORT_CHOICE" in
+        [yY][eE][sS]|[yY]|"")
+          echo -e "  Importing notes into ${VAULT_DIR}/Workspace/Obsidian..."
+          SPHENE_VAULT_DIR="$VAULT_DIR" "$SPHENE_BIN" import "$vault_path" --partition "Workspace/Obsidian"
+          ;;
+        *)
+          echo -e "  Skipped import. (You can import anytime with: ${CYAN}sphene import \"$vault_path\"${NC})"
+          ;;
+      esac
+    fi
+  done
+fi
+
+if [ "$FOUND_OBSIDIAN" -eq 0 ]; then
+  echo -e "${GREEN}✓ No existing Obsidian installation found (clean slate).${NC}"
+  echo -e "  (Tip: You can import any existing folder of notes anytime with: ${CYAN}sphene import <path>${NC})"
+fi
+
+# 5. Hermes Agent Detection & Integration
 echo -e "\n${BOLD}Scanning for Hermes Agent installations...${NC}"
 HERMES_TYPE=""
 HERMES_CONTAINER=""
@@ -222,5 +331,6 @@ echo -e "  • Knowledge Vault:  ${CYAN}${VAULT_DIR}${NC}"
 echo -e "  • Security:         ${CYAN}Log in with the admin credentials printed above.${NC}"
 echo -e "  • Password Reset:   ${CYAN}sphene auth setup [--username <user>] [--password <pass>]${NC}"
 echo -e "  • CLI Commands:     ${CYAN}sphene search <query>, sphene read <path>, sphene write <path>${NC}"
+echo -e "  • Import Notes:     ${CYAN}sphene import <path-to-obsidian-or-md-folder>${NC}"
 echo -e "  • Extensions:       ${CYAN}sphene plugin list, sphene plugin install <id>${NC}"
 echo -e "  • Hermes Setup:     ${CYAN}sphene hermes-setup [--replace-obsidian | --restore-obsidian]${NC}\n"
