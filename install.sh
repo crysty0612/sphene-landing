@@ -187,7 +187,182 @@ done
 
 echo -e "\n"
 if [ $COUNTER -lt $MAX_RETRIES ]; then
-  echo -e "${GREEN}${BOLD}==================================================================${NC}"
+  # ------------------------------------------------------------------
+  # Hermes Agent Auto-Discovery & Integration
+  # ------------------------------------------------------------------
+  HERMES_FOUND=""
+  HERMES_TYPE=""
+  HERMES_SKILLS_TARGET=""
+
+  # 1. Probe Docker for active Hermes containers
+  if command -v docker >/dev/null 2>&1; then
+    C_HERMES=$(docker ps --format '{{.Names}}' | grep -E '^hermes$' | head -n 1)
+    if [ -z "$C_HERMES" ]; then
+      C_HERMES=$(docker ps --format '{{.Names}}' | grep -iE 'hermes' | grep -v 'trafilatura' | head -n 1)
+    fi
+    if [ -n "$C_HERMES" ]; then
+      if docker exec "$C_HERMES" test -d /opt/data/skills 2>/dev/null; then
+        HERMES_FOUND="$C_HERMES"
+        HERMES_TYPE="docker"
+        HERMES_SKILLS_TARGET="/opt/data/skills"
+      elif docker exec "$C_HERMES" test -d /root/.hermes/skills 2>/dev/null; then
+        HERMES_FOUND="$C_HERMES"
+        HERMES_TYPE="docker"
+        HERMES_SKILLS_TARGET="/root/.hermes/skills"
+      fi
+    fi
+  fi
+
+  # 2. Probe host environment
+  if [ -z "$HERMES_FOUND" ]; then
+    if [ -n "$HERMES_HOME" ] && [ -d "$HERMES_HOME/skills" ]; then
+      HERMES_FOUND="$HERMES_HOME/skills"
+      HERMES_TYPE="host"
+      HERMES_SKILLS_TARGET="$HERMES_HOME/skills"
+    elif [ -d "$HOME/.hermes/skills" ]; then
+      HERMES_FOUND="$HOME/.hermes/skills"
+      HERMES_TYPE="host"
+      HERMES_SKILLS_TARGET="$HOME/.hermes/skills"
+    elif [ -d "/opt/data/skills" ]; then
+      HERMES_FOUND="/opt/data/skills"
+      HERMES_TYPE="host"
+      HERMES_SKILLS_TARGET="/opt/data/skills"
+    fi
+  fi
+
+  SKILL_INSTALLED=0
+  OBSIDIAN_REPLACED=0
+
+  if [ -n "$HERMES_FOUND" ]; then
+    echo -e "${CYAN}------------------------------------------------------------------${NC}"
+    echo -e "${CYAN}🤖 Hermes Agent Auto-Detected!${NC}"
+    if [ "$HERMES_TYPE" = "docker" ]; then
+      echo -e "   Environment: Docker container ${BOLD}${HERMES_FOUND}${NC} (${HERMES_SKILLS_TARGET})"
+    else
+      echo -e "   Environment: Host directory (${BOLD}${HERMES_SKILLS_TARGET}${NC})"
+    fi
+    echo -e "${CYAN}------------------------------------------------------------------${NC}"
+
+    # Prompt 1: Install Sphene Skill into Hermes
+    INSTALL_SKILL_CHOICE="Y"
+    PROMPT_MSG="Install Sphene Knowledge Hub skill into Hermes now? [Y/n]: "
+    if [ -t 0 ]; then
+      read -r -p "$PROMPT_MSG" USER_SKILL_RESP
+      [ -n "$USER_SKILL_RESP" ] && INSTALL_SKILL_CHOICE="$USER_SKILL_RESP"
+    elif [ -c /dev/tty ]; then
+      echo -ne "$PROMPT_MSG"
+      read -r USER_SKILL_RESP < /dev/tty 2>/dev/null || true
+      [ -n "$USER_SKILL_RESP" ] && INSTALL_SKILL_CHOICE="$USER_SKILL_RESP"
+    fi
+
+    case "$INSTALL_SKILL_CHOICE" in
+      [yY][eE][sS]|[yY]|"")
+        echo "Deploying sphene-knowledge-hub skill into Hermes..."
+        if [ "$HERMES_TYPE" = "docker" ]; then
+          docker cp "hermes-skill/sphene-knowledge-hub" "${HERMES_FOUND}:${HERMES_SKILLS_TARGET}/"
+          docker exec "${HERMES_FOUND}" chmod +x "${HERMES_SKILLS_TARGET}/sphene-knowledge-hub/sphene_client.py" 2>/dev/null || true
+          docker exec "${HERMES_FOUND}" ln -sf "${HERMES_SKILLS_TARGET}/sphene-knowledge-hub/sphene_client.py" /usr/local/bin/sphene 2>/dev/null || true
+        else
+          cp -r "hermes-skill/sphene-knowledge-hub" "${HERMES_SKILLS_TARGET}/"
+          chmod +x "${HERMES_SKILLS_TARGET}/sphene-knowledge-hub/sphene_client.py"
+          if [ -w /usr/local/bin ]; then
+            ln -sf "${HERMES_SKILLS_TARGET}/sphene-knowledge-hub/sphene_client.py" /usr/local/bin/sphene 2>/dev/null || true
+          fi
+        fi
+        SKILL_INSTALLED=1
+        echo -e "${GREEN}✓ Sphene Knowledge Hub skill installed into Hermes successfully.${NC}"
+        ;;
+      *)
+        echo "Skipped Sphene skill installation."
+        ;;
+    esac
+
+    # Prompt 2: Replace Obsidian with Sphene in Hermes
+    OBSIDIAN_REL_PATH=""
+    if [ "$HERMES_TYPE" = "docker" ]; then
+      if docker exec "${HERMES_FOUND}" test -f "${HERMES_SKILLS_TARGET}/note-taking/obsidian/SKILL.md" 2>/dev/null; then
+        OBSIDIAN_REL_PATH="note-taking/obsidian/SKILL.md"
+      elif docker exec "${HERMES_FOUND}" test -f "${HERMES_SKILLS_TARGET}/obsidian/SKILL.md" 2>/dev/null; then
+        OBSIDIAN_REL_PATH="obsidian/SKILL.md"
+      fi
+    else
+      if [ -f "${HERMES_SKILLS_TARGET}/note-taking/obsidian/SKILL.md" ]; then
+        OBSIDIAN_REL_PATH="note-taking/obsidian/SKILL.md"
+      elif [ -f "${HERMES_SKILLS_TARGET}/obsidian/SKILL.md" ]; then
+        OBSIDIAN_REL_PATH="obsidian/SKILL.md"
+      fi
+    fi
+
+    if [ -n "$OBSIDIAN_REL_PATH" ]; then
+      echo -e "\n${YELLOW}Hermes comes bundled with a default Obsidian note-taking skill.${NC}"
+      echo "Sphene is 100% compatible with Obsidian Markdown vaults, but includes zero-knowledge AES-256 encryption and native agent memory."
+      REPLACE_OBSIDIAN_CHOICE="N"
+      PROMPT_OBS="Do you want Hermes to replace Obsidian with Sphene as its primary knowledge store? [y/N]: "
+      if [ -t 0 ]; then
+        read -r -p "$PROMPT_OBS" USER_OBS_RESP
+        [ -n "$USER_OBS_RESP" ] && REPLACE_OBSIDIAN_CHOICE="$USER_OBS_RESP"
+      elif [ -c /dev/tty ]; then
+        echo -ne "$PROMPT_OBS"
+        read -r USER_OBS_RESP < /dev/tty 2>/dev/null || true
+        [ -n "$USER_OBS_RESP" ] && REPLACE_OBSIDIAN_CHOICE="$USER_OBS_RESP"
+      fi
+
+      case "$REPLACE_OBSIDIAN_CHOICE" in
+        [yY][eE][sS]|[yY])
+          echo "Upgrading Hermes Obsidian skill definition to route directly to Sphene..."
+          VAULT_ABS_PATH="$(pwd)/vault"
+          UPGRADED_OBSIDIAN_SKILL="---
+name: obsidian
+description: Read, search, create, and edit notes in Sphene Knowledge Hub (the sovereign Obsidian-compatible knowledge substrate).
+version: 2.0.0
+author: Sphene Sovereign Substrate
+platforms: [linux, macos, windows]
+metadata:
+  hermes:
+    tags: [Sphene, Obsidian, Notes, Markdown, Vault]
+    related_skills: [sphene-knowledge-hub]
+---
+
+# Sphene Knowledge Hub (Obsidian Replacement)
+
+Use this skill for all note-taking, markdown knowledge store, and second brain workflows.
+Obsidian has been upgraded to **Sphene Knowledge Hub** — a sovereign, local-first knowledge substrate running locally with standard plaintext Markdown files, zero-knowledge AES-256 encryption, and native graph/REST APIs.
+
+## Active Vault Location
+Sphene stores all documents as standard plaintext Markdown (\`.md\`) on disk at:
+\`${VAULT_ABS_PATH}\`
+
+## How to Interact with Sphene
+
+### Primary: Native Sphene CLI & REST API
+- **Search Notes:** \`sphene search \"<query>\"\`
+- **Read Note:** \`sphene read \"<slug_or_title>\"\`
+- **Create Note:** \`sphene write \"<Title>\" --body \"<Content>\" --tags \"<tag1,tag2>\"\`
+- **Knowledge Graph:** \`sphene graph\`
+- **Inspect Backlinks:** \`sphene backlinks \"<slug>\"\`
+- **Append Daily Note:** \`sphene daily \"<Content>\"\`
+
+### Secondary: Direct Filesystem Access
+All notes are plaintext Markdown in \`${VAULT_ABS_PATH}\`. You can also use \`read_file\`, \`write_file\`, and \`patch\` directly on \`.md\` files in this directory using standard \`[[Wikilinks]]\`."
+
+          if [ "$HERMES_TYPE" = "docker" ]; then
+            docker exec "${HERMES_FOUND}" sh -c "[ ! -f '${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}.bak' ] && cp '${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}' '${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}.bak'" 2>/dev/null || true
+            printf "%s\n" "$UPGRADED_OBSIDIAN_SKILL" | docker exec -i "${HERMES_FOUND}" sh -c "cat > '${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}'"
+          else
+            [ ! -f "${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}.bak" ] && cp "${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}" "${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}.bak"
+            printf "%s\n" "$UPGRADED_OBSIDIAN_SKILL" > "${HERMES_SKILLS_TARGET}/${OBSIDIAN_REL_PATH}"
+          fi
+          OBSIDIAN_REPLACED=1
+          echo -e "${GREEN}✓ Hermes Obsidian skill upgraded to route to Sphene Knowledge Hub!${NC}"
+          ;;
+        *)
+          echo "Obsidian skill left unchanged. Sphene is configured as an independent skill."
+          ;;
+      esac
+    fi
+  fi
+
+  echo -e "\n${GREEN}${BOLD}==================================================================${NC}"
   echo -e "${GREEN}${BOLD}  SPHENE KNOWLEDGE HUB IS RUNNING SUCCESSFULLY! ${NC}"
   echo -e "${GREEN}${BOLD}==================================================================${NC}"
   echo -e "  • Web Interface:    ${CYAN}${BOLD}http://localhost:${TARGET_PORT}${NC}"
@@ -199,8 +374,20 @@ if [ $COUNTER -lt $MAX_RETRIES ]; then
   echo -e "  1. ${BOLD}In Browser / Mobile:${NC} Open http://localhost:${TARGET_PORT} to view, edit, search, and click [[Wikilinks]]"
   echo -e "  2. ${BOLD}With Any Markdown / Local Editor:${NC} Open this local folder as your knowledge vault:"
   echo -e "     ${CYAN}$(pwd)/vault/${NC}"
-  echo -e "  3. ${BOLD}With Hermes Agent:${NC} Install skill into Hermes:"
-  echo -e "     ${CYAN}cp -r hermes-skill/sphene-knowledge-hub ~/.hermes/skills/${NC}"
+  if [ $SKILL_INSTALLED -eq 1 ]; then
+    echo -e "  3. ${BOLD}With Hermes Agent:${NC} ${GREEN}Skill is ACTIVE!${NC} Ask Hermes in natural language:"
+    echo -e "     ${CYAN}\"Search my Sphene notes for architecture\"${NC} or ${CYAN}\"Write a daily note in Sphene\"${NC}"
+    if [ $OBSIDIAN_REPLACED -eq 1 ]; then
+      echo -e "     ${GREEN}✓ Obsidian commands also route to Sphene.${NC}"
+    fi
+  else
+    echo -e "  3. ${BOLD}With Hermes Agent:${NC} Install skill using absolute path:"
+    if [ "$HERMES_TYPE" = "docker" ]; then
+      echo -e "     ${CYAN}docker cp \"$(pwd)/hermes-skill/sphene-knowledge-hub\" ${HERMES_FOUND}:/opt/data/skills/${NC}"
+    else
+      echo -e "     ${CYAN}cp -r \"$(pwd)/hermes-skill/sphene-knowledge-hub\" ~/.hermes/skills/${NC}"
+    fi
+  fi
   echo ""
   echo -e "To stop:  ${CYAN}docker compose down${NC}"
   echo -e "To start: ${CYAN}docker compose up -d${NC}"
@@ -208,3 +395,4 @@ if [ $COUNTER -lt $MAX_RETRIES ]; then
 else
   echo -e "${YELLOW}Container started. Please check http://localhost:${TARGET_PORT} in a few moments.${NC}"
 fi
+
