@@ -38,19 +38,35 @@ elif [ -f "${SCRIPT_DIR}/cmd/sphene/main.go" ] && command -v go >/dev/null 2>&1;
   SPHENE_BIN="${SCRIPT_DIR}/bin/sphene"
 else
   # Fetch pre-compiled native binary from Cloudflare Pages distribution
-  OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
-  ARCH="$(uname -m)"
-  case "$ARCH" in
-    x86_64) ARCH="amd64" ;;
-    aarch64|arm64) ARCH="arm64" ;;
+  OS_RAW="$(uname -s)"
+  ARCH_RAW="$(uname -m)"
+
+  case "$OS_RAW" in
+    Darwin*) OS="darwin" ;;
+    Linux*)  OS="linux" ;;
+    MSYS*|MINGW*|CYGWIN*) OS="windows" ;;
+    *)       OS="$(echo "$OS_RAW" | tr '[:upper:]' '[:lower:]')" ;;
+  esac
+
+  case "$ARCH_RAW" in
+    x86_64|amd64)   ARCH="amd64" ;;
+    arm64|aarch64)  ARCH="arm64" ;;
+    armv7*|armhf)   ARCH="arm" ;;
+    i386|i686)      ARCH="386" ;;
+    *)              ARCH="$ARCH_RAW" ;;
   esac
 
   TARGET_FILE="sphene-${OS}-${ARCH}"
+  if [ "$OS" = "windows" ]; then
+    TARGET_FILE="${TARGET_FILE}.exe"
+  fi
+
   DOWNLOAD_URL="https://sphene.app/bin/${TARGET_FILE}"
   TMP_DIR="/tmp/sphene-install"
   TMP_BIN="${TMP_DIR}/sphene"
   mkdir -p "$TMP_DIR"
-  echo "Fetching pre-compiled native Sphene binary (${OS}-${ARCH})..."
+  echo "Auto-detected system architecture: ${OS}-${ARCH}"
+  echo "Fetching pre-compiled native Sphene binary from https://sphene.app..."
   if curl -fsSL "$DOWNLOAD_URL" -o "$TMP_BIN" 2>/dev/null && [ -s "$TMP_BIN" ]; then
     chmod +x "$TMP_BIN"
     SPHENE_BIN="$TMP_BIN"
@@ -67,24 +83,48 @@ else
 fi
 
 if [ -z "$SPHENE_BIN" ] || [ ! -f "$SPHENE_BIN" ]; then
-  echo -e "${RED}Error: Sphene binary could not be found or built automatically.${NC}"
-  echo -e "Please ensure Go is installed or run this installer from the Sphene repository root."
+  echo -e "${RED}Error: Sphene binary could not be found or built automatically for ${OS}-${ARCH}.${NC}"
+  echo -e "Please check network access or build directly with Go: go build ./cmd/sphene"
   exit 1
 fi
 
-# 2. Install binary globally if possible
-if [ -w /usr/local/bin ]; then
+# 2. Install binary globally across macOS, Linux, or WSL2
+INSTALLED=0
+if [ -d "/opt/homebrew/bin" ] && [ -w "/opt/homebrew/bin" ]; then
+  cp "$SPHENE_BIN" /opt/homebrew/bin/sphene
+  chmod +x /opt/homebrew/bin/sphene
+  SPHENE_BIN="/opt/homebrew/bin/sphene"
+  INSTALLED=1
+  echo -e "${GREEN}✓ Installed /opt/homebrew/bin/sphene${NC}"
+elif [ -d "/usr/local/bin" ] && [ -w "/usr/local/bin" ]; then
   cp "$SPHENE_BIN" /usr/local/bin/sphene
   chmod +x /usr/local/bin/sphene
   SPHENE_BIN="/usr/local/bin/sphene"
+  INSTALLED=1
   echo -e "${GREEN}✓ Installed /usr/local/bin/sphene${NC}"
 elif command -v sudo >/dev/null 2>&1; then
-  sudo cp "$SPHENE_BIN" /usr/local/bin/sphene
-  sudo chmod +x /usr/local/bin/sphene
-  SPHENE_BIN="/usr/local/bin/sphene"
-  echo -e "${GREEN}✓ Installed /usr/local/bin/sphene (via sudo)${NC}"
-else
-  echo -e "${YELLOW}Notice: Could not write to /usr/local/bin. Using local binary at: ${SPHENE_BIN}${NC}"
+  TARGET_PATH="/usr/local/bin/sphene"
+  if [ "$OS" = "darwin" ] && [ -d "/opt/homebrew/bin" ]; then
+    TARGET_PATH="/opt/homebrew/bin/sphene"
+  fi
+  sudo mkdir -p "$(dirname "$TARGET_PATH")"
+  sudo cp "$SPHENE_BIN" "$TARGET_PATH"
+  sudo chmod +x "$TARGET_PATH"
+  SPHENE_BIN="$TARGET_PATH"
+  INSTALLED=1
+  echo -e "${GREEN}✓ Installed ${TARGET_PATH} (via sudo)${NC}"
+fi
+
+if [ "$INSTALLED" -eq 0 ]; then
+  USER_BIN="$HOME/.local/bin"
+  mkdir -p "$USER_BIN"
+  cp "$SPHENE_BIN" "$USER_BIN/sphene"
+  chmod +x "$USER_BIN/sphene"
+  SPHENE_BIN="$USER_BIN/sphene"
+  echo -e "${GREEN}✓ Installed to ${SPHENE_BIN}${NC}"
+  if ! echo "$PATH" | grep -q "$USER_BIN"; then
+    echo -e "${YELLOW}Notice: Add 'export PATH=\"\$HOME/.local/bin:\$PATH\"' to your ~/.zshrc or ~/.bashrc${NC}"
+  fi
 fi
 
 # 3. Vault layout
