@@ -375,7 +375,8 @@ Sphene stores all documents as standard plaintext Markdown (`.md`) on disk at:
 ## 3. How to Interact with Sphene (CLI & REST)
 - **Search Notes (FTS5 <1ms):** `sphene search "<query>"`
 - **Read Note:** `sphene read "<path_or_slug>" --raw`
-- **Create Note (Canonical 1-Shot):** `cat << 'EOF' | sphene write "Note Title" --tags "tag1,tag2"`
+- **Write / Update Note:** `sphene write "<Title>" --file <path>` or `--body "<Content>"` or `--base64 <b64>`
+- **Delete Note:** `sphene delete "<Title>"` (or `sphene rm "<Title>"`)
 - **Knowledge Graph:** `sphene graph`
 - **Append Daily Note:** `sphene daily "<Summary>"`
 - **Visual Web UI & 3D Graph:** `http://localhost:8743`

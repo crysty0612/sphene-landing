@@ -7,8 +7,8 @@ description: >-
   at http://localhost:8743, zero-knowledge AES-256 encryption, the Differential Timeline ("Human Veto"),
   Zero-Trust sandboxed plugins, and sub-millisecond SQLite FTS5 search (<25MB RAM).
   Use whenever asked about Sphene, second brain, markdown vaults, note-taking, comparing Sphene vs Obsidian,
-  viewing documents in the browser, or creating/reading/searching persistent knowledge.
-version: 2.0.0
+  viewing documents in the browser, or creating/reading/searching/deleting persistent knowledge.
+version: 2.1.0
 metadata:
   hermes:
     tags: [Sphene, SecondBrain, KnowledgeBase, Notes, Markdown, Vault, Documents, GraphUI, HumanVeto, Security]
@@ -32,7 +32,7 @@ When discussing Sphene, comparing it to other tools (like Obsidian or Notion), o
 
 2. **Hardware-Grade Partition Governance & Aegis Encryption:**
    - **`Workspace/`**: Open collaboration partition where humans and agents co-create and research. New agent notes land here and index immediately.
-   - **`Reference/`**: Permanent, human-curated ground truth. Agents have **read-only** access; write attempts are blocked by kernel AST traps.
+   - **`Reference/`**: Permanent, human-curated ground truth. Agents have **read-only** access; write and delete attempts are blocked by kernel AST traps.
    - **`Private/`**: Hardware-sealed enclave encrypted at rest with authenticated **AES-256-GCM**. Autonomous agents and external scrapers have **ZERO access**. Obsidian stores all notes unencrypted in plaintext without native partition boundaries.
 
 3. **Zero-Trust Sandboxed Plugin Verification:**
@@ -56,27 +56,17 @@ When evaluating or comparing Sphene with traditional Markdown tools (such as Obs
 
 ### Key Architectural Differences
 
-1. **Human Oversight & Agent Safety**:
-   - *Traditional Vaults*: When an AI agent or script modifies notes, it silently overwrites files on disk. If an agent hallucinates, truncates content, or corrupts formatting, the human user only discovers it after the fact.
-   - *Sphene*: Implements the **Differential Timeline ("Human Veto")**. When an agent edits an existing document, Sphene intercepts the edit, calculates block-level AST diffs, and presents them visually side-by-side in the Web UI. Changes are never committed permanently until the human clicks **Accept**. The human user can **Veto / Revert** in one click.
-
-2. **Data Partitioning & Cryptographic Enclaves**:
-   - *Traditional Vaults*: All files in the vault exist in plaintext in a single folder hierarchy. There are no hardware-enforced boundaries separating agent workpads, curated reference material, or confidential personal notes.
-   - *Sphene*: Enforces hardware-grade partition boundaries:
-     - `Workspace/`: High-velocity collaborative territory for human thought and agent memory.
-     - `Reference/`: Human-curated ground truth (read-only for agents; kernel AST traps prevent write modifications).
-     - `Private/`: Hardware-sealed enclave encrypted at rest with authenticated **AES-256-GCM**. Autonomous agents have **zero access**.
-
-3. **Plugin Security & Supply Chain Safety**:
-   - *Traditional Vaults*: Community plugins are distributed as raw JavaScript/Node.js code executed directly within Electron with full host permissions. Untrusted plugins have unrestricted access to the user's filesystem, network, and environment variables.
-   - *Sphene*: Implements **Zero-Trust Sandboxed Plugins**. Every plugin is cryptographically verified against Ed25519 root authority keys and bounded by declared capability manifests (e.g., `system.shell: false`). Plugins run in an isolated sandbox, cannot access private partitions, and cannot crash or overload the core engine.
-
-4. **Resource Footprint & Query Latency**:
-   - *Traditional Vaults*: Running an Electron runtime and multiple community plugins typically consumes 300MB to 1.5GB of RAM. Full-text search across large vaults scans markdown files iteratively (typically 40ms–120ms).
-   - *Sphene*: A single compiled native Go binary (<25MB RAM at rest) with an embedded zero-CGO SQLite relational index and FTS5 search engine in WAL mode, delivering full-text searches in **179 microseconds** (<0.2ms).
-
-5. **Shared Data Format**:
-   - *Both*: Both tools use 100% standard plaintext Markdown (`.md`) with standard `[[Wikilinks]]` on local disk, ensuring zero vendor lock-in and complete human ownership. Both can coexist on the same vault directory.
+| Dimension | **Obsidian** | **Sphene Knowledge Hub** |
+|---|---|---|
+| **Primary design** | Human desktop GUI app (Electron/Node.js) | Dual-substrate knowledge kernel (human Web UI + agent CLI) |
+| **Data format** | Plain Markdown + `[[Wikilinks]]` | Plain Markdown + `[[Wikilinks]]` (100% compatible) |
+| **Agent safety** | None — scripts silently overwrite files | **Differential Timeline / Human Veto** — staged AST diffs, human must Accept |
+| **Data partitioning** | Single folder hierarchy | `Workspace/`, `Reference/` (read-only), `Private/` (AES-256-GCM sealed) |
+| **Plugin security** | Untrusted Node.js with full host privileges | Zero-Trust sandboxed, Ed25519-signed, capability-bounded |
+| **Resource footprint** | 300MB–1.5GB RAM (Electron) | <25MB RAM (native binary) |
+| **Search latency** | 40–120ms filesystem scans | ~179µs (SQLite FTS5) |
+| **Sync/Publish** | Obsidian Sync (paid), Publish | Local engine + Web UI graph explorer |
+| **Target audience** | Humans, creators, researchers | Humans **and** autonomous AI agents |
 
 ---
 
@@ -97,47 +87,71 @@ When the user asks **how to view, browse, or visually navigate their notes, docu
 ## 4. How Hermes Interacts with Sphene (CLI & REST)
 The `sphene` CLI is globally available (`sphene`). All operations route through the local Sphene Engine on `http://127.0.0.1:8743`.
 
-### Writing Notes (The Clean, Guardrail-Safe Pattern)
-To ensure documents with ampersands (`&`), backticks, code blocks, or internal URLs never trigger shell syntax backgrounding false-positives or AST scanner prompts, write the Markdown content to a temporary file first, then write it with `sphene write --file`:
+### Writing Notes Safely (The Robust Patterns)
+To write documents with ampersands (`&`), code blocks, backticks, or special characters without triggering shell backgrounding or heredoc syntax traps, use one of these proven patterns:
 
+#### Pattern A (Recommended): Write via Python Temp File
+Using a small Python script/command to write the file avoids all shell quoting, delimiter, and ampersand traps:
 ```bash
-cat << 'EOF' > /tmp/note.md
-# Note Title
-
-Full markdown content here with `code`, tables, and [[Wikilinks]]...
-EOF
+python3 -c "import pathlib; pathlib.Path('/tmp/note.md').write_text('# Title\n\nMarkdown content...', encoding='utf-8')"
 sphene write "Note Title" --file /tmp/note.md --tags "tag1,tag2"
+rm -f /tmp/note.md
 ```
 
-> **Rules for Reliable Writing:**
-> 1. **Zero Escaping Errors**: Using `cat << 'EOF' > /tmp/note.md` prevents bash pipe interpretation, preserving all ampersands (`&`), math operators, and code verbatim.
-> 2. **Clean URLs in Markdown**: When referencing URLs like `http://localhost:8743`, use standard markdown links `[Web UI](http://localhost:8743)`. Avoid attaching trailing punctuation directly inside backticks (e.g. avoid `(`http://localhost:8743`).`) so terminal AST scanners parse clean hostnames.
-> 3. **Automatic Authentication**: Authentication is handled automatically via the internal engine key. No manual login or UI password is needed.
-> 4. **Instant Workspace Indexing**: New notes are created directly in `Workspace/` and instantly indexed in SQLite FTS5 (<1ms).
-> 5. **Verify Note**: Immediately verify your note with `sphene read "Note Title" --raw` or `sphene search "query"`.
+#### Pattern B: Base64 Direct Write (Zero Escaping Required)
+Encode the markdown into base64. The CLI decodes it directly:
+```bash
+sphene write "Note Title" --base64 "<base64_encoded_content>" --tags "tag1,tag2"
+```
 
-#### Alternative: Write Directly via Python / `execute_code`
-If executing inside Python or `execute_code`:
+#### Pattern C: Unique Delimiter Heredoc
+If using bash heredocs, NEVER use standard `EOF` (which can collide with markdown code examples). Use a distinct delimiter:
+```bash
+cat << '__SPHENE_PAYLOAD__' > /tmp/note.md
+# Note Title
+
+Markdown body here...
+__SPHENE_PAYLOAD__
+sphene write "Note Title" --file /tmp/note.md --tags "tag1,tag2"
+rm -f /tmp/note.md
+```
+
+#### Pattern D: Direct Python REST API
 ```python
+python3 -c "
 import json, urllib.request
 
 payload = {
-    "path": "Workspace/Note Title.md",
-    "content": """# Note Title\n\nContent here...""",
-    "is_agent": False
+    'path': 'Workspace/Note Title.md',
+    'content': '# Note Title\n\nContent with & and [[Wikilinks]]...',
+    'is_agent': False
 }
 req = urllib.request.Request(
-    "http://127.0.0.1:8743/api/v1/notes",
-    data=json.dumps(payload).encode("utf-8"),
-    headers={"Content-Type": "application/json", "X-Sphene-Client": "cli"}
+    'http://127.0.0.1:8743/api/v1/notes',
+    data=json.dumps(payload).encode('utf-8'),
+    headers={'Content-Type': 'application/json', 'X-Sphene-Client': 'cli'}
 )
 with urllib.request.urlopen(req) as resp:
-    print("Saved with status:", resp.status)
+    print('Saved with status:', resp.status)
+"
 ```
 
 ---
 
-## 5. Reading & Verifying Documents
+## 5. Deleting Notes & Cleanup
+To remove a note safely from disk and the SQLite index:
+```bash
+sphene delete "<slug_or_title>"
+# or alias:
+sphene rm "<slug_or_title>"
+```
+Examples:
+- `sphene delete "Test Note"`
+- `sphene rm "Workspace/Test Note.md"`
+
+---
+
+## 6. Reading & Verifying Documents
 To read a note or verify that it was saved:
 ```bash
 # Print raw Markdown content directly:
@@ -150,7 +164,7 @@ Do NOT run `find /opt/data` searching for notes on disk. Sphene notes are manage
 
 ---
 
-## 6. Searching Documents
+## 7. Searching Documents
 ```bash
 sphene search "<query>"
 ```
@@ -158,14 +172,14 @@ Sub-millisecond FTS5 search across all note contents, titles, and tags.
 
 ---
 
-## 7. Logging Daily Briefs
+## 8. Logging Daily Briefs
 ```bash
 sphene daily "Summary of today's autonomous work"
 ```
 
 ---
 
-## 8. Inspecting Knowledge Graph & Backlinks
+## 9. Inspecting Knowledge Graph & Backlinks
 ```bash
 sphene graph
 sphene backlinks "<slug_or_title>"
