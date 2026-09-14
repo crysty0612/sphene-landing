@@ -1,8 +1,6 @@
-# Cloudflare Pages Clean Routes & Releases
+# Cloudflare Pages Clean Routes
 /download     /download/      301
 /downloads    /download/      301
 /pricing      /pricing/       301
 /roadmap      /pricing/       301
 
-# Docker Release Image redirect to GitHub Releases
-/sphene-image.tar.gz  https://github.com/crysty0612/sphene-landing/releases/latest/download/sphene-image.tar.gz 302
