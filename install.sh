@@ -13,17 +13,33 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
+AUTO_YES=0
+FORCE_UPDATE=0
+for arg in "$@"; do
+  case "$arg" in
+    -y|--yes) AUTO_YES=1 ;;
+    --update) FORCE_UPDATE=1 ;;
+  esac
+done
+
 # Helper function to read from terminal even when piped via curl ... | bash
 read_input() {
   local prompt_text="$1"
   local default_val="$2"
   local user_val=""
 
-  if [ -c /dev/tty ]; then
-    echo -ne "$prompt_text" > /dev/tty
-    read -r user_val < /dev/tty 2>/dev/null || true
-  elif [ -t 0 ]; then
+  if [ "$AUTO_YES" -eq 1 ] || [ -n "$SPHENE_NON_INTERACTIVE" ] || [ -n "$CI" ]; then
+    echo "$default_val"
+    return
+  fi
+
+  if [ -t 0 ]; then
     read -r -p "$prompt_text" user_val || true
+  elif [ -c /dev/tty ] && [ -r /dev/tty ]; then
+    echo -ne "$prompt_text" > /dev/tty 2>/dev/null || true
+    read -r user_val < /dev/tty 2>/dev/null || true
+  else
+    read -r user_val 2>/dev/null || true
   fi
 
   if [ -z "$user_val" ]; then
@@ -76,6 +92,8 @@ if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   fi
 fi
 
+PORT="${SPHENE_PORT:-8743}"
+
 # 3. Determine Workspace & Vault Directory
 if [ -d "/DATA/AppData" ] && [ -w "/DATA/AppData" ]; then
   DEFAULT_INSTALL_DIR="/DATA/AppData/sphene"
@@ -85,7 +103,64 @@ fi
 INSTALL_DIR="${SPHENE_INSTALL_DIR:-$DEFAULT_INSTALL_DIR}"
 VAULT_DIR="${SPHENE_VAULT_DIR:-$INSTALL_DIR/vault}"
 mkdir -p "$VAULT_DIR/Workspace" "$VAULT_DIR/Reference" "$VAULT_DIR/Private"
-echo -e "${GREEN}✓ Knowledge vault initialized at: ${VAULT_DIR}${NC}"
+
+# Check if Sphene is already installed or running
+IS_UPDATE=0
+SPHENE_CONTAINER_EXISTS=0
+if [ $HAS_DOCKER -eq 1 ] && docker ps -a --format '{{.Names}}' | grep -q "^sphene$"; then
+  SPHENE_CONTAINER_EXISTS=1
+fi
+
+SPHENE_PORT_ACTIVE=0
+if curl -s --max-time 1 "http://127.0.0.1:${PORT}/api/v1/health" 2>/dev/null | grep -q "sphene-kernel"; then
+  SPHENE_PORT_ACTIVE=1
+fi
+
+if [ $SPHENE_CONTAINER_EXISTS -eq 1 ] || [ $SPHENE_PORT_ACTIVE -eq 1 ]; then
+  echo -e "\n${CYAN}${BOLD}==================================================================${NC}"
+  echo -e "${CYAN}${BOLD}  EXISTING SPHENE INSTALLATION DETECTED                           ${NC}"
+  echo -e "${CYAN}${BOLD}==================================================================${NC}"
+  if [ $SPHENE_CONTAINER_EXISTS -eq 1 ]; then
+    C_STATUS=$(docker inspect -f '{{.State.Status}}' sphene 2>/dev/null || echo "present")
+    echo -e "  • Docker Container: ${GREEN}sphene${NC} (Status: ${C_STATUS})"
+  fi
+  if [ $SPHENE_PORT_ACTIVE -eq 1 ]; then
+    echo -e "  • Web Interface:    ${GREEN}http://localhost:${PORT}${NC} (responding healthy)"
+  fi
+  DOC_COUNT=$(find "$VAULT_DIR" -type f -name "*.md" ! -path "*/.*" 2>/dev/null | wc -l)
+  echo -e "  • Knowledge Vault:  ${CYAN}${VAULT_DIR}${NC} (${DOC_COUNT} notes preserved)"
+  echo -e "${CYAN}${BOLD}==================================================================${NC}\n"
+
+  if [ $FORCE_UPDATE -eq 1 ]; then
+    UPDATE_CHOICE="Y"
+  else
+    PROMPT_UPDATE="Sphene is already installed! Would you like to UPDATE Sphene and sync Hermes skills? [Y/n]: "
+    UPDATE_CHOICE=$(read_input "$PROMPT_UPDATE" "Y")
+  fi
+
+  case "$UPDATE_CHOICE" in
+    [yY][eE][sS]|[yY]|"")
+      echo -e "\n${GREEN}✓ Proceeding with Sphene & Hermes update...${NC}"
+      IS_UPDATE=1
+      ;;
+    *)
+      PROMPT_REINSTALL="Do you want to run a full interactive reinstall / reconfigure instead? [y/N]: "
+      REINSTALL_CHOICE=$(read_input "$PROMPT_REINSTALL" "N")
+      case "$REINSTALL_CHOICE" in
+        [yY][eE][sS]|[yY])
+          echo -e "\nProceeding with full interactive re-installation...\n"
+          IS_UPDATE=0
+          ;;
+        *)
+          echo -e "\nNo changes made. Current Sphene installation kept untouched."
+          exit 0
+          ;;
+      esac
+      ;;
+  esac
+else
+  echo -e "${GREEN}✓ Knowledge vault initialized at: ${VAULT_DIR}${NC}"
+fi
 
 # 4. Host Binary Installation (for CLI convenience)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd || pwd)"
@@ -129,109 +204,111 @@ if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
   fi
 fi
 
-# 5. Obsidian Vault Auto-Discovery & Non-Destructive Migration
-echo -e "\n${BOLD}Scanning for existing Obsidian notes...${NC}"
-DISCOVERED_VAULTS=()
+# 5. Obsidian Vault Auto-Discovery & Non-Destructive Migration (Skip in update mode)
+if [ $IS_UPDATE -eq 0 ]; then
+  echo -e "\n${BOLD}Scanning for existing Obsidian notes...${NC}"
+  DISCOVERED_VAULTS=()
 
-OBS_CONF=""
-if [ -f "$HOME/.config/obsidian/obsidian.json" ]; then
-  OBS_CONF="$HOME/.config/obsidian/obsidian.json"
-elif [ -f "$HOME/Library/Application Support/obsidian/obsidian.json" ]; then
-  OBS_CONF="$HOME/Library/Application Support/obsidian/obsidian.json"
-elif [ -n "$APPDATA" ] && [ -f "$APPDATA/obsidian/obsidian.json" ]; then
-  OBS_CONF="$APPDATA/obsidian/obsidian.json"
-fi
-
-if [ -n "$OBS_CONF" ] && [ -r "$OBS_CONF" ]; then
-  if command -v python3 >/dev/null 2>&1; then
-    while IFS= read -r vpath; do
-      [ -d "$vpath" ] && DISCOVERED_VAULTS+=("$vpath")
-    done < <(python3 -c 'import json, sys; d=json.load(open(sys.argv[1])); print("\n".join(v["path"] for v in d.get("vaults",{}).values() if "path" in v))' "$OBS_CONF" 2>/dev/null || true)
+  OBS_CONF=""
+  if [ -f "$HOME/.config/obsidian/obsidian.json" ]; then
+    OBS_CONF="$HOME/.config/obsidian/obsidian.json"
+  elif [ -f "$HOME/Library/Application Support/obsidian/obsidian.json" ]; then
+    OBS_CONF="$HOME/Library/Application Support/obsidian/obsidian.json"
+  elif [ -n "$APPDATA" ] && [ -f "$APPDATA/obsidian/obsidian.json" ]; then
+    OBS_CONF="$APPDATA/obsidian/obsidian.json"
   fi
-  if [ ${#DISCOVERED_VAULTS[@]} -eq 0 ]; then
-    while IFS= read -r vpath; do
-      [ -d "$vpath" ] && DISCOVERED_VAULTS+=("$vpath")
-    done < <(grep -o '"path"[[:space:]]*:[[:space:]]*"[^"]*"' "$OBS_CONF" 2>/dev/null | sed -E 's/.*:[[:space:]]*"([^"]*)"/\1/' || true)
+
+  if [ -n "$OBS_CONF" ] && [ -r "$OBS_CONF" ]; then
+    if command -v python3 >/dev/null 2>&1; then
+      while IFS= read -r vpath; do
+        [ -d "$vpath" ] && DISCOVERED_VAULTS+=("$vpath")
+      done < <(python3 -c 'import json, sys; d=json.load(open(sys.argv[1])); print("\n".join(v["path"] for v in d.get("vaults",{}).values() if "path" in v))' "$OBS_CONF" 2>/dev/null || true)
+    fi
+    if [ ${#DISCOVERED_VAULTS[@]} -eq 0 ]; then
+      while IFS= read -r vpath; do
+        [ -d "$vpath" ] && DISCOVERED_VAULTS+=("$vpath")
+      done < <(grep -o '"path"[[:space:]]*:[[:space:]]*"[^"]*"' "$OBS_CONF" 2>/dev/null | sed -E 's/.*:[[:space:]]*"([^"]*)"/\1/' || true)
+    fi
   fi
-fi
 
-if [ -n "$OBSIDIAN_VAULT_PATH" ] && [ -d "$OBSIDIAN_VAULT_PATH" ]; then
-  DISCOVERED_VAULTS+=("$OBSIDIAN_VAULT_PATH")
-fi
-
-for common_path in \
-  "$HOME/Documents/Obsidian Vault" \
-  "$HOME/Documents/Obsidian" \
-  "$HOME/Documents/Notes" \
-  "$HOME/Obsidian" \
-  "$HOME/Vault" \
-  "$HOME/Documents/Vault"; do
-  if [ -d "$common_path" ]; then
-    DISCOVERED_VAULTS+=("$common_path")
+  if [ -n "$OBSIDIAN_VAULT_PATH" ] && [ -d "$OBSIDIAN_VAULT_PATH" ]; then
+    DISCOVERED_VAULTS+=("$OBSIDIAN_VAULT_PATH")
   fi
-done
 
-UNIQUE_VAULTS=()
-for v in "${DISCOVERED_VAULTS[@]}"; do
-  v_norm="$(cd "$v" 2>/dev/null && pwd || echo "$v")"
-  already=0
-  for u in "${UNIQUE_VAULTS[@]}"; do
-    if [ "$u" = "$v_norm" ]; then already=1; break; fi
-  done
-  if [ "$already" -eq 0 ] && [ -d "$v_norm" ]; then
-    UNIQUE_VAULTS+=("$v_norm")
-  fi
-done
-
-FOUND_OBSIDIAN=0
-if [ ${#UNIQUE_VAULTS[@]} -gt 0 ]; then
-  for vault_path in "${UNIQUE_VAULTS[@]}"; do
-    note_count=$(find "$vault_path" -type f -name "*.md" ! -path "*/.*" 2>/dev/null | wc -l)
-    if [ "$note_count" -gt 0 ]; then
-      FOUND_OBSIDIAN=1
-      echo -e "\n${CYAN}══════════════════════════════════════════════════════════════════${NC}"
-      echo -e "${GREEN}${BOLD}  ★ Existing Obsidian Notes Detected!${NC}"
-      echo -e "${CYAN}══════════════════════════════════════════════════════════════════${NC}"
-      echo -e "  • Path:        ${BOLD}${vault_path}${NC}"
-      echo -e "  • Documents:   ${CYAN}${note_count} Markdown notes found${NC}"
-      echo -e "  • Sample notes:"
-      find "$vault_path" -type f -name "*.md" ! -path "*/.*" 2>/dev/null | head -n 3 | while read -r sample_file; do
-        echo -e "      - $(basename "$sample_file")"
-      done
-      if [ "$note_count" -gt 3 ]; then
-        echo -e "      ... and $((note_count - 3)) more."
-      fi
-      echo ""
-      echo -e "${YELLOW}  Non-Destructive Guarantee:${NC}"
-      echo "  Sphene will safely copy your markdown notes into your sovereign vault."
-      echo "  Your original Obsidian files will remain 100% untouched and unmodified."
-      echo ""
-
-      IMPORT_PROMPT="Do you want Sphene to import a copy of these Obsidian notes? [Y/n]: "
-      IMPORT_CHOICE=$(read_input "$IMPORT_PROMPT" "Y")
-
-      case "$IMPORT_CHOICE" in
-        [yY][eE][sS]|[yY]|"")
-          echo -e "  Importing notes into ${VAULT_DIR}/Workspace/Obsidian..."
-          if command -v sphene >/dev/null 2>&1; then
-            SPHENE_VAULT_DIR="$VAULT_DIR" sphene import "$vault_path" --partition "Workspace/Obsidian"
-          else
-            mkdir -p "${VAULT_DIR}/Workspace/Obsidian"
-            cp -r "$vault_path"/* "${VAULT_DIR}/Workspace/Obsidian/" 2>/dev/null || true
-            echo -e "${GREEN}✓ Copied notes into ${VAULT_DIR}/Workspace/Obsidian${NC}"
-          fi
-          ;;
-        *)
-          echo -e "  Skipped import. (You can import anytime with: ${CYAN}sphene import \"$vault_path\"${NC})"
-          ;;
-      esac
+  for common_path in \
+    "$HOME/Documents/Obsidian Vault" \
+    "$HOME/Documents/Obsidian" \
+    "$HOME/Documents/Notes" \
+    "$HOME/Obsidian" \
+    "$HOME/Vault" \
+    "$HOME/Documents/Vault"; do
+    if [ -d "$common_path" ]; then
+      DISCOVERED_VAULTS+=("$common_path")
     fi
   done
-fi
 
-if [ "$FOUND_OBSIDIAN" -eq 0 ]; then
-  echo -e "${GREEN}✓ No existing Obsidian installation found (clean slate).${NC}"
-  echo -e "  (Tip: You can import any existing folder of notes anytime with: ${CYAN}sphene import <path>${NC})"
+  UNIQUE_VAULTS=()
+  for v in "${DISCOVERED_VAULTS[@]}"; do
+    v_norm="$(cd "$v" 2>/dev/null && pwd || echo "$v")"
+    already=0
+    for u in "${UNIQUE_VAULTS[@]}"; do
+      if [ "$u" = "$v_norm" ]; then already=1; break; fi
+    done
+    if [ "$already" -eq 0 ] && [ -d "$v_norm" ]; then
+      UNIQUE_VAULTS+=("$v_norm")
+    fi
+  done
+
+  FOUND_OBSIDIAN=0
+  if [ ${#UNIQUE_VAULTS[@]} -gt 0 ]; then
+    for vault_path in "${UNIQUE_VAULTS[@]}"; do
+      note_count=$(find "$vault_path" -type f -name "*.md" ! -path "*/.*" 2>/dev/null | wc -l)
+      if [ "$note_count" -gt 0 ]; then
+        FOUND_OBSIDIAN=1
+        echo -e "\n${CYAN}══════════════════════════════════════════════════════════════════${NC}"
+        echo -e "${GREEN}${BOLD}  ★ Existing Obsidian Notes Detected!${NC}"
+        echo -e "${CYAN}══════════════════════════════════════════════════════════════════${NC}"
+        echo -e "  • Path:        ${BOLD}${vault_path}${NC}"
+        echo -e "  • Documents:   ${CYAN}${note_count} Markdown notes found${NC}"
+        echo -e "  • Sample notes:"
+        find "$vault_path" -type f -name "*.md" ! -path "*/.*" 2>/dev/null | head -n 3 | while read -r sample_file; do
+          echo -e "      - $(basename "$sample_file")"
+        done
+        if [ "$note_count" -gt 3 ]; then
+          echo -e "      ... and $((note_count - 3)) more."
+        fi
+        echo ""
+        echo -e "${YELLOW}  Non-Destructive Guarantee:${NC}"
+        echo "  Sphene will safely copy your markdown notes into your sovereign vault."
+        echo "  Your original Obsidian files will remain 100% untouched and unmodified."
+        echo ""
+
+        IMPORT_PROMPT="Do you want Sphene to import a copy of these Obsidian notes? [Y/n]: "
+        IMPORT_CHOICE=$(read_input "$IMPORT_PROMPT" "Y")
+
+        case "$IMPORT_CHOICE" in
+          [yY][eE][sS]|[yY]|"")
+            echo -e "  Importing notes into ${VAULT_DIR}/Workspace/Obsidian..."
+            if command -v sphene >/dev/null 2>&1; then
+              SPHENE_VAULT_DIR="$VAULT_DIR" sphene import "$vault_path" --partition "Workspace/Obsidian"
+            else
+              mkdir -p "${VAULT_DIR}/Workspace/Obsidian"
+              cp -r "$vault_path"/* "${VAULT_DIR}/Workspace/Obsidian/" 2>/dev/null || true
+              echo -e "${GREEN}✓ Copied notes into ${VAULT_DIR}/Workspace/Obsidian${NC}"
+            fi
+            ;;
+          *)
+            echo -e "  Skipped import. (You can import anytime with: ${CYAN}sphene import \"$vault_path\"${NC})"
+            ;;
+        esac
+      fi
+    done
+  fi
+
+  if [ "$FOUND_OBSIDIAN" -eq 0 ]; then
+    echo -e "${GREEN}✓ No existing Obsidian installation found (clean slate).${NC}"
+    echo -e "  (Tip: You can import any existing folder of notes anytime with: ${CYAN}sphene import <path>${NC})"
+  fi
 fi
 
 # 6. Hermes Agent Detection & Interactive Integration
@@ -259,33 +336,79 @@ SKILL_INSTALLED=0
 OBSIDIAN_REPLACED=0
 
 if [ -n "$HERMES_TYPE" ]; then
-  # Prompt 6a: Install Sphene Skill into Hermes
-  PROMPT_SKILL="Install Sphene Knowledge Hub skill into Hermes now? [Y/n]: "
-  INSTALL_SKILL_CHOICE=$(read_input "$PROMPT_SKILL" "Y")
+  if [ $IS_UPDATE -eq 1 ]; then
+    echo -e "\n${BOLD}Updating Hermes Agent integration & skills...${NC}"
+    TMP_SKILL_DIR="$TMP_DIR/hermes-skill"
+    mkdir -p "$TMP_SKILL_DIR"
 
-  case "$INSTALL_SKILL_CHOICE" in
-    [yY][eE][sS]|[yY]|"")
-      echo -e "Deploying sphene-knowledge-hub skill into Hermes..."
-      TMP_SKILL_DIR="$TMP_DIR/hermes-skill"
-      mkdir -p "$TMP_SKILL_DIR"
-      
-      if [ -d "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" ]; then
-        cp -r "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" "$TMP_SKILL_DIR/"
-      else
-        curl -fsSL "https://sphene.app/hermes-skill.tar.gz" -o "$TMP_DIR/hermes-skill.tar.gz" 2>/dev/null || true
-        if [ -f "$TMP_DIR/hermes-skill.tar.gz" ]; then
-          tar -xzf "$TMP_DIR/hermes-skill.tar.gz" -C "$TMP_SKILL_DIR/"
-        fi
+    if [ -d "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" ]; then
+      cp -r "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" "$TMP_SKILL_DIR/"
+    else
+      curl -fsSL "https://sphene.app/hermes-skill.tar.gz" -o "$TMP_DIR/hermes-skill.tar.gz" 2>/dev/null || true
+      if [ -f "$TMP_DIR/hermes-skill.tar.gz" ]; then
+        tar -xzf "$TMP_DIR/hermes-skill.tar.gz" -C "$TMP_SKILL_DIR/"
       fi
+    fi
 
-      if [ -d "$TMP_SKILL_DIR/sphene-knowledge-hub" ]; then
-        if [ "$HERMES_TYPE" = "docker" ]; then
-          docker cp "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_CONTAINER}:${HERMES_SKILLS_DIR}/"
-          if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
-            docker cp "$SPHENE_HOST_BIN" "${HERMES_CONTAINER}:/usr/local/bin/sphene"
+    if [ -d "$TMP_SKILL_DIR/sphene-knowledge-hub" ]; then
+      if [ "$HERMES_TYPE" = "docker" ]; then
+        docker cp "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_CONTAINER}:${HERMES_SKILLS_DIR}/"
+        if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
+          docker cp "$SPHENE_HOST_BIN" "${HERMES_CONTAINER}:/usr/local/bin/sphene"
+        fi
+      else
+        cp -r "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_SKILLS_DIR}/"
+      fi
+      SKILL_INSTALLED=1
+      echo -e "${GREEN}✓ Sphene Knowledge Hub skill & CLI updated in Hermes.${NC}"
+    fi
+
+    # Refresh upgraded obsidian skill if previously replaced
+    OBSIDIAN_REL_PATH=""
+    if [ "$HERMES_TYPE" = "docker" ]; then
+      if docker exec "${HERMES_CONTAINER}" test -f "${HERMES_SKILLS_DIR}/note-taking/obsidian/SKILL.md.bak" 2>/dev/null; then
+        OBSIDIAN_REL_PATH="note-taking/obsidian/SKILL.md"
+      elif docker exec "${HERMES_CONTAINER}" test -f "${HERMES_SKILLS_DIR}/obsidian/SKILL.md.bak" 2>/dev/null; then
+        OBSIDIAN_REL_PATH="obsidian/SKILL.md"
+      fi
+    else
+      if [ -f "${HERMES_SKILLS_DIR}/note-taking/obsidian/SKILL.md.bak" ]; then
+        OBSIDIAN_REL_PATH="note-taking/obsidian/SKILL.md"
+      elif [ -f "${HERMES_SKILLS_DIR}/obsidian/SKILL.md.bak" ]; then
+        OBSIDIAN_REL_PATH="obsidian/SKILL.md"
+      fi
+    fi
+    if [ -n "$OBSIDIAN_REL_PATH" ]; then
+      OBSIDIAN_REPLACED=1
+    fi
+  else
+    # Prompt 6a: Install Sphene Skill into Hermes
+    PROMPT_SKILL="Install Sphene Knowledge Hub skill into Hermes now? [Y/n]: "
+    INSTALL_SKILL_CHOICE=$(read_input "$PROMPT_SKILL" "Y")
+
+    case "$INSTALL_SKILL_CHOICE" in
+      [yY][eE][sS]|[yY]|"")
+        echo -e "Deploying sphene-knowledge-hub skill into Hermes..."
+        TMP_SKILL_DIR="$TMP_DIR/hermes-skill"
+        mkdir -p "$TMP_SKILL_DIR"
+        
+        if [ -d "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" ]; then
+          cp -r "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" "$TMP_SKILL_DIR/"
+        else
+          curl -fsSL "https://sphene.app/hermes-skill.tar.gz" -o "$TMP_DIR/hermes-skill.tar.gz" 2>/dev/null || true
+          if [ -f "$TMP_DIR/hermes-skill.tar.gz" ]; then
+            tar -xzf "$TMP_DIR/hermes-skill.tar.gz" -C "$TMP_SKILL_DIR/"
           fi
-          # Ensure skill is enabled in hermes config if disabled list exists
-          docker exec "${HERMES_CONTAINER}" python3 -c '
+        fi
+
+        if [ -d "$TMP_SKILL_DIR/sphene-knowledge-hub" ]; then
+          if [ "$HERMES_TYPE" = "docker" ]; then
+            docker cp "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_CONTAINER}:${HERMES_SKILLS_DIR}/"
+            if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
+              docker cp "$SPHENE_HOST_BIN" "${HERMES_CONTAINER}:/usr/local/bin/sphene"
+            fi
+            # Ensure skill is enabled in hermes config if disabled list exists
+            docker exec "${HERMES_CONTAINER}" python3 -c '
 import yaml, os
 cfg_file = "/opt/data/config.yaml"
 if os.path.isfile(cfg_file):
@@ -301,17 +424,17 @@ if os.path.isfile(cfg_file):
     except Exception:
         pass
 ' 2>/dev/null || true
-        else
-          cp -r "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_SKILLS_DIR}/"
+          else
+            cp -r "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_SKILLS_DIR}/"
+          fi
+          SKILL_INSTALLED=1
+          echo -e "${GREEN}✓ Sphene Knowledge Hub skill deployed into Hermes successfully.${NC}"
         fi
-        SKILL_INSTALLED=1
-        echo -e "${GREEN}✓ Sphene Knowledge Hub skill deployed into Hermes successfully.${NC}"
-      fi
-      ;;
-    *)
-      echo "Skipped Hermes skill installation."
-      ;;
-  esac
+        ;;
+      *)
+        echo "Skipped Hermes skill installation."
+        ;;
+    esac
 
   # Prompt 6b: Replace Obsidian skill with Sphene
   OBSIDIAN_REL_PATH=""
@@ -413,24 +536,26 @@ if os.path.isfile(cfg_file):
         ;;
     esac
   fi
+  fi
 fi
 
 # 7. Deployment Execution: Docker Container vs Native Daemon
 PORT="${SPHENE_PORT:-8743}"
 
-# Kill any lingering native daemon on port 8743 so it doesn't conflict
-if command -v sudo >/dev/null 2>&1; then
-  sudo pkill -9 -f "sphene daemon" 2>/dev/null || true
-else
-  pkill -9 -f "sphene daemon" 2>/dev/null || true
+# Stop any lingering native daemon on port 8743 so it doesn't conflict
+if pgrep -f "sphene.*daemon" >/dev/null 2>&1; then
+  pkill -9 -f "sphene.*daemon" 2>/dev/null || true
 fi
 
 if [ $HAS_DOCKER -eq 1 ]; then
   echo -e "\n${BOLD}Deploying Sphene as Docker container...${NC}"
   cd "$INSTALL_DIR"
 
-  # Load image if not present
-  if ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^sphene:2.0.0$"; then
+  # Load image if local file exists, or if update, or if not present
+  if [ -f "${SCRIPT_DIR}/sphene-image.tar.gz" ]; then
+    echo "Loading Sphene container image from local archive..."
+    docker load < "${SCRIPT_DIR}/sphene-image.tar.gz"
+  elif [ $IS_UPDATE -eq 1 ] || ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^sphene:2.0.0$"; then
     echo "Fetching Sphene container image (sphene:2.0.0)..."
     if curl -fsSL "https://sphene.app/sphene-image.tar.gz" -o "$TMP_DIR/sphene-image.tar.gz" 2>/dev/null && [ -s "$TMP_DIR/sphene-image.tar.gz" ]; then
       docker load < "$TMP_DIR/sphene-image.tar.gz"
@@ -474,9 +599,11 @@ EOF_COMPOSE
     COUNTER=$((COUNTER + 1))
   done
 
-  # Initialize credentials inside container
-  echo -e "\n${BOLD}Configuring administrative credentials...${NC}"
-  docker exec sphene /usr/local/bin/sphene auth setup
+  # Initialize credentials inside container (only on initial installation)
+  if [ $IS_UPDATE -eq 0 ]; then
+    echo -e "\n${BOLD}Configuring administrative credentials...${NC}"
+    docker exec sphene /usr/local/bin/sphene auth setup
+  fi
 
 else
   # Fallback: Native binary daemon
@@ -485,37 +612,41 @@ else
     SPHENE_VAULT_DIR="$VAULT_DIR" SPHENE_PORT="$PORT" nohup "$SPHENE_HOST_BIN" daemon >/tmp/sphene-daemon.log 2>&1 &
     sleep 1
     echo -e "${GREEN}✓ Sphene background daemon active on http://localhost:${PORT}${NC}"
-    SPHENE_VAULT_DIR="$VAULT_DIR" "$SPHENE_HOST_BIN" auth setup
+    if [ $IS_UPDATE -eq 0 ]; then
+      SPHENE_VAULT_DIR="$VAULT_DIR" "$SPHENE_HOST_BIN" auth setup
+    fi
   fi
 fi
 
 # 8. Sync Internal API Key to Host and Hermes Agent Container
-KEY_FILE="$VAULT_DIR/.sphene/api.key"
-if [ ! -f "$KEY_FILE" ] && [ $HAS_DOCKER -eq 1 ]; then
-  docker exec sphene cat /vault/.sphene/api.key > "$TMP_DIR/api.key" 2>/dev/null || true
-  if [ -s "$TMP_DIR/api.key" ]; then
-    mkdir -p "$(dirname "$KEY_FILE")"
-    cp "$TMP_DIR/api.key" "$KEY_FILE"
-  fi
+LOCAL_KEY="$TMP_DIR/api.key"
+if [ $HAS_DOCKER -eq 1 ]; then
+  docker exec sphene cat /vault/.sphene/api.key > "$LOCAL_KEY" 2>/dev/null || true
+fi
+if [ ! -s "$LOCAL_KEY" ] && [ -r "$VAULT_DIR/.sphene/api.key" ]; then
+  cp "$VAULT_DIR/.sphene/api.key" "$LOCAL_KEY" 2>/dev/null || true
+fi
+if [ ! -s "$LOCAL_KEY" ] && command -v sudo >/dev/null 2>&1; then
+  sudo cat "$VAULT_DIR/.sphene/api.key" > "$LOCAL_KEY" 2>/dev/null || true
 fi
 
-if [ -f "$KEY_FILE" ]; then
+if [ -s "$LOCAL_KEY" ]; then
   mkdir -p /etc/sphene "$HOME/.sphene" 2>/dev/null || true
   if [ -w /etc/sphene ]; then
-    cp "$KEY_FILE" /etc/sphene/api.key
+    cp "$LOCAL_KEY" /etc/sphene/api.key
     chmod 644 /etc/sphene/api.key
   elif command -v sudo >/dev/null 2>&1; then
     sudo mkdir -p /etc/sphene 2>/dev/null || true
-    sudo cp "$KEY_FILE" /etc/sphene/api.key 2>/dev/null || true
+    sudo cp "$LOCAL_KEY" /etc/sphene/api.key 2>/dev/null || true
     sudo chmod 644 /etc/sphene/api.key 2>/dev/null || true
   fi
-  cp "$KEY_FILE" "$HOME/.sphene/api.key" 2>/dev/null || true
+  cp "$LOCAL_KEY" "$HOME/.sphene/api.key" 2>/dev/null || true
   chmod 644 "$HOME/.sphene/api.key" 2>/dev/null || true
 
   if [ -n "$HERMES_CONTAINER" ] && docker ps --format '{{.Names}}' | grep -q "^${HERMES_CONTAINER}$"; then
     docker exec "${HERMES_CONTAINER}" mkdir -p /etc/sphene /opt/data/.sphene 2>/dev/null || true
-    docker cp "$KEY_FILE" "${HERMES_CONTAINER}:/etc/sphene/api.key" 2>/dev/null || true
-    docker cp "$KEY_FILE" "${HERMES_CONTAINER}:/opt/data/.sphene/api.key" 2>/dev/null || true
+    docker cp "$LOCAL_KEY" "${HERMES_CONTAINER}:/etc/sphene/api.key" 2>/dev/null || true
+    docker cp "$LOCAL_KEY" "${HERMES_CONTAINER}:/opt/data/.sphene/api.key" 2>/dev/null || true
     docker exec "${HERMES_CONTAINER}" sh -c "chmod 644 /etc/sphene/api.key /opt/data/.sphene/api.key 2>/dev/null || true; chown -R hermes:hermes /opt/data/.sphene 2>/dev/null || true"
     echo -e "${GREEN}✓ Synced internal sovereign API key into Hermes Agent container!${NC}"
   fi
@@ -534,6 +665,24 @@ fi
 # Clean up temp files
 rm -rf "$TMP_DIR"
 
+if [ $IS_UPDATE -eq 1 ]; then
+  echo -e "\n${GREEN}${BOLD}==================================================================${NC}"
+  echo -e "${GREEN}${BOLD}  SPHENE SOVEREIGN SECOND BRAIN UPDATED SUCCESSFULLY!             ${NC}"
+  echo -e "${GREEN}${BOLD}==================================================================${NC}"
+  echo -e "  • Web Interface:    ${CYAN}http://localhost:${PORT}${NC}"
+  echo -e "  • Knowledge Vault:  ${CYAN}${VAULT_DIR}${NC} (100% preserved)"
+  if [ $HAS_DOCKER -eq 1 ]; then
+    echo -e "  • Container:        ${CYAN}sphene${NC} (reloaded with latest release)"
+  fi
+  echo -e "  • Host CLI:         ${CYAN}/usr/local/bin/sphene${NC} (updated)"
+  if [ $SKILL_INSTALLED -eq 1 ] || [ $OBSIDIAN_REPLACED -eq 1 ]; then
+    echo -e "  • Hermes Agent:     ${GREEN}UPDATED & SYNCED!${NC} (skills and CLI refreshed, container reloaded)"
+  fi
+  echo -e "  • Existing Logins:  ${GREEN}Preserved.${NC} Your existing credentials remain active."
+  echo ""
+  exit 0
+fi
+
 echo -e "\n${GREEN}${BOLD}==================================================================${NC}"
 echo -e "${GREEN}${BOLD}  SPHENE SOVEREIGN SECOND BRAIN INSTALLED SUCCESSFULLY!           ${NC}"
 echo -e "${GREEN}${BOLD}==================================================================${NC}"
@@ -550,3 +699,4 @@ if [ $SKILL_INSTALLED -eq 1 ]; then
   echo -e "  • Hermes Agent:     ${GREEN}ACTIVE!${NC} Ask Hermes in natural language to save or search documents."
 fi
 echo ""
+
