@@ -520,22 +520,13 @@ if [ -f "$KEY_FILE" ]; then
   fi
 fi
 
-# 9. Prompt to restart Hermes container once Sphene is live and authenticated
+# 9. Reload Hermes container so skills and sovereign API keys activate immediately
 if [ $SKILL_INSTALLED -eq 1 ] || [ $OBSIDIAN_REPLACED -eq 1 ]; then
-  if [ "$HERMES_TYPE" = "docker" ]; then
-    PROMPT_RESTART="Restart Hermes container now to activate Sphene skill immediately? [Y/n]: "
-    RESTART_CHOICE=$(read_input "$PROMPT_RESTART" "Y")
-    case "$RESTART_CHOICE" in
-      [yY][eE][sS]|[yY]|"")
-        echo -e "Restarting Hermes container '${HERMES_CONTAINER}'..."
-        docker restart "${HERMES_CONTAINER}" >/dev/null
-        sleep 2
-        echo -e "${GREEN}✓ Hermes container restarted. Sphene skill is live and authenticated!${NC}"
-        ;;
-      *)
-        echo -e "${YELLOW}Notice: Remember to run 'docker restart ${HERMES_CONTAINER}' later to reload skills.${NC}"
-        ;;
-    esac
+  if [ "$HERMES_TYPE" = "docker" ] && [ -n "$HERMES_CONTAINER" ]; then
+    echo -e "\n${BOLD}Reloading Hermes Agent container '${HERMES_CONTAINER}'...${NC}"
+    docker restart "${HERMES_CONTAINER}" >/dev/null
+    sleep 2
+    echo -e "${GREEN}✓ Hermes container restarted. Sphene skill is live and active!${NC}"
   fi
 fi
 
