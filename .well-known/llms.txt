@@ -1,0 +1,16 @@
+# Sphene — The Sovereign Knowledge Substrate for Humans & AI
+
+> Sphene is a sovereign, local-first knowledge substrate designed for deep human reflection and autonomous AI agent memory. It runs locally on your hardware with zero-knowledge AES-256-GCM encryption, plaintext Markdown vaults, bidirectional graph linking, and native Hermes agent toolsets.
+
+Sphene bridges the divide between human deep thought and autonomous machine intelligence. All notes remain on your disk in standard plaintext Markdown (.md), completely unencumbered by proprietary cloud databases or vendor lock-in.
+
+## Documentation & Primary Resources
+- [Home / Architecture Overview](https://sphene.app/): Core architectural pillars, zero-knowledge encryption model, and comparison with Obsidian and Notion.
+- [Deploy & Download](https://sphene.app/download): One-line automated Docker installer, standalone web app, and agent tool package.
+- [Vision & Roadmap](https://sphene.app/pricing): Self-hosted open engine guarantees and future zero-knowledge cloud sync roadmap.
+- [One-Line Installer Script](https://sphene.app/install.sh): Hardened bash deployment script that installs Sphene Engine and connects local vaults.
+- [Docker Compose Spec](https://sphene.app/docker-compose.yml): Complete container definition for homelab, TrueNAS, and server deployments.
+- [Hermes Agent Skill Package](https://sphene.app/hermes-skill.tar.gz): Agent skill containing tool definitions, natural language prompt hooks, and REST API bindings.
+
+## Technical Specifications
+- [Full Technical Documentation](https://sphene.app/llms-full.txt): Complete technical architecture, REST API reference, cryptographic specifications, CLI reference, and agent tool bindings in single markdown format.

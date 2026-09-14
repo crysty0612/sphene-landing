@@ -3,13 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sphene — The Sovereign Knowledge Substrate for Humans & AI</title>
-  <meta name="description" content="A local-first, zero-knowledge encrypted knowledge substrate for deep human thought and autonomous agent memory. Plaintext Markdown forever.">
-  <link rel="icon" type="image/svg+xml" href="/assets/sphene-icon.svg">
-  <link rel="alternate icon" type="image/png" href="/assets/icons/favicon.png">
-  <link rel="manifest" href="/manifest.json">
+  <title>Sphene — Sovereign Knowledge Substrate for Humans & AI</title>
+  <meta name="description" content="A local-first, zero-knowledge encrypted knowledge substrate for deep human thought and autonomous agent memory. Plaintext Markdown forever. Zero cloud lock-in.">
+  <meta name="keywords" content="Sphene, sovereign knowledge substrate, local-first, zero-knowledge encryption, second brain, AI memory, LLM agent, markdown vault, Obsidian alternative, self-hosted PKM, knowledge graph, Hermes agent">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://sphene.app/">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sphene">
+  <meta property="og:title" content="Sphene — Sovereign Knowledge Substrate for Humans & AI">
+  <meta property="og:description" content="A local-first, zero-knowledge encrypted knowledge substrate for deep human thought and autonomous agent memory. Plaintext Markdown forever. Zero cloud lock-in.">
+  <meta property="og:url" content="https://sphene.app/">
+  <meta property="og:image" content="https://sphene.app/assets/og-preview.png">
+  <meta property="og:image:secure_url" content="https://sphene.app/assets/og-preview.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Sphene — The Sovereign Knowledge Substrate for Humans & AI">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sphene_app">
+  <meta name="twitter:creator" content="@sphene_app">
+  <meta name="twitter:title" content="Sphene — Sovereign Knowledge Substrate for Humans & AI">
+  <meta name="twitter:description" content="A local-first, zero-knowledge encrypted knowledge substrate for deep human thought and autonomous agent memory. Plaintext Markdown forever. Zero cloud lock-in.">
+  <meta name="twitter:image" content="https://sphene.app/assets/og-preview.png">
+  <meta name="twitter:image:alt" content="Sphene — The Sovereign Knowledge Substrate for Humans & AI">
+
+  <meta name="author" content="Sphene Sovereign Knowledge Project">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="theme-color" content="#0b0f19">
+
+  <!-- LLM & Machine-Readable Declarations -->
+  <link rel="help" type="text/markdown" href="/llms.txt" title="LLM Agent Index">
+  <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="Full LLM Documentation">
+
+  <!-- Favicons & Icons -->
+  <link rel="icon" type="image/svg+xml" href="/assets/sphene-icon.svg">
+  <link rel="alternate icon" type="image/png" sizes="64x64" href="/assets/icons/favicon.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Preconnect and Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Schema.org Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://sphene.app/#website",
+        "url": "https://sphene.app/",
+        "name": "Sphene",
+        "description": "Sovereign Knowledge Substrate for Humans & AI",
+        "inLanguage": "en-US"
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://sphene.app/#organization",
+        "name": "Sphene",
+        "url": "https://sphene.app/",
+        "logo": "https://sphene.app/assets/sphene-logo.svg",
+        "sameAs": [
+          "https://github.com/crysty0612/sphene-landing"
+        ]
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://sphene.app/#software",
+        "name": "Sphene",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "Linux, macOS, Windows (WSL2 / Docker), TrueNAS, Raspberry Pi",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock"
+        },
+        "description": "A local-first, zero-knowledge encrypted knowledge substrate for deep human thought and autonomous AI agent memory. Plaintext Markdown forever.",
+        "softwareVersion": "1.0.0",
+        "featureList": [
+          "Local-first Plaintext Markdown storage (.md)",
+          "Zero-Knowledge AES-256-GCM container encryption",
+          "Interactive Force-Directed 3D Knowledge Graph",
+          "Native Hermes AI Agent memory integration",
+          "Bidirectional [[Wikilinks]] and backlinks resolution",
+          "1-Click Vault Ingestion from Obsidian, Logseq, and Foam",
+          "Zero cloud lock-in with standalone OpenSSL emergency decryptors"
+        ],
+        "screenshot": "https://sphene.app/assets/og-preview.png",
+        "softwareHelp": "https://sphene.app/llms.txt",
+        "downloadUrl": "https://sphene.app/download"
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://sphene.app/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Sphene?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sphene is a sovereign, local-first knowledge substrate designed for deep human reflection and autonomous AI agent memory. It runs locally on your hardware with zero-knowledge AES-256-GCM encryption, plaintext Markdown vaults, bidirectional graph linking, and native Hermes agent toolsets."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is Sphene different from Obsidian and Notion?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Unlike Notion, Sphene never locks your data in a closed cloud database; your notes remain plaintext Markdown (.md) on your physical drive. Unlike Obsidian, Sphene is architected with a headless container engine and native REST APIs designed specifically for autonomous AI agent memory recall."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does Sphene ensure zero-knowledge privacy?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sphene uses authenticated AES-256-GCM encryption with PBKDF2 key derivation (100,000 iterations). Encryption occurs locally on your machine. You can also independently decrypt or encrypt your vault using standard OpenSSL scripts without the engine running."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How do AI agents like Hermes connect to Sphene?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Sphene provides an authenticated local REST API and an official Hermes Agent skill package. AI agents can autonomously search notes, synthesize new knowledge, read backlink graphs, and update documents in real time."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is Sphene free to use?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. The Sphene local engine is 100% free and open for self-hosting on your local computer, homelab, TrueNAS, or server."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <div class="bg-glow"></div>
@@ -84,11 +225,11 @@
     </section>
 
     <!-- Developer & Homelab Quickstart -->
-    <section style="padding: 10px 0 60px;">
+    <section style="padding: 10px 0 60px;" aria-labelledby="quickstart-heading">
       <div class="container" style="max-width: 820px;">
         <div class="feature-card" style="padding: 24px 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; background: rgba(15, 23, 42, 0.85); border-color: var(--border-highlight);">
           <div>
-            <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Developer & Homelab Quickstart</div>
+            <h2 id="quickstart-heading" style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 4px 0;">Developer & Homelab Quickstart</h2>
             <p style="color: var(--text-secondary); font-size: 14px;">Spin up the complete engine and mount your local markdown vault in 60 seconds:</p>
           </div>
           <div class="terminal-copy" style="margin: 0; padding: 10px 14px; font-size: 13px;">
