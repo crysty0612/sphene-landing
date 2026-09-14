@@ -109,8 +109,9 @@
         <li><a href="/download" class="active">Get Sphene</a></li>
       </ul>
       <div class="nav-actions">
-        <a href="/download" class="btn btn-secondary btn-sm">Get Sphene</a>
-        <a href="http://localhost:8743" target="_blank" class="btn btn-primary btn-sm">Launch Web App</a>
+        <div class="nav-vault-slot"></div>
+        <a href="https://github.com/crysty0612/sphene-landing" target="_blank" class="btn btn-secondary btn-sm">GitHub</a>
+        <a href="/download" class="btn btn-primary btn-sm">Get Sphene</a>
       </div>
     </div>
   </header>
@@ -160,7 +161,7 @@
           <div style="display: flex; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--border-subtle); padding-top: 20px;">
             <a href="/install.sh" target="_blank" class="btn btn-secondary btn-sm">Inspect install.sh</a>
             <a href="https://github.com/crysty0612/sphene-landing" target="_blank" class="btn btn-secondary btn-sm">GitHub Repository</a>
-            <a href="http://localhost:8743" target="_blank" class="btn btn-primary btn-sm">Open Local Dashboard (Port 8743)</a>
+            <button class="btn btn-primary btn-sm btn-open-connect-modal">Connect to Local Vault</button>
           </div>
         </div>
 
@@ -299,6 +300,43 @@
       </ul>
     </div>
   </footer>
+
+  <!-- Smart Vault Connection Modal -->
+  <div id="vault-connect-modal" class="modal-backdrop">
+    <div class="modal-box">
+      <button class="modal-close btn-close-connect-modal" aria-label="Close modal">✕</button>
+      <div style="text-align: center; margin-bottom: 16px;">
+        <span class="badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: var(--accent-emerald);">LAN &amp; Local Discovery</span>
+        <h3 style="font-size: 22px; font-weight: 800; margin-top: 8px; color: var(--text-primary);">Connect to Your Sphene Vault</h3>
+        <p style="font-size: 14px; color: var(--text-secondary); margin-top: 6px;">
+          Pair this browser with your locally running Sphene kernel on your LAN, NAS, or server.
+        </p>
+      </div>
+
+      <div class="vault-connect-form">
+        <div class="vault-input-group">
+          <label for="vault-host-input">Server IP / Hostname</label>
+          <div class="vault-input-row">
+            <input type="text" id="vault-host-input" placeholder="e.g. 192.168.1.50 or ai-nas or localhost">
+          </div>
+        </div>
+
+        <div class="vault-input-group">
+          <label for="vault-port-input">Port</label>
+          <div class="vault-input-row">
+            <input type="text" id="vault-port-input" value="8743" placeholder="8743">
+          </div>
+        </div>
+
+        <div id="vault-status-msg" class="vault-status-msg"></div>
+
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+          <button id="btn-test-connect" class="btn btn-primary" style="flex: 1; justify-content: center;">Pair &amp; Save Vault</button>
+          <button class="btn btn-secondary btn-close-connect-modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="/js/app.js"></script>
 </body>
