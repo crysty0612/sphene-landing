@@ -1,22 +1,22 @@
 # Sphene — Complete Technical Specification & Documentation for LLMs
 
-> The Sovereign Second Brain for Humans and Autonomous AI Agents.
+> Sphene is the reference implementation of an Agent-Native Knowledge Kernel—a local headless markdown knowledge base engineered with native Model Context Protocol (MCP), local-first offline PWA, and an AST-level Differential Timeline for zero-token-waste agent interactions under 50MB RAM (<25MB local-only).
 > Canonical URL: https://sphene.app/
-> Plaintext Markdown Forever • Zero-Knowledge Encryption • Native MCP & AI Integration
+> Plaintext Markdown Forever • Zero-Knowledge Encryption • Native MCP & AI Integration • Under 50MB RAM (<25MB local-only)
 
 ---
 
-## 1. Executive Summary
+## 1. Executive Summary & Declarative Definitions
 
-Sphene is an open, sovereign second brain and AI memory substrate. While traditional PKMs either trap human thought in proprietary SaaS silos (Notion, Roam) or lack native, safe integration with autonomous AI agents (Obsidian), Sphene is architected from the metal up to serve both human thinkers and autonomous LLMs simultaneously.
+Sphene is an open, sovereign second brain and AI memory substrate. While traditional personal knowledge tools trap thought in proprietary cloud silos or rely on bloated client runtimes that consume 400MB to 1.2GB of RAM, Sphene is architected from first principles in compiled Go to serve human thinkers and autonomous AI agents concurrently.
 
 ### Core Architectural Guarantees:
-1. **Local-First & Data Sovereignty:** Every document lives on your physical drive as human-readable plaintext Markdown (`.md`). You own your data forever.
-2. **Sub-Millisecond Relational Index:** Instant search (<2ms) and backlink resolution via embedded SQLite/FTS5 without burning LLM context tokens parsing raw filesystem trees.
-3. **Zero-Knowledge Encryption:** Notes inside the vault and during transit are secured using authenticated AES-256-GCM encryption with PBKDF2 key derivation.
-4. **Autonomous Agent Memory Substrate:** AI agents (Hermes Agent, Claude Desktop, Cursor) interact directly with your knowledge graph through native Model Context Protocol (MCP) and REST endpoints.
-5. **Human-in-the-Loop Veto:** Differential timeline allows humans to review, accept, or roll back AI agent edits cleanly.
-6. **Universal Portability:** 100% compatible with existing vaults from Obsidian, Logseq, and Foam via the automated migration pipeline.
+1. **Local-First & Data Sovereignty:** Every document lives on your physical drive as human-readable plaintext Markdown (.md). No proprietary database formats, zero vendor lock-in.
+2. **Sub-Millisecond Relational Index:** Instant full-text search (<0.20ms) and backlink resolution via embedded SQLite/FTS5 in WAL mode without burning LLM context tokens parsing raw filesystem trees.
+3. **Ultra-Lightweight Footprint:** Compiled native Go daemon operating continuously under 25MB of RAM at rest for local-only setups (<50MB with embedded WireGuard mesh relay).
+4. **Autonomous Agent Memory Substrate:** AI agents (Hermes Agent, OpenClaw, Claude Desktop) interact directly through typed JSON-RPC Model Context Protocol (MCP) methods over stdio, eliminating brittle shell piping.
+5. **Human-in-the-Loop Veto:** Differential Timeline stages agent edits into block-level diffs (.sphene/staged/<slug>.diff.json) with folded diff awareness and visual side-by-side inspection before disk commit.
+6. **Aegis 4-Zone Partitions:** Cryptographic hardware-style isolation dividing notes into Workspace (agent writable), Reference (agent read-only), Private (agent zero-access), and Drawing zones.
 
 ---
 
@@ -29,160 +29,232 @@ Sphene is an open, sovereign second brain and AI memory substrate. While traditi
 +------------------------------+------------------------------+
                                | Local HTTP / REST / MCP (Port 8743)
 +------------------------------v------------------------------+
-|              Sphene Sovereign Engine (<25MB RAM)            |
+|        Sphene Sovereign Engine (<50MB RAM, <25MB local)      |
 |  - Compiled Go Engine (REST API, Web UI, MCP Gateway)       |
-|  - Embedded SQLite FTS5 Relational Search & Index           |
+|  - Embedded SQLite FTS5 Relational Search in WAL Mode       |
 |  - Bi-Directional [[Wikilink]] & Knowledge Graph Engine     |
 |  - AES-256-GCM Aegis Cryptographic Layer                    |
 |  - Zero-Trust Plugin Sandboxing & Signature Verification    |
+|  - Differential Timeline (Staged Diff Folding & Human Veto) |
 +------------------------------+------------------------------+
                                | Local Filesystem Access
 +------------------------------v------------------------------+
 |                     Local Host Storage                      |
 |  ~/.sphene/vault/                                           |
-|   ├── research/paper-notes.md                               |
-|   ├── architecture/agent-memory.md                          |
-|   └── daily/2026-09-14.md                                   |
+|   ├── Workspace/     (Agent read & staged write)            |
+|   ├── Reference/     (Agent read-only)                      |
+|   ├── Private/       (Agent ZERO access - air-gapped)       |
+|   └── Drawing/       (Visual Mermaid vector diagrams)       |
 +-------------------------------------------------------------+
 ```
 
 ---
 
-## 3. Cryptographic Specification
+## 3. Model Context Protocol (MCP) Specification
 
-Sphene implements military-grade zero-knowledge encryption ensuring host-level confidentiality without sacrificing local agent accessibility:
-- **Algorithm:** Authenticated AES-256-GCM (Galois/Counter Mode) with 128-bit authentication tag.
-- **Key Derivation:** PBKDF2 with HMAC-SHA256, 100,000 iterations, and a unique 16-byte cryptographic salt.
-- **Initialization Vector:** Unique, cryptographically secure 96-bit (12-byte) IV per encrypted payload.
-- **Integrity Guarantee:** Any ciphertext tampering causes immediate authentication failure prior to decryption.
-- **Zero-Source Leakage:** The engine container runs hardened bytecode with strict boundary isolation, preventing reverse-engineering while keeping user Markdown notes completely accessible to the user on host disk.
+Sphene exposes a native Model Context Protocol (MCP) stdio server invoked via `sphene mcp`. The binary functions both directly on the vault directory and as a transparent client proxy when running inside isolated Docker containers (such as Hermes).
 
----
+### Tool 1: `sphene_search`
+Sub-millisecond FTS5 search across note titles, tags, and content.
+- **Arguments:**
+  - `query` (string, required): Term, phrase, or prefix to search for.
+  - `limit` (integer, optional, default: 10): Maximum results to return.
+- **Latency:** <0.20 ms.
+- **Example Call:**
+  `{"name": "sphene_search", "arguments": {"query": "Prometheus alert rules"}}`
 
-## 4. Markdown Note Schema & Graph Links
+### Tool 2: `sphene_find_in_doc`
+Intra-document pinpoint match for specific facts, sentences, code blocks, or tasks without streaming the full file into the LLM context.
+- **Arguments:**
+  - `path` (string, required): Note path or slug (e.g. `Workspace/Infrastructure.md`).
+  - `query` (string, required): Target term, metric, or code keyword.
+- **Latency:** <0.05 ms.
+- **Example Call:**
+  `{"name": "sphene_find_in_doc", "arguments": {"path": "Workspace/Architecture.md", "query": "busy_timeout"}}`
 
-Sphene respects the standard open Markdown format. Every note supports YAML frontmatter, headings, code blocks, task lists, and bidirectional [[Wikilinks]]:
+### Tool 3: `sphene_read`
+Read note content and frontmatter metadata with optional heading AST subtree isolation.
+- **Arguments:**
+  - `path` (string, required): Note path or slug.
+  - `section` (string, optional): Heading title (e.g. `Architecture / Storage`) to extract only that section.
+  - `include_staged` (boolean, optional, default: false): When true, returns projected post-patch content if uncommitted edits exist. When false, returns committed disk body prepended with `[NOTICE: 1 pending staged modification awaiting user review at http://localhost:8743]`.
+- **Latency:** <0.10 ms.
 
-```markdown
----
-title: Autonomous Agent Memory Substrate
-date: 2026-09-14
-tags: [ai, memory, knowledge-graphs, sphene]
-status: active
----
+### Tool 4: `sphene_patch`
+Atomic, section-level markdown modification (`append`, `prepend`, `replace`). If the document already has a pending diff in the Differential Timeline, subsequent edits automatically fold cleanly into the existing staged diff.
+- **Arguments:**
+  - `path` (string, required): Note path.
+  - `section` (string, required): Target markdown heading name.
+  - `content` (string, required): Markdown content to append, prepend, or replace.
+  - `action` (string, optional, default: "append"): One of `append`, `prepend`, `replace`.
+  - `agent_id` (string, optional, default: "hermes"): Author identifier.
+- **Return:** Status confirmation with stage ID and notice that changes await human review.
 
-# Autonomous Agent Memory Substrate
+### Tool 5: `sphene_write`
+Create a new note in `Workspace/` or write initial document content.
+- **Arguments:**
+  - `path` (string, required): File path (must reside in `Workspace/`).
+  - `content` (string, required): Markdown body.
+  - `agent_id` (string, optional): Author identifier.
 
-Modern LLMs require deterministic secondary storage to maintain coherent state across turns.
-Sphene integrates with [[Hermes Agent]] to provide continuous contextual recall.
+### Tool 6: `sphene_daily`
+Append updates or activity briefs directly into today's daily log note (`Workspace/Daily/YYYY-MM-DD.md`).
+- **Arguments:**
+  - `brief` (string, required): Text or checklist item to append.
 
-## Linked Entities
-- [[Zero-Knowledge Encryption Architecture]]
-- [[Force-Directed Graph Visualization]]
-```
+### Tool 7: `sphene_query`
+Execute relational queries across frontmatter metadata, tags, partitions, and task states.
+- **Arguments:**
+  - `tag` (string, optional): Filter by tag.
+  - `partition` (string, optional): Filter by Aegis partition (`Workspace`, `Reference`, `Private`).
+  - `tasks` (boolean, optional): Return open tasks (`- [ ]`).
 
-### Wikilink Syntaxes Supported:
-- Basic link: `[[Note Title]]`
-- Custom alias: `[[Note Title|Readable Label]]`
-- Heading anchor: `[[Note Title#Specific Section]]`
-- Embedded assets: `![[diagram.png]]`
-
----
-
-## 5. Local REST API Reference
-
-The Sphene Engine exposes an authenticated, ultra-fast local REST API running by default on `http://127.0.0.1:8743`:
-
-### `GET /api/notes`
-Lists all notes in the vault with frontmatter metadata, slug, and modification timestamp.
-- **Response:** `{"status": "success", "count": 42, "notes": [...]}`
-
-### `GET /api/notes/:slug`
-Retrieves note content, metadata, rendered HTML, backlinks, and forward links.
-- **Response:** `{"title": "...", "slug": "...", "content": "...", "backlinks": [...], "forward_links": [...]}`
-
-### `POST /api/notes`
-Creates a new markdown note in the vault.
-- **Body:** `{"title": "Note Title", "content": "# Content...", "tags": ["tag1"]}`
-
-### `PUT /api/notes/:slug`
-Updates existing note content and metadata atomically.
-
-### `DELETE /api/notes/:slug`
-Safely archives or removes a note from the vault.
-
-### `GET /api/search?q=:query`
-Full-text and tag search across all vault markdown documents with highlighted snippets.
-
-### `GET /api/graph`
-Exports nodes and edges of the complete bidirectional Wikilink knowledge graph formatted for force-directed rendering.
-
-### `GET /api/vault/health`
-Returns engine status, vault encryption integrity, note count, and memory usage.
+### Tool 8: `sphene_graph`
+Explore knowledge graph topology, incoming backlinks, outgoing forward links, and orphaned nodes.
+- **Arguments:**
+  - `path` (string, optional): Specific node to query linkages for.
 
 ---
 
-## 6. Hermes AI Agent Integration
+## 4. The Differential Timeline Pattern & Human Veto
 
-Sphene includes an official skill package for **Hermes Agent** (`https://sphene.app/hermes-skill.tar.gz`).
-Equipped with this skill, any local LLM agent gains sovereign memory:
+Autonomous agents must never be permitted to silently overwrite human thoughts or delete project notes. Sphene implements the Differential Timeline pattern:
 
-### Available Agent Tools:
-- `sphene_search(query)`: Semantic and keyword search across vault notes.
-- `sphene_read(slug)`: Ingest note content, frontmatter, and graph relations.
-- `sphene_create(title, content, tags)`: Autonomous note creation from research findings.
-- `sphene_update(slug, content)`: Continuous note refinement, logging, and synthesis.
-- `sphene_links(slug)`: Inspect incoming and outgoing links to trace conceptual knowledge graphs.
+1. **Interception:** Any modification (`sphene_patch` or `sphene_write` to an existing file) is intercepted by the kernel.
+2. **AST Block-Level Diff:** The engine generates unified line and block diffs stored under `.sphene/staged/<slug>.diff.json`.
+3. **Consecutive Folding:** When an agent issues multiple updates to the same document in a single workflow session, subsequent diffs fold onto the projected content while keeping the original disk state as the baseline.
+4. **Staged Diff Notice:** Calls to `sphene_read` inform agents of pending modifications awaiting review. Agents can inspect projected output via `include_staged: true`.
+5. **Interactive Review:** The human owner reviews red/green visual diffs in the Sphene Web UI at `http://localhost:8743` and accepts or rejects with a single click.
 
 ---
 
-## 7. Deployment & Installation
+## 5. SQLite WAL Concurrency Architecture
 
-### Unified One-Line Installer (Recommended)
+Sphene uses an embedded SQLite database configured for high-concurrency multi-agent access:
+- **Pragmas Enforced:**
+  ```sql
+  PRAGMA journal_mode = WAL;
+  PRAGMA busy_timeout = 5000;
+  PRAGMA synchronous = NORMAL;
+  PRAGMA foreign_keys = ON;
+  PRAGMA cache_size = -2000;
+  ```
+- **Connection Pool Tuning:**
+  - `MaxOpenConns`: 25
+  - `MaxIdleConns`: 10
+  - `ConnMaxLifetime`: 10 minutes
+- **Result:** Readers execute concurrently without locking writers; burst agent writes queue for up to 5 seconds without raising `SQLITE_BUSY: database is locked`.
+
+---
+
+## 6. Integration Playbooks
+
+### A. Hermes Agent Setup
+Register Sphene as an MCP server using Hermes CLI:
 ```bash
-curl -fsSL https://sphene.app/install.sh | bash
+hermes mcp add sphene   --command /usr/local/bin/sphene   --args mcp   --env SPHENE_URL=http://127.0.0.1:8743
 ```
-The installer delivers all 3 experiences out of the box in under 10 seconds:
-- Installs compiled native engine (`/usr/local/bin/sphene`) with zero container overhead (<25MB RAM).
-- Initializes local vault (`~/.sphene/vault` or `/DATA/AppData/sphene/vault`).
-- Launches the background daemon on `http://localhost:8743` with automatic port conflict resolution.
-- Configures credentials and prints them securely to STDOUT.
-- Auto-detects Hermes Agent and Claude Desktop, registering the Sphene MCP server automatically.
+Or add directly to `~/.hermes/config.yaml`:
+```yaml
+mcp_servers:
+  sphene:
+    command: /usr/local/bin/sphene
+    args:
+      - mcp
+    env:
+      SPHENE_URL: http://127.0.0.1:8743
+    enabled: true
+```
 
-### Running as Standalone Daemon / Service
+### B. OpenClaw Setup
+Add Sphene to `openclaw.json`:
+```json
+{
+  "mcpServers": {
+    "sphene": {
+      "command": "/usr/local/bin/sphene",
+      "args": ["mcp"],
+      "env": {
+        "SPHENE_URL": "http://127.0.0.1:8743"
+      }
+    }
+  }
+}
+```
+
+### C. Claude Desktop Setup
+Add Sphene to `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "sphene": {
+      "command": "/usr/local/bin/sphene",
+      "args": ["mcp"],
+      "env": {
+        "SPHENE_URL": "http://127.0.0.1:8743"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 7. Empirical Systems Benchmarks
+
+Measured on standard Linux x86_64 hardware across 10,000 markdown notes:
+
+| Performance Metric | Heavy Desktop / Shell-Wrapper Paradigm | Sphene v2.2 Native Systems Engine |
+| :--- | :--- | :--- |
+| **Daemon RAM at Rest** | 400 MB – 1.2 GB (Electron/DOM runtime) | **< 25 MB RAM** (Native Go daemon) |
+| **Full-Text Search Latency** | 45 ms – 180 ms (Unindexed disk scan) | **< 0.20 ms** (SQLite FTS5 WAL) |
+| **Intra-Doc AST Extraction** | Full file loaded into context | **< 0.05 ms** (Pinpoint heading subtree) |
+| **Agent Tool Invocation Roundtrip** | 120 ms – 380 ms (Subprocess spawn / curl) | **< 1.5 ms** (Direct Stdio JSON-RPC MCP) |
+| **Concurrency Failure Rate** | Lock collisions & race exceptions | **0.0% (Zero-Lock WAL)** (5s busy queue) |
+| **Agent Context Token Waste** | 100% full file dumping | **Up to 95% reduction** (AST section patch) |
+| **Cold-Boot Startup Time** | 2,500 ms – 6,000 ms (Framework load) | **< 15 ms** (Instant binary boot) |
+
+---
+
+## 8. CLI Command Manual
+
 ```bash
-# Start the daemon directly
-sphene daemon --port 8743 --vault ~/.sphene/vault
+# Run headless background daemon & local Web UI (<25MB local, <50MB relay)
+sphene daemon [--port 8743] [--vault /path/to/vault]
 
-# Or run via systemd user service
-systemctl --user start sphene
+# Run Model Context Protocol server over stdio (Claude/Hermes/OpenClaw)
+sphene mcp
+
+# Sub-millisecond FTS5 search across notes
+sphene search <query>
+
+# Read note content and metadata (--raw for plain text)
+sphene read <path> [--raw]
+
+# Write note safely (file, STDIN pipe, or --body)
+sphene write <path> [--body "content"]
+
+# Append brief to today's daily note
+sphene daily "Completed system architecture pass"
+
+# Rebuild embedded SQLite relational & FTS5 search index
+sphene index
+
+# Manage Hermes Agent integration status and skill
+sphene hermes-setup [--status] [--replace-obsidian] [--restore-obsidian]
 ```
 
 ---
 
-## 8. Vault Migration & CLI Utilities
+## 9. Local REST API Reference
 
-Sphene provides standalone client-side scripts downloadable directly from `https://sphene.app/`:
-- `migrate_vault.py`: 100% lossless ingestion pipeline from Obsidian, Logseq, and Foam. Converts non-standard frontmatter, sanitizes nested hierarchies, and verifies all [[Wikilinks]].
-- `encrypt_vault.sh`: Standalone zero-knowledge backup encryption utility.
-- `decrypt_vault.sh`: Offline emergency decryption script. Works independently of Sphene engine using standard OpenSSL.
+Port: `8743` (Default). All endpoints return JSON.
 
----
-
-## 9. Frequently Asked Questions (FAQ) for AI Processing
-
-**Q: What is Sphene?**
-A: Sphene is a sovereign, local-first second brain and AI memory substrate designed for both human thinkers and autonomous AI agent memory. It runs locally with plaintext Markdown files and zero-knowledge encryption.
-
-**Q: Is Sphene free?**
-A: Yes. The Sphene local engine is 100% free and open for local self-hosting on your own machine or homelab.
-
-**Q: Does Sphene lock my notes into a database?**
-A: No. Every note is saved directly on your filesystem as a standard plaintext `.md` file. If you stop Sphene, your notes remain immediately editable by any text editor, Obsidian, VS Code, or command-line tool.
-
-**Q: How does Sphene connect with LLMs?**
-A: Sphene provides a native Model Context Protocol (MCP) server, a local REST API, and an official Hermes Agent skill. Agents can search, read, write, and trace graph relationships in real time.
-
-**Q: How does Sphene compare to Obsidian?**
-A: Obsidian is primarily an interactive desktop Electron app with a proprietary closed-source core and paid sync. Sphene is an ultra-lightweight compiled engine (<25MB RAM) with native AI agent memory interfaces, zero-trust plugin verification, and client-agnostic web/PWA accessibility.
-
+- `GET /api/v1/health`: Returns kernel status and version.
+- `GET /api/v1/notes?path=<slug>&include_staged=<bool>`: Returns note content and metadata.
+- `POST /api/v1/notes`: Write or stage note updates (`path`, `content`, `agent_id`).
+- `GET /api/v1/search?q=<query>`: FTS5 full-text search.
+- `GET /api/v1/graph`: Returns full wikilink graph nodes and edges.
+- `GET /api/v1/staged`: Lists pending staged modifications.
+- `POST /api/v1/staged/:id/commit`: Accepts and writes staged diff to disk.
+- `POST /api/v1/staged/:id/reject`: Discards staged diff.

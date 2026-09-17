@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Get Sphene — Deploy Your Second Brain in Seconds</title>
-  <meta name="description" content="Deploy Sphene in one command on Linux, macOS, Windows, or Docker. 100% sovereign second brain with plaintext Markdown, &lt;25MB RAM, and native AI memory.">
+  <meta name="description" content="Deploy Sphene in one command on Linux, macOS, Windows, or Docker. 100% sovereign second brain with plaintext Markdown, &lt;50MB RAM (&lt;25MB local-only), and native AI memory.">
   <meta name="keywords" content="download Sphene, deploy Sphene, sovereign second brain, local-first notes, self-hosted PKM, markdown vault, Hermes agent memory install">
 
   <!-- Canonical URL -->
@@ -14,7 +14,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sphene">
   <meta property="og:title" content="Get Sphene — Deploy Your Second Brain in Seconds">
-  <meta property="og:description" content="Deploy Sphene in one command on Linux, macOS, Windows, or Docker. 100% sovereign second brain with plaintext Markdown, &lt;25MB RAM, and native AI memory.">
+  <meta property="og:description" content="Deploy Sphene in one command on Linux, macOS, Windows, or Docker. 100% sovereign second brain with plaintext Markdown, &lt;50MB RAM (&lt;25MB local-only), and native AI memory.">
   <meta property="og:url" content="https://sphene.app/download">
   <meta property="og:image" content="https://sphene.app/assets/og-preview.png">
   <meta property="og:image:secure_url" content="https://sphene.app/assets/og-preview.png">
@@ -29,7 +29,7 @@
   <meta name="twitter:site" content="@sphene_app">
   <meta name="twitter:creator" content="@sphene_app">
   <meta name="twitter:title" content="Get Sphene — Deploy Your Second Brain in Seconds">
-  <meta name="twitter:description" content="Deploy Sphene in one command on Linux, macOS, Windows, or Docker. 100% sovereign second brain with plaintext Markdown, &lt;25MB RAM, and native AI memory.">
+  <meta name="twitter:description" content="Deploy Sphene in one command on Linux, macOS, Windows, or Docker. 100% sovereign second brain with plaintext Markdown, &lt;50MB RAM (&lt;25MB local-only), and native AI memory.">
   <meta name="twitter:image" content="https://sphene.app/assets/og-preview.png">
   <meta name="twitter:image:alt" content="Get Sphene — Sovereign Knowledge Substrate & Engine">
 
@@ -95,23 +95,26 @@
 <body>
   <div class="bg-glow"></div>
 
-  <!-- Navigation -->
+  <!-- Sleek Single-Row Navigation -->
   <header class="navbar">
     <div class="container nav-inner">
       <a href="/" class="brand">
         <img src="/assets/sphene-logo.svg" alt="Sphene Emblem">
       </a>
       <ul class="nav-links">
-        <li><a href="/#features">Features</a></li>
-        <li><a href="/#architecture">Architecture</a></li>
-        <li><a href="/#comparison">Compare</a></li>
-        <li><a href="/pricing">Vision & Roadmap</a></li>
-        <li><a href="/download" class="active">Get Sphene</a></li>
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture">Architecture</a></li>
+        <li><a href="/benchmarks">Benchmarks</a></li>
+        <li><a href="/plugins">Plugins</a></li>
+        <li><a href="/security">Security &amp; Partitions</a></li>
+        <li><a href="/pricing">Roadmap</a></li>
       </ul>
       <div class="nav-actions">
         <div class="nav-vault-slot"></div>
-        <a href="https://github.com/crysty0612/sphene-landing" target="_blank" class="btn btn-secondary btn-sm">GitHub</a>
-        <a href="/download" class="btn btn-primary btn-sm">Get Sphene</a>
+        <a href="https://github.com/sphene-org/sphene" target="_blank" class="nav-icon-link" title="GitHub Repository" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a href="/download" class="btn btn-primary btn-sm">Get Sphene Free</a>
       </div>
     </div>
   </header>
@@ -127,7 +130,7 @@
           <h1>Deploy Your Second Brain in Seconds</h1>
           <p>
             One simple command installs the complete sovereign system. Out of the box, you get the ultra-lightweight 
-            background engine (&lt;25MB RAM), the local web dashboard with 3D graph, and native AI agent memory integration.
+            background engine (&lt;50MB RAM, &lt;25MB local-only), the local web dashboard with 3D graph, and native AI agent memory integration.
           </p>
         </div>
 
@@ -152,7 +155,7 @@
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 24px; font-size: 13px; color: var(--text-secondary);">
-            <div>✓ <strong>Single native binary</strong> (&lt;25MB RAM, zero Electron bloat)</div>
+            <div>✓ <strong>Single native binary</strong> (&lt;50MB RAM, &lt;25MB local-only, zero Electron bloat)</div>
             <div>✓ <strong>Plaintext Markdown vault</strong> on your physical disk</div>
             <div>✓ <strong>Sub-millisecond search</strong> via embedded SQLite FTS5</div>
             <div>✓ <strong>Pre-configured AI agent integration</strong> (MCP &amp; Hermes)</div>
@@ -160,7 +163,7 @@
 
           <div style="display: flex; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--border-subtle); padding-top: 20px;">
             <a href="/install.sh" target="_blank" class="btn btn-secondary btn-sm">Inspect install.sh</a>
-            <a href="https://github.com/crysty0612/sphene-landing" target="_blank" class="btn btn-secondary btn-sm">GitHub Repository</a>
+            <a href="https://github.com/sphene-org/sphene" target="_blank" class="btn btn-secondary btn-sm">GitHub Repository</a>
             <button class="btn btn-primary btn-sm btn-open-connect-modal">Connect to Local Vault</button>
           </div>
         </div>
@@ -173,11 +176,11 @@
           <div class="feature-card">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
               <div class="feature-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald);">🪶</div>
-              <span class="badge" style="margin-bottom: 0; color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3);">&lt;25MB RAM</span>
+              <span class="badge" style="margin-bottom: 0; color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3);">&lt;25MB Local • &lt;50MB Relay</span>
             </div>
             <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">1. Sovereign Knowledge Substrate</h3>
             <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.6;">
-              All your notes live as standard plaintext Markdown files on your own disk. Powered by an embedded SQLite FTS5 relational index delivering sub-millisecond search (&lt;2ms) with zero cloud lock-in.
+              All your notes live as standard plaintext Markdown files on your own disk. Operates at &lt;25MB RAM locally (&lt;50MB with embedded WireGuard mesh relay) with zero cloud lock-in.
             </p>
           </div>
 
@@ -236,46 +239,90 @@
         </div>
 
         <div style="display: flex; gap: 16px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
-          <a href="https://github.com/crysty0612/sphene-landing" target="_blank" class="btn btn-secondary btn-sm">
+          <a href="https://github.com/sphene-org/sphene" target="_blank" class="btn btn-secondary btn-sm">
             <span>View Technical Documentation &amp; Repository</span>
           </a>
         </div>
 
         <!-- Release Hashes & Verification Table -->
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <h3 style="font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">
+              🛡️ Cryptographic Verification &amp; Consistency Hashes (SHA-256)
+            </h3>
+            <p style="color: var(--text-secondary); font-size: 14px;">
+              Every release artifact is compiled with <code>-trimpath -ldflags="-s -w"</code> and signed with immutable SHA-256 checksums to guarantee zero tampering and safe delivery.
+            </p>
+          </div>
+          <a href="/SHA256SUMS" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 8px;">
+            <span>View Master SHA256SUMS</span>
+            <span>↗</span>
+          </a>
+        </div>
+
+        <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent-emerald); line-height: 1.6;">
+          <span style="color: var(--text-muted);"># 1-Line verification for untampered releases:</span><br>
+          <span style="color: var(--accent-cyan);">curl -fsSL https://sphene.app/SHA256SUMS | sha256sum -c --ignore-missing</span>
+        </div>
+
         <div class="table-card">
           <table class="comp-table">
             <thead>
               <tr>
                 <th>Artifact</th>
-                <th>Target Platform</th>
+                <th>Platform / Target</th>
                 <th>Format</th>
-                <th>Description</th>
+                <th>SHA-256 Consistency Hash</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><code>sphene-linux-amd64</code></td>
                 <td>Linux (x86_64 / amd64)</td>
-                <td>Native Compiled Binary</td>
-                <td>Headless sovereign engine &amp; Web UI (&lt;25MB RAM)</td>
+                <td>Stripped Static ELF</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">e406389db8c068c7...af6a0372</code></td>
+              </tr>
+              <tr>
+                <td><code>sphene-linux-arm64</code></td>
+                <td>Linux (ARM64 / aarch64)</td>
+                <td>Stripped Static ELF</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">6e734df250184d26...30c34240</code></td>
+              </tr>
+              <tr>
+                <td><code>sphene-darwin-arm64</code></td>
+                <td>macOS Apple Silicon (M1-M4)</td>
+                <td>Mach-O 64-bit arm64</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">0d22d43676434b9f...dbf14af5</code></td>
+              </tr>
+              <tr>
+                <td><code>sphene-darwin-amd64</code></td>
+                <td>macOS Intel (x86_64)</td>
+                <td>Mach-O 64-bit x86_64</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">796d7356db625821...0e45a97e7</code></td>
+              </tr>
+              <tr>
+                <td><code>sphene-windows-amd64.exe</code></td>
+                <td>Windows (x86_64)</td>
+                <td>PE32+ Console Executable</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">de25f438c7ae8084...1111887ac9</code></td>
+              </tr>
+              <tr>
+                <td><code>sphene-image.tar.gz</code></td>
+                <td>Docker Container (v2.2.0)</td>
+                <td>OCI Archive Image</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">8d60797c4fb292b4...4e90449319</code></td>
+              </tr>
+              <tr>
+                <td><code>hermes-skill.tar.gz</code></td>
+                <td>Hermes Agent Skill</td>
+                <td>Gzipped Tar Archive</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">5957146ffb968fa1...d28ae4862c</code></td>
               </tr>
               <tr>
                 <td><code>install.sh</code></td>
-                <td>POSIX Bash (Linux/macOS/WSL)</td>
-                <td>Automated Universal Installer</td>
-                <td>1-line automated environment &amp; vault setup</td>
-              </tr>
-              <tr>
-                <td><code>migrate_vault.sh</code></td>
-                <td>Any OS (Standard Bash/Python)</td>
-                <td>Vault Ingestion Pipeline</td>
-                <td>1-click desktop markdown vault importer (Obsidian/Logseq)</td>
-              </tr>
-              <tr>
-                <td><code>decrypt_vault.sh</code></td>
-                <td>Any OS (Standard OpenSSL)</td>
-                <td>Offline Cryptographic Decryptor</td>
-                <td>Zero-dependency offline vault emergency unsealer</td>
+                <td>Universal Installer</td>
+                <td>POSIX Bash Script</td>
+                <td><code style="font-size: 11px; color: var(--accent-cyan);">37efa22cddd9aba3...b4b494885e2</code></td>
               </tr>
             </tbody>
           </table>
@@ -293,10 +340,14 @@
         <span class="footer-copy">© 2026 Sphene. Sovereign Data. All rights reserved.</span>
       </div>
       <ul class="footer-links">
-        <li><a href="/download">Get Sphene</a></li>
-        <li><a href="/pricing">Vision & Roadmap</a></li>
-        <li><a href="https://github.com/crysty0612/sphene-landing" target="_blank">Docs & Repository</a></li>
-        <li><a href="https://github.com/crysty0612/sphene-landing/releases" target="_blank">GitHub Releases</a></li>
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture">Architecture</a></li>
+        <li><a href="/benchmarks">Benchmarks</a></li>
+        <li><a href="/plugins">Plugins</a></li>
+        <li><a href="/security">Security &amp; Partitions</a></li>
+        <li><a href="/pricing">Roadmap</a></li>
+        <li><a href="/download">Download</a></li>
+        <li><a href="https://github.com/sphene-org/sphene" target="_blank">GitHub</a></li>
       </ul>
     </div>
   </footer>

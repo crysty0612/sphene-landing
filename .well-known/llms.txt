@@ -1,11 +1,11 @@
 # Sphene — The Sovereign Second Brain for Humans & Autonomous AI
 
-> Sphene is a local-first, ultra-lightweight second brain (<25MB RAM) engineered for sub-millisecond retrieval (<2ms), zero-trust security, and native human-agent harmony. It combines plaintext Markdown files on your disk with an embedded SQLite/FTS5 index, native Model Context Protocol (MCP) server, interactive web dashboard, and differential human-in-the-loop review for agent edits.
+> Sphene is a local-first, ultra-lightweight second brain (<50MB RAM, <25MB local-only) engineered for sub-millisecond retrieval (<2ms), zero-trust security, and native human-agent harmony. It combines plaintext Markdown files on your disk with an embedded SQLite/FTS5 index, native Model Context Protocol (MCP) server, interactive web dashboard, and differential human-in-the-loop review for agent edits.
 
 Sphene eliminates the bloat of Electron desktop wrappers and the privacy risks of unsandboxed community plugins. All notes remain on disk in clean, standard plaintext Markdown (.md) with zero vendor lock-in.
 
 ## The Triangle of Truth
-- **LIGHT**: <25MB RAM at rest, zero Electron bloat, compiled native daemon deployable from Raspberry Pi to workstation.
+- **LIGHT**: <50MB RAM (<25MB local-only at rest), zero Electron bloat, compiled native daemon deployable from Raspberry Pi to workstation.
 - **FAST**: Native sub-millisecond retrieval (<2ms) via embedded SQLite/FTS5 relational index without burning LLM context tokens on raw file parsing.
 - **SECURE**: Zero-trust plugin security model with Ed25519 cryptographic signatures and authenticated AES-256-GCM encryption at rest.
 

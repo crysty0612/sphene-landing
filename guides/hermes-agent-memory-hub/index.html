@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connecting Hermes Agent to Local Markdown via Native MCP — Sphene</title>
+  <meta name="description" content="Step-by-step guide to connecting Hermes Agent to a local markdown vault using Sphene's native Model Context Protocol (MCP) server under 25MB RAM.">
+  <meta name="keywords" content="Hermes Agent MCP, Model Context Protocol markdown, local agent memory, Sphene Hermes setup, agentic second brain">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://sphene.app/guides/hermes-agent-memory-hub">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sphene">
+  <meta property="og:title" content="Connecting Hermes Agent to Local Markdown via Native MCP — Sphene">
+  <meta property="og:description" content="Step-by-step guide to connecting Hermes Agent to a local markdown vault using Sphene's native Model Context Protocol (MCP) server.">
+  <meta property="og:url" content="https://sphene.app/guides/hermes-agent-memory-hub">
+  <meta property="og:image" content="https://sphene.app/assets/og-preview.png">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sphene_app">
+  <meta name="twitter:title" content="Connecting Hermes Agent to Local Markdown via Native MCP — Sphene">
+  <meta name="twitter:description" content="Step-by-step guide to connecting Hermes Agent to a local markdown vault using Sphene's native Model Context Protocol (MCP) server.">
+  <meta name="twitter:image" content="https://sphene.app/assets/og-preview.png">
+
+  <meta name="theme-color" content="#07090e">
+  <link rel="icon" type="image/svg+xml" href="/assets/sphene-icon.svg">
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Schema.org HowTo JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to Connect Hermes Agent to a Markdown Knowledge Base via Native MCP",
+    "description": "Step-by-step configuration enabling Hermes Agent to search, read, and patch local markdown notes via Model Context Protocol (MCP).",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Start the Sphene Kernel Daemon",
+        "text": "Run 'sphene daemon' on the host system to start the sub-millisecond SQLite index and local gateway on port 8743."
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Register the Stdio MCP Toolset in Hermes",
+        "text": "Add the Sphene MCP server to Hermes using 'hermes mcp add sphene --command /usr/local/bin/sphene --args mcp --env SPHENE_URL=http://127.0.0.1:8743'."
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Perform Natural Language Note Operations",
+        "text": "Prompt Hermes to search, retrieve, or update notes. Hermes invokes typed MCP tools without shell escaping errors."
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Emblem">
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture">Architecture</a></li>
+        <li><a href="/benchmarks">Benchmarks</a></li>
+        <li><a href="/plugins">Plugins</a></li>
+        <li><a href="/security">Security &amp; Partitions</a></li>
+        <li><a href="/pricing">Roadmap</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div class="nav-vault-slot"></div>
+        <a href="https://github.com/sphene-org/sphene" target="_blank" class="nav-icon-link" title="GitHub Repository" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a href="/download" class="btn btn-primary btn-sm">Get Sphene Free</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <article class="section" style="padding-top: 60px;">
+      <div class="container" style="max-width: 880px;">
+        <div class="section-header" style="text-align: left;">
+          <div class="badge">DEVELOPER PLAYBOOK • HERMES AGENT</div>
+          <h1 style="font-size: 32px; line-height: 1.25; margin: 12px 0;">How to Connect Hermes Agent to a Markdown Knowledge Base via Native MCP</h1>
+          
+          <!-- Immediate Answer Pattern -->
+          <p style="font-size: 16px; line-height: 1.7; color: var(--text-secondary);">
+            To connect Hermes Agent to Sphene, register Sphene as a Stdio MCP server via <code>hermes mcp add sphene --command /usr/local/bin/sphene --args mcp --env SPHENE_URL=http://127.0.0.1:8743</code>. 
+            This provides Hermes with sub-millisecond SQLite FTS5 search, AST-level heading extraction, and staged patch folding under 25MB RAM—completely eliminating brittle terminal shell piping and quote-escaping errors.
+          </p>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-subtle); margin: 32px 0;">
+
+        <h2>Why Native MCP Replaces Brittle Shell Piping</h2>
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px;">
+          When autonomous agents interact with markdown folders via bash commands (such as <code>cat &lt;&lt; 'EOF'</code>, <code>grep -rn</code>, or <code>curl</code> pipelines), 
+          multiple operational failure points occur:
+        </p>
+        <ul style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 24px; padding-left: 24px;">
+          <li><strong>Terminal Escaping Misfires:</strong> Markdown content with nested backticks, quotes, or LaTeX math breaks bash heredocs, causing silent note truncation.</li>
+          <li><strong>Subprocess Overhead:</strong> Spawning a new shell, parsing curl flags, and formatting raw text introduces 100–300ms latency per tool turn.</li>
+          <li><strong>Context Exhaustion:</strong> Dumping entire 3,000-word files into agent memory just to read one checklist burns thousands of tokens per step.</li>
+        </ul>
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 28px;">
+          With Model Context Protocol (MCP), Hermes calls strongly-typed JSON-RPC methods directly over stdio. Tool execution completes in under 1.5 milliseconds with zero shell interpolation.
+        </p>
+
+        <h2>Step 1: Verify Sphene Kernel Daemon</h2>
+        <p style="color: var(--text-secondary); line-height: 1.7;">
+          Ensure the Sphene kernel daemon is running on your host system or container network:
+        </p>
+        <pre style="background: #0f172a; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; overflow-x: auto; color: #38bdf8; font-family: monospace; font-size: 14px; margin: 16px 0 28px;"><code># Start Sphene background daemon (&lt;25MB RAM)
+sphene daemon &amp;
+
+# Verify HTTP gateway health
+curl -s http://127.0.0.1:8743/api/v1/health
+# Output: {"status":"ok","version":"2.2.0"}</code></pre>
+
+        <h2>Step 2: Add Sphene to Hermes Agent MCP Configuration</h2>
+        <p style="color: var(--text-secondary); line-height: 1.7;">
+          Run the official Hermes CLI command to register Sphene as an active MCP server:
+        </p>
+        <pre style="background: #0f172a; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; overflow-x: auto; color: #10b981; font-family: monospace; font-size: 14px; margin: 16px 0 28px;"><code>hermes mcp add sphene   --command /usr/local/bin/sphene   --args mcp   --env SPHENE_URL=http://127.0.0.1:8743</code></pre>
+
+        <p style="color: var(--text-secondary); line-height: 1.7;">
+          Alternatively, add Sphene directly to your <code>~/.hermes/config.yaml</code> (or <code>/opt/data/config.yaml</code>):
+        </p>
+        <pre style="background: #0f172a; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; overflow-x: auto; color: #e2e8f0; font-family: monospace; font-size: 14px; margin: 16px 0 28px;"><code>mcp_servers:
+  sphene:
+    command: /usr/local/bin/sphene
+    args:
+      - mcp
+    env:
+      SPHENE_URL: http://127.0.0.1:8743
+    enabled: true</code></pre>
+
+        <h2>Step 3: Available MCP Toolset</h2>
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 16px;">
+          Once enabled, Hermes automatically discovers 8 native Sphene tools:
+        </p>
+        <div class="table-card" style="margin-bottom: 32px;">
+          <table class="comp-table">
+            <thead>
+              <tr>
+                <th style="width: 30%;">Tool Name</th>
+                <th style="width: 45%;">Capability</th>
+                <th style="width: 25%;">Latency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>sphene_search</code></td>
+                <td>Sub-millisecond FTS5 search across notes, tags, and content</td>
+                <td><span class="check">&lt; 0.20 ms</span></td>
+              </tr>
+              <tr>
+                <td><code>sphene_find_in_doc</code></td>
+                <td>Intra-document pinpoint match for sentences, facts, or tasks</td>
+                <td><span class="check">&lt; 0.05 ms</span></td>
+              </tr>
+              <tr>
+                <td><code>sphene_read</code></td>
+                <td>Read note with heading AST extraction &amp; staged review notice</td>
+                <td><span class="check">&lt; 0.10 ms</span></td>
+              </tr>
+              <tr>
+                <td><code>sphene_patch</code></td>
+                <td>Surgical section append/prepend/replace folded into Timeline</td>
+                <td><span class="check">&lt; 0.50 ms</span></td>
+              </tr>
+              <tr>
+                <td><code>sphene_write</code></td>
+                <td>Create new notes in Workspace/ with instant FTS5 indexing</td>
+                <td><span class="check">&lt; 0.50 ms</span></td>
+              </tr>
+              <tr>
+                <td><code>sphene_daily</code></td>
+                <td>Append updates to today's daily log note</td>
+                <td><span class="check">&lt; 0.50 ms</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Step 4: Human Veto &amp; Differential Timeline Review</h2>
+        <p style="color: var(--text-secondary); line-height: 1.7; margin-bottom: 20px;">
+          When Hermes updates an existing document via <code>sphene_patch</code>, Sphene does not silently overwrite your file. 
+          Instead, the modification is staged in <code>.sphene/staged/</code>. Open the Sphene dashboard at 
+          <a href="http://localhost:8743" target="_blank" style="color: var(--accent-cyan);">http://localhost:8743</a> to inspect the side-by-side color-coded diff 
+          and accept or reject it with 1 click.
+        </p>
+
+        <div style="text-align: center; margin-top: 48px; padding: 40px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle); border-radius: 12px;">
+          <h3 style="font-size: 22px; font-weight: 800; margin-bottom: 8px;">Ready to deploy?</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 20px;">Install Sphene on your local hardware in 60 seconds.</p>
+          <a href="/download" class="btn btn-primary">Get Sphene Free (v2.2)</a>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Logo">
+        <span class="footer-copy">© 2026 Sphene. Sovereign Data. All rights reserved.</span>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture">Architecture</a></li>
+        <li><a href="/benchmarks">Benchmarks</a></li>
+        <li><a href="/plugins">Plugins</a></li>
+        <li><a href="/security">Security &amp; Partitions</a></li>
+        <li><a href="/pricing">Roadmap</a></li>
+        <li><a href="/download">Download</a></li>
+        <li><a href="https://github.com/sphene-org/sphene" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

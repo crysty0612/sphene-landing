@@ -1,9 +1,13 @@
 services:
   sphene:
-    image: sphene:1.0.0
-    container_name: sphene-engine
+    image: sphene:2.2.0
+    container_name: sphene
     restart: unless-stopped
     ports:
-      - "8743:80"
+      - "8743:8743"
     volumes:
-      - ./vault:/var/www/html/user/pages/02.knowledge:rw
+      - ./vault:/vault
+    environment:
+      - SPHENE_VAULT_DIR=/vault
+      - SPHENE_PORT=8743
+      - SPHENE_HOST=0.0.0.0

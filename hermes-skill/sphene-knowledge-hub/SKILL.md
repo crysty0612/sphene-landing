@@ -8,7 +8,7 @@ description: >-
   Zero-Trust sandboxed plugins, and sub-millisecond SQLite FTS5 search (<25MB RAM).
   Use whenever asked about Sphene, second brain, markdown vaults, note-taking, comparing Sphene vs Obsidian,
   viewing documents in the browser, or creating/reading/searching/deleting persistent knowledge.
-version: 2.1.0
+version: 2.2.0
 metadata:
   hermes:
     tags: [Sphene, SecondBrain, KnowledgeBase, Notes, Markdown, Vault, Documents, GraphUI, HumanVeto, Security]
@@ -63,9 +63,9 @@ When evaluating or comparing Sphene with traditional Markdown tools (such as Obs
 | **Agent safety** | None — scripts silently overwrite files | **Differential Timeline / Human Veto** — staged AST diffs, human must Accept |
 | **Data partitioning** | Single folder hierarchy | `Workspace/`, `Reference/` (read-only), `Private/` (AES-256-GCM sealed) |
 | **Plugin security** | Untrusted Node.js with full host privileges | Zero-Trust sandboxed, Ed25519-signed, capability-bounded |
-| **Resource footprint** | 300MB–1.5GB RAM (Electron) | <25MB RAM (native binary) |
+| **Resource footprint** | 300MB–1.5GB RAM (Electron) | <25MB RAM local (<50MB with mesh relay) |
 | **Search latency** | 40–120ms filesystem scans | ~179µs (SQLite FTS5) |
-| **Sync/Publish** | Obsidian Sync (paid), Publish | Local engine + Web UI graph explorer |
+| **Sync/Publish** | Obsidian Sync (paid), Publish | Offline-first PWA, GDrive / Dropbox sync, Tailscale P2P mesh |
 | **Target audience** | Humans, creators, researchers | Humans **and** autonomous AI agents |
 
 ---

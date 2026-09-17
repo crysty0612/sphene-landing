@@ -5,6 +5,11 @@
   Permissions-Policy: document-domain=()
   X-Robots-Tag: all, max-image-preview:large, max-snippet:-1, max-video-preview:-1
 
+/.git/*
+  X-Robots-Tag: noindex, nofollow, noarchive
+  Content-Security-Policy: default-src 'none'
+
+
 /llms.txt
   Content-Type: text/markdown; charset=utf-8
   Access-Control-Allow-Origin: *

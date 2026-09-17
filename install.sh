@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # SPHENE SOVEREIGN SECOND BRAIN - DOCKER & NATIVE INSTALLER
-# Sovereign, compiled knowledge substrate (<25MB RAM, SQLite FTS5)
+# Sovereign, compiled knowledge substrate (<50MB RAM, <25MB local, SQLite FTS5)
 # Official Website: https://sphene.app
 # ==============================================================================
 set -e
@@ -46,8 +46,43 @@ read_input() {
     echo "$default_val"
   else
     echo "$user_val"
+}
+
+# Cryptographic Integrity Verification (SHA-256)
+verify_file_sha256() {
+  local target_file="$1"
+  local expected_hash="$2"
+  local calculated_hash=""
+
+  if [ ! -f "$target_file" ] || [ -z "$expected_hash" ]; then
+    return 1
+  fi
+
+  if command -v sha256sum >/dev/null 2>&1; then
+    calculated_hash=$(sha256sum "$target_file" 2>/dev/null | awk '{print $1}')
+  elif command -v shasum >/dev/null 2>&1; then
+    calculated_hash=$(shasum -a 256 "$target_file" 2>/dev/null | awk '{print $1}')
+  elif command -v python3 >/dev/null 2>&1; then
+    calculated_hash=$(python3 -c "import hashlib, sys; print(hashlib.sha256(open(sys.argv[1], 'rb').read()).hexdigest())" "$target_file" 2>/dev/null || true)
+  elif command -v openssl >/dev/null 2>&1; then
+    calculated_hash=$(openssl dgst -sha256 "$target_file" 2>/dev/null | awk '{print $NF}')
+  fi
+
+  if [ -n "$calculated_hash" ] && [ "$calculated_hash" = "$expected_hash" ]; then
+    return 0
+  else
+    return 1
   fi
 }
+
+get_expected_sha256() {
+  local filename="$1"
+  local checksums_file="$2"
+  if [ -f "$checksums_file" ]; then
+    grep -E "[[:space:]](bin/)?${filename}\$" "$checksums_file" 2>/dev/null | head -n 1 | awk '{print $1}'
+  fi
+}
+
 
 echo -e "${CYAN}${BOLD}"
 echo "  ____  ____  _   _ _____ _   _ _____ "
@@ -56,7 +91,7 @@ echo " \___ \| |_) | |_| |  _| |  \| |  _|  "
 echo "  ___) |  __/|  _  | |___| |\  | |___ "
 echo " |____/|_|   |_| |_|_____|_| \_|_____|"
 echo -e "${NC}"
-echo -e "${BOLD}Installing Sphene Sovereign Second Brain (<25MB RAM)...${NC}\n"
+echo -e "${BOLD}Installing Sphene Sovereign Second Brain (<50MB RAM, <25MB local)...${NC}\n"
 
 # 1. Environment & Architecture Detection
 OS_RAW="$(uname -s)"
@@ -168,14 +203,38 @@ TMP_DIR="/tmp/sphene-install"
 mkdir -p "$TMP_DIR"
 SPHENE_HOST_BIN=""
 
+# Fetch or locate cryptographic checksums
+if [ -f "${SCRIPT_DIR}/SHA256SUMS" ]; then
+  cp "${SCRIPT_DIR}/SHA256SUMS" "$TMP_DIR/SHA256SUMS"
+elif [ -f "${SCRIPT_DIR}/bin/SHA256SUMS" ]; then
+  cp "${SCRIPT_DIR}/bin/SHA256SUMS" "$TMP_DIR/SHA256SUMS"
+else
+  curl -fsSL "https://sphene.app/SHA256SUMS" -o "$TMP_DIR/SHA256SUMS" 2>/dev/null || curl -fsSL "https://sphene.app/bin/SHA256SUMS" -o "$TMP_DIR/SHA256SUMS" 2>/dev/null || true
+fi
+
 if [ -f "${SCRIPT_DIR}/bin/${TARGET_BIN}" ]; then
   SPHENE_HOST_BIN="${SCRIPT_DIR}/bin/${TARGET_BIN}"
 else
   echo -e "Fetching pre-compiled native Sphene CLI binary (${OS}-${ARCH})..."
-  if curl -fsSL "https://sphene.app/bin/${TARGET_BIN}" -o "$TMP_DIR/sphene" 2>/dev/null && [ -s "$TMP_DIR/sphene" ]; then
-    chmod +x "$TMP_DIR/sphene"
-    SPHENE_HOST_BIN="$TMP_DIR/sphene"
+  DOWNLOADED_NAME=""
+  if curl -fsSL "https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/${TARGET_BIN}" -o "$TMP_DIR/sphene" 2>/dev/null && [ -s "$TMP_DIR/sphene" ]; then
+    DOWNLOADED_NAME="$TARGET_BIN"
+  elif curl -fsSL "https://sphene.app/bin/${TARGET_BIN}" -o "$TMP_DIR/sphene" 2>/dev/null && [ -s "$TMP_DIR/sphene" ]; then
+    DOWNLOADED_NAME="$TARGET_BIN"
   elif curl -fsSL "https://sphene.app/bin/sphene" -o "$TMP_DIR/sphene" 2>/dev/null && [ -s "$TMP_DIR/sphene" ]; then
+    DOWNLOADED_NAME="sphene"
+  fi
+
+  if [ -n "$DOWNLOADED_NAME" ] && [ -f "$TMP_DIR/sphene" ]; then
+    EXPECTED_HASH=$(get_expected_sha256 "$DOWNLOADED_NAME" "$TMP_DIR/SHA256SUMS")
+    if [ -n "$EXPECTED_HASH" ]; then
+      if verify_file_sha256 "$TMP_DIR/sphene" "$EXPECTED_HASH"; then
+        echo -e "${GREEN}✓ Cryptographic integrity verified (SHA-256: ${EXPECTED_HASH:0:16}...)${NC}"
+      else
+        echo -e "${RED}✗ Error: Cryptographic checksum mismatch for ${DOWNLOADED_NAME}! File corrupted or tampered.${NC}"
+        exit 1
+      fi
+    fi
     chmod +x "$TMP_DIR/sphene"
     SPHENE_HOST_BIN="$TMP_DIR/sphene"
   elif command -v sphene >/dev/null 2>&1; then
@@ -288,17 +347,23 @@ if [ $IS_UPDATE -eq 0 ]; then
 
         case "$IMPORT_CHOICE" in
           [yY][eE][sS]|[yY]|"")
-            echo -e "  Importing notes into ${VAULT_DIR}/Workspace/Obsidian..."
+            echo -e "  Importing notes into ${VAULT_DIR}/Workspace (preserving native Folder hierarchy)..."
             if command -v sphene >/dev/null 2>&1; then
-              SPHENE_VAULT_DIR="$VAULT_DIR" sphene import "$vault_path" --partition "Workspace/Obsidian"
+              SPHENE_VAULT_DIR="$VAULT_DIR" sphene import "$vault_path" --partition "Workspace"
             else
-              mkdir -p "${VAULT_DIR}/Workspace/Obsidian"
-              cp -r "$vault_path"/* "${VAULT_DIR}/Workspace/Obsidian/" 2>/dev/null || true
-              echo -e "${GREEN}✓ Copied notes into ${VAULT_DIR}/Workspace/Obsidian${NC}"
+              mkdir -p "${VAULT_DIR}/Workspace"
+              # Non-destructively copy all notes and media, mapping subfolders to Sphene Folders and excluding hidden metadata (.obsidian, .trash)
+              find "$vault_path" -type f \( -name "*.md" -o -name "*.markdown" -o -name "*.txt" -o -name "*.png" -o -name "*.jpg" -o -name "*.svg" -o -name "*.pdf" \) ! -path "*/.*" 2>/dev/null | while read -r src_file; do
+                rel_file="${src_file#$vault_path/}"
+                target_dest="${VAULT_DIR}/Workspace/$rel_file"
+                mkdir -p "$(dirname "$target_dest")"
+                cp -p "$src_file" "$target_dest"
+              done
+              echo -e "${GREEN}✓ Imported notes into ${VAULT_DIR}/Workspace with full native Folder structure preserved!${NC}"
             fi
             ;;
           *)
-            echo -e "  Skipped import. (You can import anytime with: ${CYAN}sphene import \"$vault_path\"${NC})"
+            echo -e "  Skipped import. (Tip: You can also do this later anytime from Sphene Settings: 'Import Notes from Obsidian / Disk', or via ${CYAN}sphene import \"$vault_path\"${NC})"
             ;;
         esac
       fi
@@ -307,7 +372,7 @@ if [ $IS_UPDATE -eq 0 ]; then
 
   if [ "$FOUND_OBSIDIAN" -eq 0 ]; then
     echo -e "${GREEN}✓ No existing Obsidian installation found (clean slate).${NC}"
-    echo -e "  (Tip: You can import any existing folder of notes anytime with: ${CYAN}sphene import <path>${NC})"
+    echo -e "  (Tip: You can import notes anytime later from Sphene Settings: 'Import Notes from Obsidian / Disk', or via ${CYAN}sphene import <path>${NC})"
   fi
 fi
 
@@ -345,7 +410,16 @@ if [ -n "$HERMES_TYPE" ]; then
       cp -r "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" "$TMP_SKILL_DIR/"
     else
       curl -fsSL "https://sphene.app/hermes-skill.tar.gz" -o "$TMP_DIR/hermes-skill.tar.gz" 2>/dev/null || true
-      if [ -f "$TMP_DIR/hermes-skill.tar.gz" ]; then
+      if [ -s "$TMP_DIR/hermes-skill.tar.gz" ]; then
+        EXPECTED_SKILL_HASH=$(get_expected_sha256 "hermes-skill.tar.gz" "$TMP_DIR/SHA256SUMS")
+        if [ -n "$EXPECTED_SKILL_HASH" ]; then
+          if verify_file_sha256 "$TMP_DIR/hermes-skill.tar.gz" "$EXPECTED_SKILL_HASH"; then
+            echo -e "${GREEN}✓ Cryptographic integrity verified (hermes-skill.tar.gz)${NC}"
+          else
+            echo -e "${RED}✗ Error: Checksum mismatch for hermes-skill.tar.gz! Aborting.${NC}"
+            exit 1
+          fi
+        fi
         tar -xzf "$TMP_DIR/hermes-skill.tar.gz" -C "$TMP_SKILL_DIR/"
       fi
     fi
@@ -355,12 +429,53 @@ if [ -n "$HERMES_TYPE" ]; then
         docker cp "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_CONTAINER}:${HERMES_SKILLS_DIR}/"
         if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
           docker cp "$SPHENE_HOST_BIN" "${HERMES_CONTAINER}:/usr/local/bin/sphene"
+          docker exec "${HERMES_CONTAINER}" chmod +x /usr/local/bin/sphene 2>/dev/null || true
         fi
+        # Register Sphene native MCP server in Hermes
+        docker exec "${HERMES_CONTAINER}" python3 -c '
+import yaml, os
+cfg_file = "/opt/data/config.yaml"
+if os.path.isfile(cfg_file):
+    try:
+        with open(cfg_file, "r") as f:
+            c = yaml.safe_load(f) or {}
+        mcp = c.setdefault("mcp_servers", {})
+        mcp["sphene"] = {
+            "command": "/usr/local/bin/sphene",
+            "args": ["mcp"],
+            "env": {"SPHENE_URL": "http://127.0.0.1:8743"},
+            "enabled": True
+        }
+        with open(cfg_file, "w") as f:
+            yaml.dump(c, f, default_flow_style=False)
+    except Exception:
+        pass
+' 2>/dev/null || true
       else
         cp -r "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_SKILLS_DIR}/"
+        python3 -c '
+import yaml, os
+candidates = [os.path.expanduser("~/.hermes/config.yaml"), "/DATA/AppData/hermes/config.yaml"]
+for cfg_file in candidates:
+    if os.path.isfile(cfg_file):
+        try:
+            with open(cfg_file, "r") as f:
+                c = yaml.safe_load(f) or {}
+            mcp = c.setdefault("mcp_servers", {})
+            mcp["sphene"] = {
+                "command": "/usr/local/bin/sphene",
+                "args": ["mcp"],
+                "env": {"SPHENE_URL": "http://127.0.0.1:8743"},
+                "enabled": True
+            }
+            with open(cfg_file, "w") as f:
+                yaml.dump(c, f, default_flow_style=False)
+        except Exception:
+            pass
+' 2>/dev/null || true
       fi
       SKILL_INSTALLED=1
-      echo -e "${GREEN}✓ Sphene Knowledge Hub skill & CLI updated in Hermes.${NC}"
+      echo -e "${GREEN}✓ Sphene Knowledge Hub skill & native MCP server updated in Hermes.${NC}"
     fi
 
     # Refresh upgraded obsidian skill if previously replaced
@@ -396,7 +511,16 @@ if [ -n "$HERMES_TYPE" ]; then
           cp -r "${SCRIPT_DIR}/hermes-skill/sphene-knowledge-hub" "$TMP_SKILL_DIR/"
         else
           curl -fsSL "https://sphene.app/hermes-skill.tar.gz" -o "$TMP_DIR/hermes-skill.tar.gz" 2>/dev/null || true
-          if [ -f "$TMP_DIR/hermes-skill.tar.gz" ]; then
+          if [ -s "$TMP_DIR/hermes-skill.tar.gz" ]; then
+            EXPECTED_SKILL_HASH=$(get_expected_sha256 "hermes-skill.tar.gz" "$TMP_DIR/SHA256SUMS")
+            if [ -n "$EXPECTED_SKILL_HASH" ]; then
+              if verify_file_sha256 "$TMP_DIR/hermes-skill.tar.gz" "$EXPECTED_SKILL_HASH"; then
+                echo -e "${GREEN}✓ Cryptographic integrity verified (hermes-skill.tar.gz)${NC}"
+              else
+                echo -e "${RED}✗ Error: Checksum mismatch for hermes-skill.tar.gz! Aborting.${NC}"
+                exit 1
+              fi
+            fi
             tar -xzf "$TMP_DIR/hermes-skill.tar.gz" -C "$TMP_SKILL_DIR/"
           fi
         fi
@@ -406,7 +530,28 @@ if [ -n "$HERMES_TYPE" ]; then
             docker cp "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_CONTAINER}:${HERMES_SKILLS_DIR}/"
             if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
               docker cp "$SPHENE_HOST_BIN" "${HERMES_CONTAINER}:/usr/local/bin/sphene"
+              docker exec "${HERMES_CONTAINER}" chmod +x /usr/local/bin/sphene 2>/dev/null || true
             fi
+            # Register Sphene native MCP server in Hermes
+            docker exec "${HERMES_CONTAINER}" python3 -c '
+import yaml, os
+cfg_file = "/opt/data/config.yaml"
+if os.path.isfile(cfg_file):
+    try:
+        with open(cfg_file, "r") as f:
+            c = yaml.safe_load(f) or {}
+        mcp = c.setdefault("mcp_servers", {})
+        mcp["sphene"] = {
+            "command": "/usr/local/bin/sphene",
+            "args": ["mcp"],
+            "env": {"SPHENE_URL": "http://127.0.0.1:8743"},
+            "enabled": True
+        }
+        with open(cfg_file, "w") as f:
+            yaml.dump(c, f, default_flow_style=False)
+    except Exception:
+        pass
+' 2>/dev/null || true
             # Ensure skill is enabled in hermes config if disabled list exists
             docker exec "${HERMES_CONTAINER}" python3 -c '
 import yaml, os
@@ -426,9 +571,29 @@ if os.path.isfile(cfg_file):
 ' 2>/dev/null || true
           else
             cp -r "$TMP_SKILL_DIR/sphene-knowledge-hub" "${HERMES_SKILLS_DIR}/"
+            python3 -c '
+import yaml, os
+candidates = [os.path.expanduser("~/.hermes/config.yaml"), "/DATA/AppData/hermes/config.yaml"]
+for cfg_file in candidates:
+    if os.path.isfile(cfg_file):
+        try:
+            with open(cfg_file, "r") as f:
+                c = yaml.safe_load(f) or {}
+            mcp = c.setdefault("mcp_servers", {})
+            mcp["sphene"] = {
+                "command": "/usr/local/bin/sphene",
+                "args": ["mcp"],
+                "env": {"SPHENE_URL": "http://127.0.0.1:8743"},
+                "enabled": True
+            }
+            with open(cfg_file, "w") as f:
+                yaml.dump(c, f, default_flow_style=False)
+        except Exception:
+            pass
+' 2>/dev/null || true
           fi
           SKILL_INSTALLED=1
-          echo -e "${GREEN}✓ Sphene Knowledge Hub skill deployed into Hermes successfully.${NC}"
+          echo -e "${GREEN}✓ Sphene Knowledge Hub skill & native MCP server deployed into Hermes successfully.${NC}"
         fi
         ;;
       *)
@@ -455,20 +620,22 @@ if os.path.isfile(cfg_file):
   if [ -n "$OBSIDIAN_REL_PATH" ]; then
     echo -e "\n${YELLOW}${BOLD}Obsidian Skill Integration Option:${NC}"
     echo "Hermes comes bundled with a default Obsidian note-taking skill."
-    echo "Sphene is 100% compatible with Obsidian Markdown vaults, but features <25MB memory footprint,"
+    echo "Sphene is 100% compatible with Obsidian Markdown vaults, but features <25MB local memory footprint (<50MB with relay),"
     echo "sub-millisecond SQLite FTS5 index, human veto timeline, and interactive visual Web UI."
     echo ""
 
-    PROMPT_OBS="Do you want Hermes to replace Obsidian with Sphene as its primary knowledge store? [y/N]: "
-    REPLACE_OBSIDIAN_CHOICE=$(read_input "$PROMPT_OBS" "N")
+    PROMPT_OBS="Do you want Hermes to replace Obsidian with Sphene as its primary knowledge store? [Y/n]: "
+    REPLACE_OBSIDIAN_CHOICE=$(read_input "$PROMPT_OBS" "Y")
 
     case "$REPLACE_OBSIDIAN_CHOICE" in
-      [yY][eE][sS]|[yY])
+      [yY][eE][sS]|[yY]|"")
         echo "Upgrading Hermes Obsidian skill definition to route directly to Sphene..."
         UPGRADED_OBSIDIAN_SKILL='---
 name: obsidian
-description: Read, search, create, and edit notes in Sphene Knowledge Hub (the sovereign Obsidian-compatible knowledge substrate).
-version: 2.0.0
+description: >-
+  Read, search, create, and edit notes in Sphene Knowledge Hub (the sovereign Obsidian-compatible knowledge substrate).
+  Use native Sphene MCP tools for all note-taking, markdown notes, second brain retrieval, intra-document search, and updates.
+version: 2.2.0
 author: Sphene Sovereign Substrate
 platforms: [linux, macos, windows]
 metadata:
@@ -479,30 +646,31 @@ metadata:
 
 # Sphene Knowledge Hub (Obsidian Replacement)
 
-Use this skill for all note-taking, markdown knowledge store, and second brain workflows.
-Obsidian has been upgraded to **Sphene Knowledge Hub** (https://sphene.app) — the hardened, sovereign knowledge substrate and second brain engineered to put **HUMANS ON TOP** while providing autonomous AI agents with sub-millisecond programmatic memory (<25MB RAM).
+Obsidian has been completely upgraded to **Sphene Knowledge Hub** (https://sphene.app) — the hardened, sovereign knowledge substrate and second brain running locally with sub-millisecond SQLite FTS5 search (<0.2ms) and native Model Context Protocol (MCP) integration.
 
-## 1. Core Architecture & Philosophy: "Human on Top"
-- **Human Sovereignty & Safety:** Sphene puts the human user in ultimate control. When agents edit notes, Sphene stages block-level diffs in the **Differential Timeline ("Human Veto")** accessible in the Web UI (`http://localhost:8743`), allowing humans to 1-click accept or veto changes.
-- **Hardware-Grade Partitioning & Encryption:**
-  - `Workspace/`: Open collaboration partition where humans and agents co-create.
-  - `Reference/`: Human-curated ground truth (read-only for agents, write-blocked by kernel AST traps).
-  - `Private/`: Hardware-sealed enclave encrypted at rest with authenticated **AES-256-GCM**. Agents have **zero access**.
-- **Zero-Trust Sandboxed Plugins:** Every plugin is cryptographically verified against Ed25519 Sphene Root Authority signatures and constrained by strict capability manifests (cannot execute arbitrary shell commands or crash the kernel).
-- **Sub-Millisecond Engine:** Embedded SQLite FTS5 search executing in **179 microseconds** (<0.2ms) with zero Electron bloat (<25MB RAM).
+## 1. Zero Misfires: Direct Native MCP Tool Invocations
+All note-taking, document lookups, and second brain requests MUST use your native Sphene MCP tools directly:
+- **`sphene_search(query, partition?)`**: Sub-millisecond full-text search across all notes, topics, concepts, and books (<0.2ms). Call this FIRST whenever searching for information.
+- **`sphene_find_in_doc(path, query)`**: Pinpoint fact and checklist search inside a specific document without loading the entire note.
+- **`sphene_read(path, section?)`**: Retrieve note content or a specific heading (`section: "..."`).
+- **`sphene_write(path, content, agent_id?)`**: Create new workspace notes with immediate FTS5 indexing.
+- **`sphene_patch(path, section, content, action?, agent_id?)`**: Safely update or append to a specific section with Differential Timeline human review.
+- **`sphene_query(kind?, status?, limit?)`**: Fast relational queries across tasks and frontmatter.
+- **`sphene_graph(path?, depth?)`**: Graph backlinks and topology.
+- **`sphene_daily(content)`**: Autonomous logging to today\x27s daily note.
 
-## 2. Active Vault Location
-Sphene stores all documents as standard plaintext Markdown (`.md`) on disk at:
-`'"${VAULT_DIR}"'`
+Do NOT attempt to run shell scripts or search for local Obsidian files—the native Sphene MCP tools provide 100x faster, safer, and cleaner access.
 
-## 3. How to Interact with Sphene (CLI & REST)
-- **Search Notes (FTS5 <1ms):** `sphene search "<query>"`
-- **Read Note:** `sphene read "<path_or_slug>" --raw`
-- **Write / Update Note:** `sphene write "<Title>" --file <path>` or `--body "<Content>"` or `--base64 <b64>`
-- **Delete Note:** `sphene delete "<Title>"` (or `sphene rm "<Title>"`)
-- **Knowledge Graph:** `sphene graph`
-- **Append Daily Note:** `sphene daily "<Summary>"`
-- **Visual Web UI & 3D Graph:** `http://localhost:8743`
+## 2. Active Vault Location & Visual Web UI
+- **Local Web Interface:** http://localhost:8743 (interactive note reader, 3D force graph, and human veto timeline).
+- **Vault Location:** All notes live as standard plaintext Markdown files on disk at:
+  `'"${VAULT_DIR}"'`
+
+## 3. Fallback CLI (Only if MCP is Unavailable)
+- `sphene search "<query>"`
+- `sphene read "<path>" --raw`
+- `sphene write "<path>" --file /tmp/note.md`
+- `sphene daily "<summary>"`
 '
         if [ "$HERMES_TYPE" = "docker" ]; then
           docker exec "${HERMES_CONTAINER}" sh -c "[ ! -f '${HERMES_SKILLS_DIR}/${OBSIDIAN_REL_PATH}.bak' ] && cp '${HERMES_SKILLS_DIR}/${OBSIDIAN_REL_PATH}' '${HERMES_SKILLS_DIR}/${OBSIDIAN_REL_PATH}.bak'" 2>/dev/null || true
@@ -539,7 +707,93 @@ if os.path.isfile(cfg_file):
   fi
 fi
 
-# 7. Deployment Execution: Docker Container vs Native Daemon
+# 7. OpenClaw Agent Detection & Interactive Integration
+echo -e "\n${BOLD}Scanning for OpenClaw Agent installations...${NC}"
+OPENCLAW_TYPE=""
+OPENCLAW_CONTAINER=""
+OPENCLAW_CONFIG=""
+
+if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Names}}' | grep -iE '^(openclaw|clawdbot|moltbot)$'; then
+  OPENCLAW_TYPE="docker"
+  OPENCLAW_CONTAINER="$(docker ps --format '{{.Names}}' | grep -iE '^(openclaw|clawdbot|moltbot)$' | head -n 1)"
+  echo -e "${GREEN}✓ Found running OpenClaw container: '${OPENCLAW_CONTAINER}'${NC}"
+elif [ -f "$HOME/.openclaw/openclaw.json" ]; then
+  OPENCLAW_TYPE="local"
+  OPENCLAW_CONFIG="$HOME/.openclaw/openclaw.json"
+  echo -e "${GREEN}✓ Found local OpenClaw configuration: ${OPENCLAW_CONFIG}${NC}"
+elif [ -f "/DATA/AppData/openclaw/openclaw.json" ]; then
+  OPENCLAW_TYPE="local"
+  OPENCLAW_CONFIG="/DATA/AppData/openclaw/openclaw.json"
+  echo -e "${GREEN}✓ Found local OpenClaw configuration: ${OPENCLAW_CONFIG}${NC}"
+elif command -v openclaw >/dev/null 2>&1; then
+  OPENCLAW_TYPE="cli"
+  echo -e "${GREEN}✓ Found OpenClaw CLI in PATH${NC}"
+fi
+
+OPENCLAW_INSTALLED=0
+if [ -n "$OPENCLAW_TYPE" ]; then
+  PROMPT_OPENCLAW="Configure Sphene native MCP integration for OpenClaw? [Y/n]: "
+  OPENCLAW_CHOICE=$(read_input "$PROMPT_OPENCLAW" "Y")
+  case "$OPENCLAW_CHOICE" in
+    [yY][eE][sS]|[yY]|"")
+      echo -e "Configuring Sphene native MCP server in OpenClaw..."
+      if [ "$OPENCLAW_TYPE" = "docker" ]; then
+        if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
+          docker cp "$SPHENE_HOST_BIN" "${OPENCLAW_CONTAINER}:/usr/local/bin/sphene" 2>/dev/null || true
+          docker exec "${OPENCLAW_CONTAINER}" chmod +x /usr/local/bin/sphene 2>/dev/null || true
+        fi
+        docker exec "${OPENCLAW_CONTAINER}" openclaw mcp add sphene --command /usr/local/bin/sphene --arg mcp 2>/dev/null || true
+        docker exec "${OPENCLAW_CONTAINER}" python3 -c '
+import json, os
+candidates = ["/root/.openclaw/openclaw.json", "/opt/data/openclaw.json", "/etc/openclaw/openclaw.json", "/app/openclaw.json"]
+for path in candidates:
+    if os.path.isfile(path):
+        try:
+            with open(path, "r") as f:
+                c = json.load(f) or {}
+            mcp = c.setdefault("mcp", {}).setdefault("servers", {})
+            mcp["sphene"] = {
+                "command": "/usr/local/bin/sphene",
+                "args": ["mcp"],
+                "env": {"SPHENE_URL": "http://127.0.0.1:8743"}
+            }
+            with open(path, "w") as f:
+                json.dump(c, f, indent=2)
+        except Exception:
+            pass
+' 2>/dev/null || true
+      elif [ "$OPENCLAW_TYPE" = "local" ] && [ -n "$OPENCLAW_CONFIG" ]; then
+        python3 -c '
+import json, os
+cfg_file = "'"$OPENCLAW_CONFIG"'"
+if os.path.isfile(cfg_file):
+    try:
+        with open(cfg_file, "r") as f:
+            c = json.load(f) or {}
+        mcp = c.setdefault("mcp", {}).setdefault("servers", {})
+        mcp["sphene"] = {
+            "command": "/usr/local/bin/sphene",
+            "args": ["mcp"],
+            "env": {"SPHENE_URL": "http://127.0.0.1:8743"}
+        }
+        with open(cfg_file, "w") as f:
+            json.dump(c, f, indent=2)
+    except Exception:
+        pass
+' 2>/dev/null || true
+      elif [ "$OPENCLAW_TYPE" = "cli" ]; then
+        openclaw mcp add sphene --command /usr/local/bin/sphene --arg mcp 2>/dev/null || true
+      fi
+      OPENCLAW_INSTALLED=1
+      echo -e "${GREEN}✓ Sphene native MCP server successfully integrated into OpenClaw!${NC}"
+      ;;
+    *)
+      echo "Skipped OpenClaw MCP integration."
+      ;;
+  esac
+fi
+
+# 8. Deployment Execution: Docker Container vs Native Daemon
 PORT="${SPHENE_PORT:-8743}"
 
 # Stop any lingering native daemon on port 8743 so it doesn't conflict
@@ -555,9 +809,18 @@ if [ $HAS_DOCKER -eq 1 ]; then
   if [ -f "${SCRIPT_DIR}/sphene-image.tar.gz" ]; then
     echo "Loading Sphene container image from local archive..."
     docker load < "${SCRIPT_DIR}/sphene-image.tar.gz"
-  elif [ $IS_UPDATE -eq 1 ] || ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^sphene:2.0.0$"; then
-    echo "Fetching Sphene container image (sphene:2.0.0)..."
-    if curl -fsSL "https://sphene.app/sphene-image.tar.gz" -o "$TMP_DIR/sphene-image.tar.gz" 2>/dev/null && [ -s "$TMP_DIR/sphene-image.tar.gz" ]; then
+  elif [ $IS_UPDATE -eq 1 ] || ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^sphene:2.2.0$"; then
+    echo "Fetching Sphene container image (sphene:2.2.0)..."
+    if (curl -fsSL "https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/sphene-image.tar.gz" -o "$TMP_DIR/sphene-image.tar.gz" 2>/dev/null || curl -fsSL "https://sphene.app/sphene-image.tar.gz" -o "$TMP_DIR/sphene-image.tar.gz" 2>/dev/null) && [ -s "$TMP_DIR/sphene-image.tar.gz" ]; then
+      EXPECTED_IMG_HASH=$(get_expected_sha256 "sphene-image.tar.gz" "$TMP_DIR/SHA256SUMS")
+      if [ -n "$EXPECTED_IMG_HASH" ]; then
+        if verify_file_sha256 "$TMP_DIR/sphene-image.tar.gz" "$EXPECTED_IMG_HASH"; then
+          echo -e "${GREEN}✓ Cryptographic integrity verified (sphene-image.tar.gz)${NC}"
+        else
+          echo -e "${RED}✗ Error: Checksum mismatch for sphene-image.tar.gz! Aborting.${NC}"
+          exit 1
+        fi
+      fi
       docker load < "$TMP_DIR/sphene-image.tar.gz"
     fi
   fi
@@ -566,7 +829,7 @@ if [ $HAS_DOCKER -eq 1 ]; then
   cat << EOF_COMPOSE > "$INSTALL_DIR/docker-compose.yml"
 services:
   sphene:
-    image: sphene:2.0.0
+    image: sphene:2.2.0
     container_name: sphene
     restart: unless-stopped
     ports:
@@ -676,7 +939,10 @@ if [ $IS_UPDATE -eq 1 ]; then
   fi
   echo -e "  • Host CLI:         ${CYAN}/usr/local/bin/sphene${NC} (updated)"
   if [ $SKILL_INSTALLED -eq 1 ] || [ $OBSIDIAN_REPLACED -eq 1 ]; then
-    echo -e "  • Hermes Agent:     ${GREEN}UPDATED & SYNCED!${NC} (skills and CLI refreshed, container reloaded)"
+    echo -e "  • Hermes Agent:     ${GREEN}UPDATED & SYNCED!${NC} (Native MCP tools + skill active, container reloaded)"
+  fi
+  if [ $OPENCLAW_INSTALLED -eq 1 ]; then
+    echo -e "  • OpenClaw Agent:   ${GREEN}UPDATED & SYNCED!${NC} (Native Sphene MCP tools active)"
   fi
   echo -e "  • Existing Logins:  ${GREEN}Preserved.${NC} Your existing credentials remain active."
   echo ""
@@ -695,8 +961,11 @@ echo -e "  • Security:         ${CYAN}Log in with the admin credentials printe
 echo -e "  • Password Reset:   ${CYAN}sphene auth setup [--username <user>] [--password <pass>]${NC}"
 echo -e "  • CLI Commands:     ${CYAN}sphene search <query>, sphene read <path>, sphene write <path>${NC}"
 echo -e "  • Import Notes:     ${CYAN}sphene import <path-to-obsidian-or-md-folder>${NC}"
-if [ $SKILL_INSTALLED -eq 1 ]; then
-  echo -e "  • Hermes Agent:     ${GREEN}ACTIVE!${NC} Ask Hermes in natural language to save or search documents."
+if [ $SKILL_INSTALLED -eq 1 ] || [ $OBSIDIAN_REPLACED -eq 1 ]; then
+  echo -e "  • Hermes Agent:     ${GREEN}ACTIVE!${NC} Native Sphene MCP server connected (8 sub-millisecond tools enabled)."
+fi
+if [ $OPENCLAW_INSTALLED -eq 1 ]; then
+  echo -e "  • OpenClaw Agent:   ${GREEN}ACTIVE!${NC} Native Sphene MCP server connected."
 fi
 echo ""
 

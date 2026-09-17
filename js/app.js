@@ -34,20 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderVaultButton(url) {
     navSlots.forEach(slot => {
       slot.innerHTML = `
-        <div style="display:inline-flex; align-items:center; gap:6px;">
-          <a href="${url}" target="_blank" rel="noopener noreferrer" class="btn btn-vault-live btn-sm" title="Launch connected vault: ${url}">
-            🟢 Open Vault
-          </a>
-          <button class="btn btn-secondary btn-sm btn-clear-vault" title="Settings / Change Vault" style="padding: 6px 9px; font-size: 11px;">⚙️</button>
-        </div>
+        <a href="${url}" target="_blank" rel="noopener noreferrer" class="vault-status-pill" title="Connected to local vault: ${url}">
+          <span class="pulse-dot"></span> Vault Live
+        </a>
       `;
-      const clearBtn = slot.querySelector('.btn-clear-vault');
-      if (clearBtn) {
-        clearBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          openConnectModal();
-        });
-      }
     });
   }
 
@@ -153,3 +143,106 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// -------------------------------------------------------------
+// Interactive Feature Tabs
+// -------------------------------------------------------------
+document.querySelectorAll('.feature-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.getAttribute('data-tab');
+    document.querySelectorAll('.feature-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.feature-tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById(target);
+    if (panel) panel.classList.add('active');
+  });
+});
+
+// -------------------------------------------------------------
+// Plugin Catalog Filtering
+// -------------------------------------------------------------
+document.querySelectorAll('.plugin-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.getAttribute('data-filter');
+    document.querySelectorAll('.plugin-filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.plugin-card').forEach(card => {
+      const cat = card.getAttribute('data-category');
+      if (filter === 'all' || cat === filter) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+// -------------------------------------------------------------
+// Screenshot Gallery Filtering & Lightbox
+// -------------------------------------------------------------
+document.querySelectorAll('.gallery-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.getAttribute('data-filter');
+    document.querySelectorAll('.gallery-tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.gallery-item').forEach(item => {
+      const cat = item.getAttribute('data-category') || '';
+      if (filter === 'all' || cat.includes(filter)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
+});
+
+const lightbox = document.getElementById('sphene-lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxTitle = document.getElementById('lightbox-title');
+const lightboxDesc = document.getElementById('lightbox-desc');
+const lightboxClose = document.getElementById('lightbox-close');
+
+function openLightbox(src, title, desc) {
+  if (!lightbox) return;
+  lightboxImg.src = src;
+  lightboxTitle.innerText = title;
+  lightboxDesc.innerText = desc || '';
+  lightbox.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  if (!lightbox) return;
+  lightbox.classList.remove('active');
+  lightboxImg.src = '';
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('[data-lightbox-src]').forEach(el => {
+  el.addEventListener('click', () => {
+    const src = el.getAttribute('data-lightbox-src');
+    const title = el.getAttribute('data-lightbox-title') || 'Sphene Application Preview';
+    const desc = el.getAttribute('data-lightbox-desc') || '';
+    openLightbox(src, title, desc);
+  });
+});
+
+if (lightboxClose) {
+  lightboxClose.addEventListener('click', closeLightbox);
+}
+
+if (lightbox) {
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox || e.target.classList.contains('sphene-lightbox-img-box')) {
+      closeLightbox();
+    }
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+      closeLightbox();
+    }
+  });
+}
+

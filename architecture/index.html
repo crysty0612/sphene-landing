@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architecture &amp; Systems Engineering — Sphene Sovereign Knowledge Substrate</title>
+  <meta name="description" content="Technical architecture of Sphene v2.2: Native Stdio MCP, AST-level section patching, Differential Timeline with Human Veto, and hardened SQLite WAL concurrency.">
+  <meta name="keywords" content="Sphene architecture, Model Context Protocol, MCP server Go, autonomous agent memory, SQLite WAL concurrency, AST markdown patching">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://sphene.app/architecture">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sphene">
+  <meta property="og:title" content="Architecture &amp; Systems Engineering — Sphene v2.2">
+  <meta property="og:description" content="First-principles systems engineering for the Autonomous Agent Era: Sub-millisecond FTS5 search, native stdio MCP, AST-level patching, and non-blocking SQLite WAL.">
+  <meta property="og:url" content="https://sphene.app/architecture">
+  <meta property="og:image" content="https://sphene.app/assets/og-preview.png">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sphene_app">
+  <meta name="twitter:title" content="Architecture &amp; Systems Engineering — Sphene v2.2">
+  <meta name="twitter:description" content="First-principles systems engineering for the Autonomous Agent Era: Sub-millisecond FTS5 search, native stdio MCP, AST-level patching, and non-blocking SQLite WAL.">
+  <meta name="twitter:image" content="https://sphene.app/assets/og-preview.png">
+
+  <meta name="author" content="Sphene Systems Architecture Team">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#07090e">
+
+  <!-- Favicons & Icons -->
+  <link rel="icon" type="image/svg+xml" href="/assets/sphene-icon.svg">
+  <link rel="alternate icon" type="image/png" sizes="64x64" href="/assets/icons/favicon.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Preconnect and Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <!-- Sleek Single-Row Navigation -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Emblem">
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture" class="active">Architecture</a></li>
+        <li><a href="/benchmarks">Benchmarks</a></li>
+        <li><a href="/plugins">Plugins</a></li>
+        <li><a href="/security">Security &amp; Partitions</a></li>
+        <li><a href="/pricing">Roadmap</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div class="nav-vault-slot"></div>
+        <a href="https://github.com/sphene-org/sphene" target="_blank" class="nav-icon-link" title="GitHub Repository" aria-label="GitHub">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </a>
+        <a href="/download" class="btn btn-primary btn-sm">Get Sphene Free</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="section" style="padding-top: 60px;">
+      <div class="container">
+        <div class="section-header">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            SYSTEMS ARCHITECTURE &amp; FIRST PRINCIPLES
+          </div>
+          <h1>Built from Ground Up for the Autonomous Agent Era</h1>
+          <p>
+            Why traditional personal knowledge systems hit a hard ceiling when paired with AI agents — 
+            and how Sphene replaces heavy client runtimes and fragile shell piping with sub-millisecond native systems engineering.
+          </p>
+
+          <!-- Quotable Anchor Definition -->
+          <blockquote class="quotable-anchor" style="margin: 20px 0 0; padding: 14px 20px; background: rgba(56, 189, 248, 0.05); border-left: 3px solid var(--accent-cyan); border-radius: 0 8px 8px 0; font-size: 15px; line-height: 1.6; color: var(--text-secondary); text-align: left;">
+            <strong style="color: var(--text-primary);">Definition:</strong> Sphene is the reference implementation of an <strong>Agent-Native Knowledge Kernel</strong>—a local headless markdown knowledge base engineered with native Model Context Protocol (MCP), local-first offline PWA, and an AST-level Differential Timeline for zero-token-waste agent interactions under 50MB RAM (&lt;25MB for local-only setups).
+          </blockquote>
+        </div>
+
+        <!-- Paradigm Contrast Banner -->
+        <div class="feature-card" style="padding: 36px 32px; margin-bottom: 56px; border-color: rgba(56, 189, 248, 0.4); background: linear-gradient(180deg, rgba(56, 189, 248, 0.05) 0%, rgba(15, 23, 42, 0.95) 100%);">
+          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
+            <span style="font-size: 32px;">⚡</span>
+            <div>
+              <span class="badge" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: var(--accent-cyan); margin-bottom: 6px;">The Architectural Shift</span>
+              <h2 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0;">Passive Document Viewers vs. Active Agent Substrates</h2>
+            </div>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 15.5px; line-height: 1.7; max-width: 900px;">
+            For two decades, note-taking software was designed exclusively around human typing speeds (1–2 updates per minute) in single-threaded desktop applications. 
+            In the autonomous agent era, an intelligent background process may execute dozens of concurrent reads, associative searches, and surgical updates per second. 
+            When agents interface with traditional passive markdown folders via brittle shell scripts, three points of failure emerge: uncontrolled file overwrites that clobber human notes, 
+            bloated client runtimes consuming hundreds of megabytes just to read text, and persistent database locking under concurrent load.
+          </p>
+          <p style="color: var(--text-secondary); font-size: 15.5px; line-height: 1.7; max-width: 900px; margin-top: 12px;">
+            Sphene v2.2 resolves these bottlenecks through first-principles systems engineering: a compiled native Go kernel running under 25MB of RAM locally (&lt;50MB with embedded WireGuard mesh relay), 
+            a direct Model Context Protocol (MCP) server over stdio, AST-level section manipulation, deterministic staged diff folding with Human Veto, 
+            and a non-blocking SQLite WAL storage engine.
+          </p>
+        </div>
+
+        <!-- Pillar 1: Native Stdio MCP over Container Proxies -->
+        <div style="margin-bottom: 64px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div class="feature-icon" style="margin-bottom: 0;">🔌</div>
+            <h2 style="font-size: 24px; font-weight: 800; margin: 0;">1. Native Stdio MCP: Sub-Millisecond Agent Interface</h2>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 15.5px; line-height: 1.7; max-width: 860px; margin-bottom: 24px;">
+            Connecting autonomous agents to knowledge bases traditionally relies on shell wrappers, temporary scratch files, or custom REST polling scripts. 
+            These intermediate layers suffer from process startup latency (50–200ms), quote escaping failures, and security vulnerabilities.
+          </p>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="color: var(--accent-cyan);">Native Stdio JSON-RPC Stream</h3>
+              <p>
+                Sphene embeds a high-performance Model Context Protocol (MCP) engine directly into the compiled binary (<code>sphene mcp</code>). 
+                Autonomous runtimes (Claude Desktop, Hermes Agent, OpenClaw) communicate over standard I/O via typed JSON-RPC messages. 
+                Zero network roundtrips, zero temporary scratch files, and complete isolation from host shell execution.
+              </p>
+            </div>
+            <div class="feature-card">
+              <h3 style="color: var(--accent-emerald);">Direct &amp; Remote Dual-Stack</h3>
+              <p>
+                When executed on the local host, <code>sphene mcp</code> binds directly to the local vault storage engine. 
+                When executed inside an isolated container (such as Hermes running under Docker), the same binary acts as a transparent client-side MCP proxy 
+                connecting via persistent HTTP/2 to the host kernel daemon. The agent interacts with identical tool signatures regardless of network topology.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 2: AST-Level Section Manipulation -->
+        <div style="margin-bottom: 64px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div class="feature-icon" style="margin-bottom: 0;">🌲</div>
+            <h2 style="font-size: 24px; font-weight: 800; margin: 0;">2. AST-Level Section Manipulation &amp; Token Preservation</h2>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 15.5px; line-height: 1.7; max-width: 860px; margin-bottom: 24px;">
+            When an agent needs to retrieve a checklist or log a meeting update in a 3,000-word design document, reading and rewriting the entire file burns thousands of input/output tokens 
+            and increases the probability of hallucinated text loss.
+          </p>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="color: var(--accent-cyan);">Surgical Heading Resolution (<code>sphene_read</code>)</h3>
+              <p>
+                Using AST-aware markdown parsing, Sphene traverses heading hierarchies to isolate exact sections (e.g. <code>## Architecture / ### Storage</code>) 
+                without streaming unnecessary document paragraphs into the agent's context window. This reduces context consumption by up to 95%.
+              </p>
+            </div>
+            <div class="feature-card">
+              <h3 style="color: var(--accent-emerald);">Safe Subtree Patching (<code>sphene_patch</code>)</h3>
+              <p>
+                Agents can append items, prepend updates, or replace specific subsections atomically. The kernel computes heading subtree boundaries, replaces only the target slice, 
+                and leaves all surrounding headings, frontmatter, and formatting completely untouched.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 3: Differential Timeline & Folded Diff Awareness -->
+        <div style="margin-bottom: 64px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div class="feature-icon" style="margin-bottom: 0;">🛡️</div>
+            <h2 style="font-size: 24px; font-weight: 800; margin: 0;">3. Differential Timeline: Staged Diff Awareness &amp; Human Veto</h2>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 15.5px; line-height: 1.7; max-width: 860px; margin-bottom: 24px;">
+            Autonomous agents must never overwrite human knowledge without oversight. In Sphene, agent modifications are staged in the Differential Timeline 
+            rather than committed immediately to disk, allowing the user to visually inspect and accept or reject each change.
+          </p>
+          <div class="grid-3">
+            <div class="feature-card">
+              <div class="feature-icon">📑</div>
+              <h3>Staged Diff Awareness</h3>
+              <p>
+                When an agent reads a note with uncommitted modifications, <code>sphene_read</code> returns the committed disk baseline with a clear notification header: 
+                <code>[NOTICE: 1 pending staged modification awaiting user review]</code>.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🔮</div>
+              <h3>Projected State (<code>include_staged</code>)</h3>
+              <p>
+                If an agent needs to plan subsequent reasoning based on its own pending edits, passing <code>include_staged: true</code> returns the projected post-patch content 
+                without altering the disk baseline or bypassing human review.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🧩</div>
+              <h3>Deterministic Patch Folding</h3>
+              <p>
+                Consecutive patches to the same document do not clobber earlier proposals or spawn competing diff files. 
+                The kernel seamlessly folds subsequent edits into the existing pending diff, preserving the original disk state as the baseline.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 4: Concurrency Hardening & SQLite WAL -->
+        <div style="margin-bottom: 64px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <div class="feature-icon" style="margin-bottom: 0;">⚡</div>
+            <h2 style="font-size: 24px; font-weight: 800; margin: 0;">4. Concurrency Hardening: Non-Blocking SQLite WAL Engine</h2>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 15.5px; line-height: 1.7; max-width: 860px; margin-bottom: 24px;">
+            When multiple background workers, agent tool calls, and human UI edits fire concurrently, standard embedded SQLite setups fail with <code>SQLITE_BUSY: database is locked</code>. 
+            Sphene v2.2 enforces strict kernel concurrency pragmas and connection pool limits.
+          </p>
+          <div class="grid-2">
+            <div class="feature-card">
+              <h3 style="color: var(--accent-cyan);">WAL Mode &amp; Busy Queueing</h3>
+              <p>
+                Enforces <code>PRAGMA journal_mode=WAL;</code>, allowing concurrent readers to execute without blocking writers, and writers to commit without locking out readers. 
+                Under extreme burst write conditions, <code>PRAGMA busy_timeout=5000;</code> transparently queues transactions up to 5 seconds before failing, eliminating spurious lock exceptions.
+              </p>
+            </div>
+            <div class="feature-card">
+              <h3 style="color: var(--accent-emerald);">Tuned Connection Pool</h3>
+              <p>
+                The Go database connection pool is tuned for embedded workloads (<code>MaxOpenConns: 25</code>, <code>MaxIdleConns: 10</code>, <code>ConnMaxLifetime: 10m</code>). 
+                Parallel FTS5 search queries, relational link traversals, and staged diff writes execute smoothly without connection leaks.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hard Metrics Table -->
+        <div style="margin-bottom: 64px;">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <div class="badge">EMPIRICAL BENCHMARKS</div>
+            <h2 style="font-size: 28px; font-weight: 800; margin-top: 8px;">Architectural Paradigm Comparison</h2>
+            <p style="color: var(--text-secondary); max-width: 640px; margin: 0 auto;">Measured on identical standard x86_64 Linux hardware across 10,000 markdown notes.</p>
+          </div>
+
+          <div class="table-card">
+            <table class="comp-table">
+              <thead>
+                <tr>
+                  <th style="width: 32%;">Architectural Dimension</th>
+                  <th style="width: 34%;">Heavy Desktop / Shell-Wrapper Paradigm</th>
+                  <th style="width: 34%;">Sphene v2.2 Native Systems Engine</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Daemon Memory Footprint (RAM)</strong></td>
+                  <td>400 MB – 1.2 GB <span style="color: var(--text-muted); font-size: 13px;">(Heavy web-wrapper client runtimes)</span></td>
+                  <td><span class="check">&lt; 25 MB</span> <span style="color: var(--text-muted); font-size: 13px;">(Compiled native Go daemon)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Full-Text Search Latency (10k notes)</strong></td>
+                  <td>80 ms – 450 ms <span style="color: var(--text-muted); font-size: 13px;">(Brute-force disk traversal / regex)</span></td>
+                  <td><span class="check">&lt; 0.2 ms</span> <span style="color: var(--text-muted); font-size: 13px;">(SQLite FTS5 relational index)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Agent Tool Invocation Roundtrip</strong></td>
+                  <td>120 ms – 380 ms <span style="color: var(--text-muted); font-size: 13px;">(Subprocess spawn + curl + JSON parsing)</span></td>
+                  <td><span class="check">&lt; 1.5 ms</span> <span style="color: var(--text-muted); font-size: 13px;">(Direct Stdio Model Context Protocol)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Concurrent Read/Write Safety</strong></td>
+                  <td>File lock collisions &amp; race conditions on disk</td>
+                  <td><span class="check">Zero-lock WAL mode</span> <span style="color: var(--text-muted); font-size: 13px;">(5s busy queue + 25-conn pool)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Agent Context Token Consumption</strong></td>
+                  <td>100% full file content transmitted per edit</td>
+                  <td><span class="check">Up to 95% reduction</span> <span style="color: var(--text-muted); font-size: 13px;">(AST-level section isolation)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Modification Integrity &amp; Safety</strong></td>
+                  <td>Uncontrolled disk overwrites / data loss risk</td>
+                  <td><span class="check">Differential Timeline</span> <span style="color: var(--text-muted); font-size: 13px;">(Folded diffs + Human Veto)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>System Security Model</strong></td>
+                  <td>Full host filesystem access / arbitrary shell access</td>
+                  <td><span class="check">Aegis 4-Zone Partitions</span> <span style="color: var(--text-muted); font-size: 13px;">(Zero-trust private note boundary)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bottom CTA -->
+        <div style="text-align: center; margin-top: 60px; padding: 50px 30px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle); border-radius: 16px;">
+          <h3 style="font-size: 26px; font-weight: 800; margin-bottom: 12px;">Deploy Sphene v2.2 on Your Local Hardware</h3>
+          <p style="color: var(--text-secondary); max-width: 540px; margin: 0 auto 24px;">Run the sub-millisecond knowledge kernel as a local background service with native MCP enabled.</p>
+          <a href="/download" class="btn btn-primary btn-lg">Get Sphene Free (v2.2)</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Logo">
+        <span class="footer-copy">© 2026 Sphene. Sovereign Data. All rights reserved.</span>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture">Architecture</a></li>
+        <li><a href="/benchmarks">Benchmarks</a></li>
+        <li><a href="/plugins">Plugins</a></li>
+        <li><a href="/security">Security &amp; Partitions</a></li>
+        <li><a href="/pricing">Roadmap</a></li>
+        <li><a href="/download">Download</a></li>
+        <li><a href="https://github.com/sphene-org/sphene" target="_blank">GitHub</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

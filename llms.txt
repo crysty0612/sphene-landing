@@ -1,18 +1,21 @@
-# Sphene — The Sovereign Second Brain for Humans & Autonomous AI
+# Sphene — Agent-Native Knowledge Kernel
+> Sphene is the open-source, sub-millisecond knowledge kernel designed for local autonomous agents (Hermes Agent, OpenClaw) via native Model Context Protocol (MCP) under 50MB RAM (&lt;25MB local-only).
 
-> Sphene is a local-first, ultra-lightweight second brain (<25MB RAM) engineered for sub-millisecond retrieval (<2ms), zero-trust security, and native human-agent harmony. It combines plaintext Markdown files on your disk with an embedded SQLite/FTS5 index, native Model Context Protocol (MCP) server, interactive web dashboard, and differential human-in-the-loop review for agent edits.
+## Quotable Definition
+> Sphene is the reference implementation of an Agent-Native Knowledge Kernel—a local headless markdown knowledge base engineered with native Model Context Protocol (MCP), local-first offline PWA, and an AST-level Differential Timeline for zero-token-waste agent interactions under 50MB RAM (&lt;25MB local-only).
 
-Sphene eliminates the bloat of Electron desktop wrappers and the privacy risks of unsandboxed community plugins. All notes remain on disk in clean, standard plaintext Markdown (.md) with zero vendor lock-in.
+## Core Architecture
+- [Architecture Overview](https://sphene.app/architecture): How Sphene uses SQLite FTS5 in WAL mode to provide <0.20ms search under 50MB RAM (<25MB local-only).
+- [Empirical Benchmarks](https://sphene.app/benchmarks): Hard performance data comparing native systems engineering against heavy client runtimes.
+- [Model Context Protocol (MCP)](https://sphene.app/guides/hermes-agent-memory-hub): 8 typed tools (sphene_search, sphene_patch, sphene_find_in_doc) replacing fragile shell pipes.
+- [The Differential Timeline](https://sphene.app/guides/agent-safe-note-editing): Cryptographic AST staging allowing Human Veto over agent edits.
+- [Retrieval Architecture (FTS5 vs Vector RAG)](https://sphene.app/guides/local-rag-without-heavy-runtimes): Why SQLite FTS5 outperforms heavy vector runtimes for personal vaults.
 
-## The Triangle of Truth
-- **LIGHT**: <25MB RAM at rest, zero Electron bloat, compiled native daemon deployable from Raspberry Pi to workstation.
-- **FAST**: Native sub-millisecond retrieval (<2ms) via embedded SQLite/FTS5 relational index without burning LLM context tokens on raw file parsing.
-- **SECURE**: Zero-trust plugin security model with Ed25519 cryptographic signatures and authenticated AES-256-GCM encryption at rest.
+## Integrations & Playbooks
+- [Hermes Agent Integration](https://sphene.app/integrations/hermes-agent): Connecting Hermes via stdio MCP proxy without Docker host mounts.
+- [OpenClaw Setup](https://sphene.app/integrations/openclaw): Using Sphene as an agentic memory store.
+- [Security & Aegis Partitions](https://sphene.app/security): Zero-knowledge encryption and the 4 Aegis vault zones.
+- [Download & Automated Deploy](https://sphene.app/download): One-line automated installer and system service configuration.
 
-## Documentation & Primary Resources
-- [Home / Architecture Overview](https://sphene.app/): The Triangle of Truth, native MCP gateway, and direct comparison with Obsidian and Notion.
-- [Deploy & Download](https://sphene.app/download): One-line automated installer, headless daemon setup, and MCP configuration.
-- [Vision & Roadmap](https://sphene.app/pricing): Self-hosted open engine guarantees, sandboxed plugin ecosystem, and upcoming cloud relay.
-- [One-Line Installer Script](https://sphene.app/install.sh): Hardened bash deployment script with automated port conflict resolution and MCP auto-configuration.
-- [Full Technical Documentation](https://sphene.app/llms-full.txt): Complete technical architecture, MCP tool schemas, REST API reference, cryptographic specifications, and CLI manual.
-
+## Full Technical Documentation
+- [Full Documentation Payload](https://sphene.app/llms-full.txt): Complete machine-readable markdown reference with full MCP tool schemas, REST API specs, and CLI manual.
