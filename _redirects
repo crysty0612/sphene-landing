@@ -10,6 +10,8 @@
 /docs/differential-timeline /guides/agent-safe-note-editing/ 301
 /docs/integrations/hermes   /guides/hermes-agent-memory-hub/ 301
 /docs/integrations/openclaw /guides/agent-safe-note-editing/ 301
+/privacy      /privacy/       301
+/terms        /terms/         301
 
 # Release Binaries & Assets Redirect to GitHub Releases v2.2.0
 /bin/*                  https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/:splat 302
