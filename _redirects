@@ -11,10 +11,6 @@
 /docs/integrations/hermes   /guides/hermes-agent-memory-hub/ 301
 /docs/integrations/openclaw /guides/agent-safe-note-editing/ 301
 
-# Security: Block dotfiles / git metadata
-/.git/*         /404.html       404
-/.git           /404.html       404
-
 # Release Binaries & Assets Redirect to GitHub Releases v2.2.0
 /bin/*                  https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/:splat 302
 /sphene-image.tar.gz    https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/sphene-image.tar.gz 302
