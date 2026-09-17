@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sphene-landing",
+  "compatibility_date": "2024-09-23",
+  "assets": {
+    "directory": ".",
+    "not_found_handling": "404-page"
+  }
+}
