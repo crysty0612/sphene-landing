@@ -1,8 +1,5 @@
-bin/
-*.tar.gz
 .DS_Store
 __pycache__/
 *.pyc
-*.exe
 download/sphene*
 

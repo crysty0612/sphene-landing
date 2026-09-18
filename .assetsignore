@@ -1,7 +1,4 @@
 .git/
-bin/
-*.tar.gz
-*.exe
 download/sphene*
 download/*.tar.gz
 tests/

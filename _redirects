@@ -13,8 +13,5 @@
 /privacy      /privacy/       301
 /terms        /terms/         301
 
-# Release Binaries & Assets Redirect to GitHub Releases v2.2.0
-/bin/*                  https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/:splat 302
-/sphene-image.tar.gz    https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/sphene-image.tar.gz 302
 
 
