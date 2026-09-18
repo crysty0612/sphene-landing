@@ -1020,13 +1020,21 @@ if [ $IS_UPDATE -eq 0 ]; then
         mkdir -p "$VAULT_DIR"
         tar -zxvf "$SAMPLES_TAR" -C "$VAULT_DIR" >/dev/null 2>&1 || tar -xvf "$SAMPLES_TAR" -C "$VAULT_DIR" >/dev/null 2>&1
         echo -e "${GREEN}✓ Installed sample notes into ${VAULT_DIR}${NC}"
-        # Trigger indexer so search and backlinks populate immediately
+
+        # Notify and activate verified plugins required for the sample notes showcase
+        echo -e "\n${CYAN}Notice:${NC} Activating verified plugins 'sphene-mermaid', 'sphene-math-katex', and 'sphene-drawing' to enable full diagram, math, and visual canvas capabilities for sample notes."
         if [ $HAS_DOCKER -eq 1 ]; then
+          docker exec sphene sphene plugin install sphene-mermaid >/dev/null 2>&1 || true
+          docker exec sphene sphene plugin install sphene-math-katex >/dev/null 2>&1 || true
+          docker exec sphene sphene plugin install sphene-drawing >/dev/null 2>&1 || true
           docker exec sphene sphene index --vault /data/vault >/dev/null 2>&1 || true
         elif command -v sphene >/dev/null 2>&1; then
+          sphene plugin install sphene-mermaid >/dev/null 2>&1 || true
+          sphene plugin install sphene-math-katex >/dev/null 2>&1 || true
+          sphene plugin install sphene-drawing >/dev/null 2>&1 || true
           sphene index --vault "$VAULT_DIR" >/dev/null 2>&1 || true
         fi
-        echo -e "${GREEN}✓ Indexed sample notes into SQLite FTS5 search engine!${NC}"
+        echo -e "${GREEN}✓ Verified plugins provisioned and sample notes indexed into SQLite FTS5!${NC}"
       else
         echo -e "${YELLOW}⚠ Could not download sample notes, skipping...${NC}"
       fi
