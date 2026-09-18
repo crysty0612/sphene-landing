@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sphene — Your Second Brain | Locally Owned. Blazing Fast. Built for Humans &amp; AI.</title>
-  <meta name="description" content="Sphene is the sovereign, local-first second brain designed for deep human reflection and autonomous AI agent memory. Plaintext Markdown forever. Sub-millisecond search. Under 50MB RAM (&lt;25MB local-only). Zero cloud lock-in.">
-  <meta name="keywords" content="Sphene, second brain, sovereign knowledge substrate, local-first, zero-knowledge encryption, AI memory, LLM agent, markdown vault, Obsidian alternative, self-hosted PKM, knowledge graph, Hermes agent">
+  <title>Sphene — Lightweight Local-First PKM &amp; Agent-Native Markdown Knowledge Base</title>
+  <meta name="description" content="Sphene is an ultra-lightweight, local-first Personal Knowledge Management (PKM) app and markdown knowledge base. Engineered with sub-millisecond search, &lt;50MB RAM, and safe Model Context Protocol (MCP) agent integrations.">
+  <meta name="keywords" content="Sphene, PKM, personal knowledge management, note-taking app, local-first, markdown knowledge base, second brain, zero-knowledge encryption, AI memory, LLM agent, markdown vault, Obsidian alternative, Logseq alternative, self-hosted PKM, knowledge graph, Model Context Protocol, Hermes agent">
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://sphene.app/">
@@ -13,23 +13,23 @@
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sphene">
-  <meta property="og:title" content="Sphene — Your Second Brain | Locally Owned. Blazing Fast. Built for Humans &amp; AI.">
-  <meta property="og:description" content="A local-first, encrypted knowledge sanctuary designed for deep human thinking and autonomous AI memory. Plaintext Markdown on your disk, instant search, under 50MB RAM (&lt;25MB local-only), and zero Electron bloat.">
+  <meta property="og:title" content="Sphene — Lightweight Local-First PKM &amp; Agent-Native Markdown Knowledge Base">
+  <meta property="og:description" content="An ultra-lightweight, local-first Personal Knowledge Management (PKM) application and markdown knowledge base. Instant search, &lt;50MB RAM, plaintext markdown on disk, zero Electron bloat, and safe MCP agent integrations.">
   <meta property="og:url" content="https://sphene.app/">
   <meta property="og:image" content="https://sphene.app/assets/og-preview.png">
   <meta property="og:image:secure_url" content="https://sphene.app/assets/og-preview.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Sphene — Your Second Brain for Humans &amp; AI">
+  <meta property="og:image:alt" content="Sphene — Lightweight Local-First PKM &amp; Agent-Native Markdown Knowledge Base">
   <meta property="og:locale" content="en_US">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Sphene — Your Second Brain | Locally Owned. Blazing Fast. Built for Humans &amp; AI.">
-  <meta name="twitter:description" content="A local-first, encrypted knowledge sanctuary designed for deep human thinking and autonomous AI memory. Plaintext Markdown on your disk, instant search, under 50MB RAM (&lt;25MB local-only), and zero Electron bloat.">
+  <meta name="twitter:title" content="Sphene — Lightweight Local-First PKM &amp; Agent-Native Markdown Knowledge Base">
+  <meta name="twitter:description" content="An ultra-lightweight, local-first Personal Knowledge Management (PKM) application and markdown knowledge base. Instant search, &lt;50MB RAM, plaintext markdown on disk, and safe MCP agent integrations.">
   <meta name="twitter:image" content="https://sphene.app/assets/og-preview.png">
-  <meta name="twitter:image:alt" content="Sphene — Sovereign Second Brain">
+  <meta name="twitter:image:alt" content="Sphene — Sovereign Local-First PKM">
 
   <!-- Favicon & Icons -->
   <link rel="icon" type="image/svg+xml" href="/assets/sphene-icon.svg">
@@ -57,14 +57,18 @@
         "@id": "https://sphene.app/#website",
         "url": "https://sphene.app/",
         "name": "Sphene",
-        "description": "Sovereign, local-first second brain for deep human reflection and autonomous AI agent memory.",
+        "description": "Sovereign, ultra-lightweight, local-first Personal Knowledge Management (PKM) app and agent-native markdown knowledge base.",
         "inLanguage": "en-US"
       },
       {
         "@type": "SoftwareApplication",
         "@id": "https://sphene.app/#software",
         "name": "Sphene",
-        "applicationCategory": "DeveloperApplication",
+        "applicationCategory": [
+          "ProductivityApplication",
+          "NoteTakingApp",
+          "DeveloperApplication"
+        ],
         "operatingSystem": "Linux, macOS, Windows (WSL2 / Docker), TrueNAS, Raspberry Pi",
         "offers": {
           "@type": "Offer",
@@ -72,11 +76,13 @@
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock"
         },
-        "description": "Agent-native knowledge kernel providing sub-millisecond full-text search (<0.20ms), AST section patching, and Model Context Protocol (MCP) support for local AI agents under 50MB RAM (<25MB local-only).",
+        "description": "Ultra-lightweight local-first Personal Knowledge Management (PKM) app and agent-native knowledge base. Engineered with sub-millisecond search (<0.20ms), plaintext markdown storage, AST section patching, and Model Context Protocol (MCP) support under 50MB RAM (<25MB local-only).",
         "softwareVersion": "2.2.0",
         "softwareRequirements": "Docker, Linux, macOS, or Windows",
         "featureList": [
-          "Model Context Protocol (MCP) Stdio Server",
+          "Local-First Plaintext Markdown Note-Taking (.md)",
+          "Personal Knowledge Management (PKM) with [[Wikilinks]] & Bi-directional Graph",
+          "Model Context Protocol (MCP) Stdio Server for AI Agents",
           "SQLite FTS5 Full-Text Search in WAL mode (<0.20ms)",
           "Differential Timeline for Human Review of AI edits (Human Veto)",
           "AST-Level Section Patching and Heading Isolation",
@@ -84,11 +90,10 @@
           "Local-First Standalone PWA with Offline IndexedDB",
           "Sovereign Cloud Sync (Google Drive & Dropbox)",
           "Zero-Port Tailscale WireGuard Mesh Relay",
-          "Local-first Plaintext Markdown storage (.md)",
           "Aegis 4-Zone Vault Partitions (Workspace, Reference, Private, Drawing)",
           "Zero-knowledge container encryption",
           "Interactive Force-Directed 3D Knowledge Graph",
-          "1-Click Ingestion from standard desktop markdown vaults"
+          "1-Click Ingestion from Obsidian, Logseq, and standard desktop markdown vaults"
         ],
         "screenshot": "https://sphene.app/assets/og-preview.png",
         "softwareHelp": "https://sphene.app/llms.txt",

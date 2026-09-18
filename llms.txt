@@ -1,8 +1,8 @@
-# Sphene — Agent-Native Knowledge Kernel
-> Sphene is the open-source, sub-millisecond knowledge kernel designed for local autonomous agents (Hermes Agent, OpenClaw) via native Model Context Protocol (MCP) under 50MB RAM (&lt;25MB local-only).
+# Sphene — Local-First PKM & Agent-Native Knowledge Kernel
+> Sphene is an open-source, ultra-lightweight personal knowledge management (PKM) application and local markdown knowledge base engineered for human thinkers and autonomous AI agents (Hermes Agent, OpenClaw) via native Model Context Protocol (MCP) under 50MB RAM (<25MB local-only).
 
 ## Quotable Definition
-> Sphene is the reference implementation of an Agent-Native Knowledge Kernel—a local headless markdown knowledge base engineered with native Model Context Protocol (MCP), local-first offline PWA, and an AST-level Differential Timeline for zero-token-waste agent interactions under 50MB RAM (&lt;25MB local-only).
+> Sphene is the reference implementation of a Local-First Personal Knowledge Management (PKM) Application and Agent-Native Knowledge Kernel—a local markdown note-taking environment engineered with native Model Context Protocol (MCP), bidirectional [[wikilinks]], local-first offline PWA, and an AST-level Differential Timeline for zero-token-waste agent interactions under 50MB RAM (<25MB local-only).
 
 ## Core Architecture
 - [Architecture Overview](https://sphene.app/architecture): How Sphene uses SQLite FTS5 in WAL mode to provide <0.20ms search under 50MB RAM (<25MB local-only).

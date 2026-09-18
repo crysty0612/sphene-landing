@@ -46,29 +46,39 @@ document.addEventListener('DOMContentLoaded', () => {
     renderVaultButton(savedVault);
   }
 
-  // Smart Discovery Probe on Load
+  // Smart Discovery Probe on Demand (Defensive against automated crawlers / headless bots)
   async function probeCandidate(url) {
+    // Avoid network probes when running under automated crawlers or headless bots
+    if (typeof navigator !== 'undefined' && navigator.webdriver) {
+      return false;
+    }
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1200);
-      const res = await fetch(`${url}/api/v1/health`, { signal: controller.signal, mode: 'cors' });
+      const res = await fetch(`${url}/api/v1/health`, { signal: controller.signal, mode: 'cors' }).catch(() => null);
       clearTimeout(timeoutId);
-      const data = await res.json();
-      if (data.status === 'healthy' || data.engine === 'sphene-kernel') {
+      if (!res || !res.ok) return false;
+      const data = await res.json().catch(() => null);
+      if (data && (data.status === 'healthy' || data.engine === 'sphene-kernel')) {
         return true;
       }
     } catch (e) {}
     return false;
   }
 
-  // If no saved vault, probe localhost if running on desktop or same machine
-  if (!savedVault) {
+  // Only probe localhost automatically if already running on local development host
+  const isLocalHost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' || 
+    window.location.hostname === '127.0.0.1' || 
+    window.location.hostname === '0.0.0.0'
+  );
+  if (!savedVault && isLocalHost && !(typeof navigator !== 'undefined' && navigator.webdriver)) {
     probeCandidate('http://localhost:8743').then(alive => {
       if (alive) {
         localStorage.setItem(VAULT_STORAGE_KEY, 'http://localhost:8743');
         renderVaultButton('http://localhost:8743');
       }
-    });
+    }).catch(() => {});
   }
 
   // Modal handlers

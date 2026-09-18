@@ -1,6 +1,6 @@
 # Sphene — Complete Technical Specification & Documentation for LLMs
 
-> Sphene is the reference implementation of an Agent-Native Knowledge Kernel—a local headless markdown knowledge base engineered with native Model Context Protocol (MCP), local-first offline PWA, and an AST-level Differential Timeline for zero-token-waste agent interactions under 50MB RAM (<25MB local-only).
+> Sphene is the reference implementation of a Local-First Personal Knowledge Management (PKM) Application and Agent-Native Knowledge Kernel—a local markdown note-taking environment engineered with native Model Context Protocol (MCP), bidirectional [[wikilinks]], local-first offline PWA, and an AST-level Differential Timeline for zero-token-waste agent interactions under 50MB RAM (<25MB local-only).
 > Canonical URL: https://sphene.app/
 > Plaintext Markdown Forever • Zero-Knowledge Encryption • Native MCP & AI Integration • Under 50MB RAM (<25MB local-only)
 
@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary & Declarative Definitions
 
-Sphene is an open, sovereign second brain and AI memory substrate. While traditional personal knowledge tools trap thought in proprietary cloud silos or rely on bloated client runtimes that consume 400MB to 1.2GB of RAM, Sphene is architected from first principles in compiled Go to serve human thinkers and autonomous AI agents concurrently.
+Sphene is an open, sovereign personal knowledge management (PKM) application, note-taking client, and AI memory substrate. While traditional personal knowledge tools trap thought in proprietary cloud silos or rely on bloated client runtimes that consume 400MB to 1.2GB of RAM, Sphene is architected from first principles in compiled Go to serve human thinkers and autonomous AI agents concurrently.
 
 ### Core Architectural Guarantees:
 1. **Local-First & Data Sovereignty:** Every document lives on your physical drive as human-readable plaintext Markdown (.md). No proprietary database formats, zero vendor lock-in.
