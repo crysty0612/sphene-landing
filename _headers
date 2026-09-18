@@ -20,6 +20,11 @@
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=3600
 
+/sphene-image*.tar.gz
+  Content-Type: application/gzip
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
 /sphene-image.tar.gz
   Content-Type: application/gzip
   Access-Control-Allow-Origin: *

@@ -198,15 +198,46 @@ else
   echo -e "${GREEN}✓ Knowledge vault initialized at: ${VAULT_DIR}${NC}"
 fi
 
-# macOS user preference: Native bare-metal daemon vs Docker Desktop
-if [ "$OS" = "darwin" ] && [ $HAS_DOCKER -eq 1 ] && [ $SPHENE_CONTAINER_EXISTS -eq 0 ]; then
-  echo -e "\n${CYAN}${BOLD}Choose deployment method for macOS:${NC}"
-  echo -e "  1) Native macOS Background Daemon (<25MB RAM, instant, zero virtualization) [Recommended]"
-  echo -e "  2) Docker Container (runs via Docker Desktop VM)"
-  DEPLOY_CHOICE=$(read_input "Select deployment method [1/2, default: 1]: " "1")
-  if [ "$DEPLOY_CHOICE" != "2" ]; then
-    HAS_DOCKER=0
-  fi
+# Recommend Docker if not installed, explaining autostart & reliability benefits
+if [ $HAS_DOCKER -eq 0 ] && [ $IS_UPDATE -eq 0 ]; then
+  echo -e "\n${YELLOW}${BOLD}==================================================================${NC}"
+  echo -e "${YELLOW}${BOLD}  DOCKER NOT DETECTED (STRONGLY RECOMMENDED FOR PRODUCTION)       ${NC}"
+  echo -e "${YELLOW}${BOLD}==================================================================${NC}"
+  echo -e "Docker is the ${BOLD}strongly recommended${NC} way to deploy Sphene Sovereign Hub."
+  echo -e "Why Docker is preferred:"
+  echo -e "  • ${BOLD}Automatic Boot Restart${NC}: Restarts automatically on system boot (${CYAN}restart: unless-stopped${NC})"
+  echo -e "    without requiring user logon, manual launchd plists (macOS), or systemd services (Linux)."
+  echo -e "  • ${BOLD}Sandboxed Runtime${NC}: Hardened SQLite WAL storage, isolated environment, and zero dependency conflicts."
+  echo ""
+  echo -e "${BOLD}Recommended: Install Docker on your machine (${OS}):${NC}"
+  case "$OS" in
+    darwin)
+      echo -e "  • Homebrew:       ${CYAN}brew install --cask docker${NC}"
+      echo -e "  • Direct Download: ${CYAN}https://www.docker.com/products/docker-desktop/${NC}"
+      ;;
+    linux)
+      echo -e "  • Official installer: ${CYAN}curl -fsSL https://get.docker.com | sh${NC}"
+      echo -e "  • Add to docker group: ${CYAN}sudo usermod -aG docker \$USER${NC}"
+      ;;
+    windows)
+      echo -e "  • Docker Desktop with WSL2: ${CYAN}https://www.docker.com/products/docker-desktop/${NC}"
+      ;;
+  esac
+  echo ""
+  echo -e "You can proceed with an unmanaged background host daemon, but it will"
+  echo -e "${YELLOW}NOT start automatically upon reboot${NC} without manual service configuration."
+  PROMPT_HOST="Do you want to proceed with unmanaged host daemon anyway? [y/N]: "
+  CONTINUE_HOST=$(read_input "$PROMPT_HOST" "N")
+  case "$CONTINUE_HOST" in
+    [yY][eE][sS]|[yY])
+      echo -e "\nProceeding with native host daemon installation...\n"
+      ;;
+    *)
+      echo -e "\n${CYAN}Installation aborted.${NC} Please install Docker and re-run:"
+      echo -e "  ${BOLD}curl -fsSL https://sphene.app/install.sh | bash${NC}\n"
+      exit 0
+      ;;
+  esac
 fi
 
 # 4. Host Binary Installation (for CLI convenience)
@@ -818,22 +849,33 @@ if [ $HAS_DOCKER -eq 1 ]; then
   echo -e "\n${BOLD}Deploying Sphene as Docker container...${NC}"
   cd "$INSTALL_DIR"
 
+  # Select architecture-specific Docker image archive (ARM64 vs AMD64)
+  if [ "$ARCH" = "arm64" ]; then
+    TARGET_IMG_FILE="sphene-image-arm64.tar.gz"
+  else
+    TARGET_IMG_FILE="sphene-image-amd64.tar.gz"
+  fi
+
   # Load image if local file exists, or if update, or if not present
-  if [ -f "${SCRIPT_DIR}/sphene-image.tar.gz" ]; then
-    echo "Loading Sphene container image from local archive..."
+  if [ -f "${SCRIPT_DIR}/${TARGET_IMG_FILE}" ]; then
+    echo "Loading Sphene container image from local archive (${TARGET_IMG_FILE})..."
+    docker load < "${SCRIPT_DIR}/${TARGET_IMG_FILE}" || true
+  elif [ -f "${SCRIPT_DIR}/sphene-image.tar.gz" ]; then
+    echo "Loading Sphene container image from local archive (sphene-image.tar.gz)..."
     docker load < "${SCRIPT_DIR}/sphene-image.tar.gz" || true
   elif [ $IS_UPDATE -eq 1 ] || ! docker images --format '{{.Repository}}:{{.Tag}}' | grep -q "^sphene:2.2.0$"; then
-    echo "Fetching Sphene container image (sphene:2.2.0)..."
-    if (curl -fsSL "https://sphene.app/sphene-image.tar.gz" -o "$TMP_DIR/sphene-image.tar.gz" 2>/dev/null || curl -fsSL "https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/sphene-image.tar.gz" -o "$TMP_DIR/sphene-image.tar.gz" 2>/dev/null) && [ -s "$TMP_DIR/sphene-image.tar.gz" ]; then
-      EXPECTED_IMG_HASH=$(get_expected_sha256 "sphene-image.tar.gz" "$TMP_DIR/SHA256SUMS")
+    echo "Fetching native Sphene container image (${TARGET_IMG_FILE} for ${OS}-${ARCH})..."
+    if (curl -fsSL "https://sphene.app/${TARGET_IMG_FILE}" -o "$TMP_DIR/${TARGET_IMG_FILE}" 2>/dev/null || curl -fsSL "https://sphene.app/sphene-image.tar.gz" -o "$TMP_DIR/${TARGET_IMG_FILE}" 2>/dev/null) && [ -s "$TMP_DIR/${TARGET_IMG_FILE}" ]; then
+      EXPECTED_IMG_HASH=$(get_expected_sha256 "${TARGET_IMG_FILE}" "$TMP_DIR/SHA256SUMS")
+      [ -z "$EXPECTED_IMG_HASH" ] && EXPECTED_IMG_HASH=$(get_expected_sha256 "sphene-image.tar.gz" "$TMP_DIR/SHA256SUMS")
       if [ -n "$EXPECTED_IMG_HASH" ]; then
-        if verify_file_sha256 "$TMP_DIR/sphene-image.tar.gz" "$EXPECTED_IMG_HASH"; then
-          echo -e "${GREEN}✓ Cryptographic integrity verified (sphene-image.tar.gz)${NC}"
+        if verify_file_sha256 "$TMP_DIR/${TARGET_IMG_FILE}" "$EXPECTED_IMG_HASH"; then
+          echo -e "${GREEN}✓ Cryptographic integrity verified (${TARGET_IMG_FILE})${NC}"
         else
-          echo -e "${YELLOW}⚠ Warning: Checksum mismatch for sphene-image.tar.gz, continuing with caution...${NC}"
+          echo -e "${YELLOW}⚠ Warning: Checksum mismatch for ${TARGET_IMG_FILE}, continuing with caution...${NC}"
         fi
       fi
-      docker load < "$TMP_DIR/sphene-image.tar.gz" || true
+      docker load < "$TMP_DIR/${TARGET_IMG_FILE}" || true
     fi
   fi
 
