@@ -994,6 +994,49 @@ if [ $SKILL_INSTALLED -eq 1 ] || [ $OBSIDIAN_REPLACED -eq 1 ]; then
   fi
 fi
 
+# 10. Optional Curated Sample Notes (Fresh Installs)
+if [ $IS_UPDATE -eq 0 ]; then
+  echo -e "\n${CYAN}${BOLD}Curated Sample Notes & Capability Showcase:${NC}"
+  echo -e "Would you like to install curated sample notes showcasing Markdown, KaTeX math,"
+  echo -e "interactive tasks, Mermaid diagrams, and drawing studio capabilities?"
+  PROMPT_SAMPLES="Install sample notes? [Y/n]: "
+  INSTALL_SAMPLES=$(read_input "$PROMPT_SAMPLES" "Y")
+  case "$INSTALL_SAMPLES" in
+    [yY][eE][sS]|[yY]|"")
+      echo -e "Downloading curated sample notes suite..."
+      SAMPLES_TAR="$TMP_DIR/sample-notes.tar.gz"
+      if [ -f "${SCRIPT_DIR}/sample-notes.tar.gz" ]; then
+        cp "${SCRIPT_DIR}/sample-notes.tar.gz" "$SAMPLES_TAR"
+      else
+        curl -fsSL "https://sphene.app/sample-notes.tar.gz" -o "$SAMPLES_TAR" 2>/dev/null || curl -fsSL "https://github.com/crysty0612/sphene-landing/raw/main/sample-notes.tar.gz" -o "$SAMPLES_TAR" 2>/dev/null || true
+      fi
+      if [ -s "$SAMPLES_TAR" ]; then
+        EXPECTED_SAMPLES_HASH=$(get_expected_sha256 "sample-notes.tar.gz" "$TMP_DIR/SHA256SUMS")
+        if [ -n "$EXPECTED_SAMPLES_HASH" ]; then
+          if verify_file_sha256 "$SAMPLES_TAR" "$EXPECTED_SAMPLES_HASH"; then
+            echo -e "${GREEN}✓ Cryptographic integrity verified (sample-notes.tar.gz)${NC}"
+          fi
+        fi
+        mkdir -p "$VAULT_DIR"
+        tar -zxvf "$SAMPLES_TAR" -C "$VAULT_DIR" >/dev/null 2>&1 || tar -xvf "$SAMPLES_TAR" -C "$VAULT_DIR" >/dev/null 2>&1
+        echo -e "${GREEN}✓ Installed sample notes into ${VAULT_DIR}${NC}"
+        # Trigger indexer so search and backlinks populate immediately
+        if [ $HAS_DOCKER -eq 1 ]; then
+          docker exec sphene sphene index --vault /data/vault >/dev/null 2>&1 || true
+        elif command -v sphene >/dev/null 2>&1; then
+          sphene index --vault "$VAULT_DIR" >/dev/null 2>&1 || true
+        fi
+        echo -e "${GREEN}✓ Indexed sample notes into SQLite FTS5 search engine!${NC}"
+      else
+        echo -e "${YELLOW}⚠ Could not download sample notes, skipping...${NC}"
+      fi
+      ;;
+    *)
+      echo -e "Skipping sample notes. Vault created clean and empty."
+      ;;
+  esac
+fi
+
 # Clean up temp files
 rm -rf "$TMP_DIR"
 
