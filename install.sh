@@ -46,6 +46,7 @@ read_input() {
     echo "$default_val"
   else
     echo "$user_val"
+  fi
 }
 
 # Cryptographic Integrity Verification (SHA-256)
