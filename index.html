@@ -125,7 +125,7 @@
         <a href="https://github.com/sphene-org/sphene" target="_blank" class="nav-icon-link" title="GitHub Repository" aria-label="GitHub">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
         </a>
-        <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-sm" style="font-weight: 600;">Web App (Instant) ↗</a>
+        <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-sm" style="font-weight: 600;">Launch Local PWA ↗</a>
         <a href="/download" class="btn btn-primary btn-sm">Get Sphene Core</a>
       </div>
     </div>
@@ -164,7 +164,7 @@
 
         <div class="hero-cta">
           <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-lg" style="box-shadow: 0 4px 22px rgba(16, 185, 129, 0.4);">
-            <span>🚀 Launch Web App (Instant)</span>
+            <span>🚀 Launch Local Standalone PWA</span>
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
           </a>
           <a href="/download" class="btn btn-primary btn-lg">
@@ -211,33 +211,34 @@
         </div>
 
         <div class="dual-onboarding-grid">
-          <!-- Option A: Local PWA -->
+          <!-- Option A: Local Standalone PWA -->
           <div class="onboarding-card pwa-card">
             <div>
               <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: var(--accent-emerald); font-weight: 700;">🚀 Instant Quickstart</span>
-                <span style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">0s Setup • No Server</span>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: var(--accent-emerald); font-weight: 700;">🚀 100% Local &amp; Private</span>
+                <span style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">0s Setup • Zero Cloud</span>
               </div>
-              <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Sphene Local (Web App)</h3>
+              <h3 style="font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 6px;">Sphene Local (Standalone PWA)</h3>
               <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.55;">
-                For thinkers, writers, and researchers who want to jump straight into note-taking. Runs 100% in your browser with private device storage.
+                For thinkers, writers, and researchers who want an instant, private note-taking space. Runs 100% locally in your browser sandbox. Your notes never touch our servers — stored entirely on your device with zero cloud tracking.
               </p>
 
               <div class="onboarding-feature-list">
-                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Zero installation:</strong> Launch instantly in any browser</span></div>
-                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>100% offline:</strong> Saves to your device's IndexedDB</span></div>
-                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Full app features:</strong> Wikilinks, 3D Graph, and Dataview</span></div>
-                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Direct cloud sync:</strong> Google Drive &amp; Dropbox (encrypted)</span></div>
-                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>1-tap mobile install:</strong> Add to Home Screen on iOS &amp; Android</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Zero installation:</strong> Launch instantly in any browser — zero server setup</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>100% on your device:</strong> Stored in your browser's private IndexedDB</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Complete privacy:</strong> Works fully offline; zero server telemetry</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Full PKM features:</strong> Wikilinks, 3D Graph, Backlinks, Dataview</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Optional personal backup:</strong> Sync to your own Google Drive or Dropbox</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Installable standalone app:</strong> Add to Home Screen / Dock on Mac, iOS, Android</span></div>
               </div>
             </div>
 
             <div style="margin-top: 14px;">
               <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-lg" style="width: 100%; text-align: center; justify-content: center; font-weight: 700;">
-                <span>Launch Web App (local.sphene.app) ↗</span>
+                <span>Launch Local Standalone PWA ↗</span>
               </a>
               <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 8px;">
-                Instant access • No account required • 100% Free
+                Runs 100% on your device • Zero server storage • No account required
               </div>
             </div>
           </div>
@@ -258,7 +259,7 @@
                 <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Physical Markdown vault:</strong> Real plaintext files on your disk</span></div>
                 <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Native AI Agent MCP:</strong> Claude, Cursor &amp; Hermes memory</span></div>
                 <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Embedded Tailscale:</strong> Zero-port remote mesh &amp; Let's Encrypt TLS</span></div>
-                <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Includes Web App:</strong> Serves the complete PWA on port 8743</span></div>
+                <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Bundles Local PWA:</strong> Serves the complete local UI on port 8743</span></div>
                 <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Whisper quiet:</strong> Single native binary (&lt;25MB RAM local)</span></div>
               </div>
             </div>
@@ -289,7 +290,7 @@
               The Zero-Risk Evolution Guarantee: Start Anywhere, Connect Anytime
             </div>
             <div style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.5;">
-              Not sure which one to pick? Start with the Web App today. When you're ready to host your own server or connect autonomous AI agents, you can link your PWA to Sphene Core in 1 click without losing a single document.
+              Not sure which one to pick? Start with the standalone Local PWA today. Your notes live safely on your device. When you're ready to host your own server or connect autonomous AI agents, you can link your PWA to Sphene Core in 1 click without losing a single document.
             </div>
           </div>
         </div>
