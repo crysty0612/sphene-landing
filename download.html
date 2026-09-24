@@ -111,6 +111,10 @@
       </ul>
       <div class="nav-actions">
         <div class="nav-vault-slot"></div>
+        <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+          <span>Web App (Instant)</span>
+          <span style="font-size: 11px;">↗</span>
+        </a>
         <a href="https://github.com/sphene-org/sphene" target="_blank" class="nav-icon-link" title="GitHub Repository" aria-label="GitHub">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
         </a>
@@ -125,46 +129,103 @@
         <div class="section-header">
           <div class="badge">
             <span class="badge-dot"></span>
-            1-CLICK SOVEREIGN INSTALLER • v2.0
+            CHOOSE YOUR STARTING PATH • 100% PRIVATE &amp; SOVEREIGN
           </div>
           <h1>Deploy Your Second Brain in Seconds</h1>
           <p>
-            One simple command installs the complete sovereign system. Out of the box, you get the ultra-lightweight 
-            background engine (&lt;50MB RAM, &lt;25MB local-only), the local web dashboard with 3D graph, and native AI agent memory integration.
+            Choose the experience tailored to your workflow. Start immediately in your browser with zero setup, 
+            or deploy the self-hosted sovereign Core engine with native AI agent memory and physical file control.
           </p>
         </div>
 
-        <!-- Primary Universal One-Liner Box -->
-        <div class="feature-card" style="border-color: var(--accent-cyan); background: linear-gradient(180deg, rgba(14, 165, 233, 0.08) 0%, rgba(15, 23, 42, 0.95) 100%); padding: 36px 32px; margin-bottom: 48px;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-            <div>
-              <span class="badge" style="margin-bottom: 8px; background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: var(--accent-cyan);">Universal One-Line Installer</span>
-              <h2 style="font-size: 26px; font-weight: 800; color: var(--text-primary); margin: 0;">Deploy Sphene on Any System</h2>
-            </div>
-            <span style="font-size: 13px; color: var(--text-muted); font-family: var(--font-mono);">Linux • macOS • Windows (WSL2) • Homelab</span>
-          </div>
+        <!-- Two-Door Getting Started Hub (Phase 7) -->
+        <div class="dual-onboarding-grid" style="margin-bottom: 24px;">
           
-          <p style="color: var(--text-secondary); font-size: 15px; line-height: 1.6; margin-bottom: 24px; max-width: 800px;">
-            Run this command in your terminal. It installs the native compiled Sphene binary, mounts your sovereign Markdown vault, generates your admin credentials, and launches your local web dashboard instantly.
-          </p>
+          <!-- Door 1: Sphene Local (PWA / Web App) -->
+          <div class="onboarding-card pwa-card">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.35); color: var(--accent-emerald); font-weight: 700;">🚀 Door 1: Instant Quickstart</span>
+                <span style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">0s Setup • No Terminal</span>
+              </div>
+              <h2 style="font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;">Sphene Local (Web App)</h2>
+              <p style="color: var(--text-secondary); font-size: 14.5px; line-height: 1.6; margin-bottom: 18px;">
+                Open immediately in any desktop or mobile browser. Runs 100% locally in your device's IndexedDB storage. Zero server configuration, zero terminal commands, and complete privacy.
+              </p>
 
-          <div class="terminal-copy" style="width: 100%; padding: 16px 20px; font-size: 15px; margin-bottom: 24px;">
-            <code>curl -fsSL https://sphene.app/install.sh | bash</code>
-            <button class="copy-btn" data-target="cmd-install-full">Copy</button>
-            <span id="cmd-install-full" style="display:none;">curl -fsSL https://sphene.app/install.sh | bash</span>
+              <div class="onboarding-feature-list" style="margin-bottom: 24px;">
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>0-second setup:</strong> Launch immediately without installing anything</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Offline-first:</strong> Encrypted local storage in browser IndexedDB</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Full PKM toolset:</strong> Wikilinks, 3D Graph, Backlinks, Dataview</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Encrypted cloud backup:</strong> Sync to Google Drive or Dropbox</span></div>
+                <div><span style="color: var(--accent-emerald); font-weight: 700;">✓</span> <span><strong>Installable PWA:</strong> Borderless app icon on macOS, Windows, iOS, Android</span></div>
+                <div style="font-size: 12px; color: var(--text-muted); padding-top: 4px;">
+                  <span>💡</span> <span><em>Local PWA focuses on pure note-taking. When you need agentic AI memory (MCP) or physical disk files, link to Core anytime.</em></span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-lg" style="width: 100%; text-align: center; justify-content: center; font-weight: 700; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);">
+                <span>Launch Web App (local.sphene.app) ↗</span>
+              </a>
+              <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 10px;">
+                Direct URL: <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" style="color: var(--accent-emerald); text-decoration: underline;">https://local.sphene.app</a> • 100% Free
+              </div>
+            </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 24px; font-size: 13px; color: var(--text-secondary);">
-            <div>✓ <strong>Single native binary</strong> (&lt;50MB RAM, &lt;25MB local-only, zero Electron bloat)</div>
-            <div>✓ <strong>Plaintext Markdown vault</strong> on your physical disk</div>
-            <div>✓ <strong>Sub-millisecond search</strong> via embedded SQLite FTS5</div>
-            <div>✓ <strong>Pre-configured AI agent integration</strong> (MCP &amp; Hermes)</div>
+          <!-- Door 2: Sphene Core (Self-Hosted Server) -->
+          <div class="onboarding-card core-card">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                <span class="badge" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.35); color: var(--accent-cyan); font-weight: 700;">⚡ Door 2: Sovereign Kernel</span>
+                <span style="font-size: 12px; color: var(--text-muted); font-family: var(--font-mono);">60s Deploy • Linux / Mac / Docker</span>
+              </div>
+              <h2 style="font-size: 24px; font-weight: 800; color: var(--text-primary); margin-bottom: 8px;">Sphene Core (Server)</h2>
+              <p style="color: var(--text-secondary); font-size: 14.5px; line-height: 1.6; margin-bottom: 18px;">
+                The compiled Go daemon with real plaintext Markdown files on disk, Model Context Protocol (MCP) for autonomous AI agents, and embedded Tailscale WireGuard mesh.
+              </p>
+
+              <div class="terminal-copy" style="width: 100%; padding: 14px 18px; font-size: 14px; margin-bottom: 18px;">
+                <code>curl -fsSL https://sphene.app/install.sh | bash</code>
+                <button class="copy-btn" data-target="cmd-install-full">Copy</button>
+                <span id="cmd-install-full" style="display:none;">curl -fsSL https://sphene.app/install.sh | bash</span>
+              </div>
+
+              <div class="onboarding-feature-list" style="margin-bottom: 24px;">
+                <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Physical Markdown vault:</strong> Standard <code>.md</code> files stored on your disk</span></div>
+                <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Autonomous AI agent memory:</strong> Native MCP for Claude, Cursor, Hermes</span></div>
+                <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Whisper-light:</strong> Single native binary (&lt;25MB RAM local, &lt;50MB mesh)</span></div>
+                <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Tailscale Sovereign Mesh:</strong> Zero-port remote sync &amp; Let's Encrypt TLS</span></div>
+                <div><span style="color: var(--accent-cyan); font-weight: 700;">✓</span> <span><strong>Bundles the Web App:</strong> Serves the complete PWA locally on port 8743</span></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/install.sh" target="_blank" class="btn btn-secondary btn-sm" style="flex: 1; text-align: center; justify-content: center;">Inspect install.sh</a>
+                <a href="https://github.com/sphene-org/sphene" target="_blank" class="btn btn-secondary btn-sm" style="flex: 1; text-align: center; justify-content: center;">GitHub Repo</a>
+                <button class="btn btn-primary btn-sm btn-open-connect-modal" style="flex: 1.2; text-align: center; justify-content: center;">Connect to Vault</button>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 10px;">
+                Linux • macOS • Windows (WSL2) • Docker • Homelab NAS
+              </div>
+            </div>
           </div>
 
-          <div style="display: flex; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--border-subtle); padding-top: 20px;">
-            <a href="/install.sh" target="_blank" class="btn btn-secondary btn-sm">Inspect install.sh</a>
-            <a href="https://github.com/sphene-org/sphene" target="_blank" class="btn btn-secondary btn-sm">GitHub Repository</a>
-            <button class="btn btn-primary btn-sm btn-open-connect-modal">Connect to Local Vault</button>
+        </div>
+
+        <!-- The Zero-Risk Evolution Guarantee Banner -->
+        <div class="evolution-bridge-banner" style="margin-bottom: 48px;">
+          <div style="font-size: 28px; line-height: 1; flex-shrink: 0;">🔄</div>
+          <div style="flex: 1;">
+            <div style="font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px;">
+              The Zero-Risk Evolution Guarantee: Start Anywhere, Connect Anytime
+            </div>
+            <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.55;">
+              You never have to choose between convenience and control. Start drafting your knowledge in the Web App today. When you're ready for physical file storage or AI agent automation (MCP), install Sphene Core and link your PWA with 1 click. Zero data loss, zero lock-in.
+            </div>
           </div>
         </div>
 

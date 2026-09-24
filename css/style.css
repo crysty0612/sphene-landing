@@ -227,6 +227,20 @@ body {
   box-shadow: 0 6px 24px rgba(56, 189, 248, 0.5);
 }
 
+.btn-emerald {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #041f14;
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.btn-emerald:hover {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.5);
+  color: #02150d;
+}
+
 .btn-secondary {
   background: var(--bg-card);
   color: var(--text-primary);
@@ -2171,4 +2185,92 @@ input:checked + .slider:before {
   background: rgba(255, 255, 255, 0.12);
   border-color: var(--border-highlight);
 }
+
+/* ==========================================================================
+   Dual Onboarding & PWA Presentation Gateway (Phase 7)
+   ========================================================================== */
+.dual-onboarding-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 480px) {
+  .dual-onboarding-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.onboarding-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.onboarding-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.onboarding-card.pwa-card {
+  border-top: 3px solid var(--accent-emerald);
+}
+
+.onboarding-card.pwa-card:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 12px 32px rgba(16, 185, 129, 0.15);
+}
+
+.onboarding-card.core-card {
+  border-top: 3px solid var(--accent-cyan);
+}
+
+.onboarding-card.core-card:hover {
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 12px 32px rgba(56, 189, 248, 0.15);
+}
+
+.onboarding-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.onboarding-feature-list div {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.evolution-bridge-banner {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.08) 0%, rgba(56, 189, 248, 0.08) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 14px;
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  .evolution-bridge-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
 
