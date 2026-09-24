@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sphene vs. Logseq — Ultra-Fast Relational SQLite FTS5 vs. Clojure Overhead</title>
+  <meta name="description" content="Compare Sphene and Logseq: Sub-0.20ms embedded SQLite FTS5 retrieval vs heavy Clojure/Datascript memory bloat, under 25MB RAM vs 1GB+ Electron, native Model Context Protocol (MCP) agent support, and document-first freedom.">
+  <meta name="keywords" content="Sphene vs Logseq, Logseq alternative, fast Logseq alternative, outliner vs document, SQLite FTS5 PKM, local-first markdown, agent note taking">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://sphene.app/vs/logseq/">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Sphene">
+  <meta property="og:title" content="Sphene vs. Logseq — Ultra-Fast Relational SQLite FTS5 vs. Clojure Overhead">
+  <meta property="og:description" content="Sub-0.20ms embedded SQLite FTS5 retrieval vs heavy Clojure/Datascript memory bloat, under 25MB RAM vs 1GB+ Electron, and native MCP agent support.">
+  <meta property="og:url" content="https://sphene.app/vs/logseq/">
+  <meta property="og:image" content="https://sphene.app/assets/og-preview.png">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@sphene_app">
+  <meta name="twitter:title" content="Sphene vs. Logseq — Fast SQLite FTS5 vs. Clojure Overhead">
+  <meta name="twitter:description" content="Under 25MB RAM vs 1GB+ Electron, &lt;0.20ms search, and document-first freedom.">
+  <meta name="twitter:image" content="https://sphene.app/assets/og-preview.png">
+
+  <meta name="theme-color" content="#07090e">
+
+  <!-- Favicons & Icons -->
+  <link rel="icon" type="image/svg+xml" href="/assets/sphene-icon.svg">
+  <link rel="alternate icon" type="image/png" sizes="64x64" href="/assets/icons/favicon.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/assets/icons/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Preload Local Sovereign Font -->
+  <link rel="preload" href="/assets/fonts/inter-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Schema.org JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://sphene.app/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Comparisons",
+            "item": "https://sphene.app/#comp-heading"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Sphene vs. Logseq",
+            "item": "https://sphene.app/vs/logseq/"
+          }
+        ]
+      },
+      {
+        "@type": "TechArticle",
+        "headline": "Sphene vs. Logseq: Ultra-Fast Relational SQLite FTS5 vs. Clojure Overhead",
+        "description": "Architectural comparison evaluating memory consumption, Datalog vs. SQLite FTS5 query latency, agent integration, and note-taking paradigms between Sphene and Logseq.",
+        "author": {
+          "@type": "Organization",
+          "name": "Sphene Systems Architecture Team"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Sphene",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://sphene.app/assets/sphene-logo.svg"
+          }
+        },
+        "datePublished": "2026-09-25T00:00:00Z",
+        "dateModified": "2026-09-25T00:00:00Z"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Why is Sphene's search so much faster than Logseq?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Logseq relies on an in-memory ClojureScript Datascript database that reconstructs its graph index on every start and performs complex Datalog queries in JavaScript, leading to high CPU spikes and memory bloat. Sphene uses embedded SQLite FTS5 running in Write-Ahead Logging (WAL) mode in compiled Go, executing full-text and backlink queries in under 0.20 milliseconds with zero GC pauses."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Am I forced into bullet points in Sphene like in Logseq?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Logseq is an outliner where every paragraph is treated as a bulleted block. Sphene gives you full document-first freedom with standard flowing Markdown paragraphs, headings, blockquotes, and code blocks, while still supporting task checklists, interactive tables, and block-level diffing."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does Sphene support AI agent integration?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Sphene includes a native Model Context Protocol (MCP) server for autonomous AI agents like Claude Desktop, Hermes Agent, and Cursor. Logseq has no native MCP server or agent safety timeline."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <div class="bg-glow"></div>
+
+  <!-- Sleek Single-Row Navigation -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Emblem" width="182" height="42">
+      </a>
+      <ul class="nav-links">
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture/">Architecture</a></li>
+        <li><a href="/benchmarks/">Benchmarks</a></li>
+        <li><a href="/plugins/">Plugins</a></li>
+        <li><a href="/security/">Security &amp; Partitions</a></li>
+        <li><a href="/pricing/">Roadmap</a></li>
+      </ul>
+      <div class="nav-actions">
+        <div class="nav-vault-slot"></div>
+        <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-sm" style="display: inline-flex; align-items: center; gap: 6px;">
+          <span>Launch Local PWA</span>
+          <span style="font-size: 11px;">↗</span>
+        </a>
+        <a href="/download/" class="btn btn-primary btn-sm">Get Sphene Free</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Breadcrumb Bar -->
+    <div style="background: rgba(15, 23, 42, 0.4); border-bottom: 1px solid var(--border-subtle); padding: 10px 0;">
+      <div class="container" style="font-size: 13px; color: var(--text-secondary);">
+        <a href="/" style="color: var(--text-secondary); text-decoration: none;">Home</a>
+        <span style="margin: 0 8px; color: var(--text-muted);">/</span>
+        <a href="/#comp-heading" style="color: var(--text-secondary); text-decoration: none;">Comparisons</a>
+        <span style="margin: 0 8px; color: var(--text-muted);">/</span>
+        <span style="color: var(--accent-cyan);">Sphene vs. Logseq</span>
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="section" style="padding-top: 50px; padding-bottom: 60px;">
+      <div class="container" style="max-width: 1000px;">
+        <div class="section-header" style="text-align: left; margin-bottom: 36px;">
+          <div class="badge" style="margin-bottom: 12px; background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.3); color: var(--accent-purple);">
+            <span class="badge-dot"></span> PERFORMANCE &amp; ENGINE COMPARISON
+          </div>
+          <h1>Sphene vs. Logseq: Ultra-Fast Relational SQLite FTS5 vs. Clojure Overhead</h1>
+          <p style="font-size: 18px; line-height: 1.6; max-width: 820px; margin-top: 14px; color: var(--text-secondary);">
+            Logseq demonstrated the power of bidirectional linking and local Markdown graphs. But its heavy ClojureScript Datascript engine and Electron runtime frequently lead to re-indexing freezes, high RAM usage (800MB–1.5GB), and strict outliner constraints. 
+            <strong>Sphene pairs compiled Go systems performance with embedded SQLite FTS5 in WAL mode</strong> for instant sub-millisecond retrieval under 25MB of RAM.
+          </p>
+        </div>
+
+        <!-- Metric Highlight Cards -->
+        <div class="grid-3" style="margin-bottom: 48px;">
+          <div class="feature-card" style="border-top: 3px solid var(--accent-emerald);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">RAM at Rest</div>
+            <div style="font-size: 32px; font-weight: 800; color: var(--text-primary);">&lt; 25 MB</div>
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 6px;">Vs. 800MB–1,500MB in Logseq Electron + Clojure Datascript in-memory cache.</p>
+          </div>
+          <div class="feature-card" style="border-top: 3px solid var(--accent-cyan);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Search Index Latency</div>
+            <div style="font-size: 32px; font-weight: 800; color: var(--text-primary);">&lt; 0.20 ms</div>
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 6px;">Sub-millisecond SQLite FTS5 in WAL mode vs 80ms–300ms in-memory Datalog traversal.</p>
+          </div>
+          <div class="feature-card" style="border-top: 3px solid var(--accent-purple);">
+            <div style="font-size: 13px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Writing Freedom</div>
+            <div style="font-size: 32px; font-weight: 800; color: var(--text-primary);">Doc-First</div>
+            <p style="font-size: 13.5px; color: var(--text-secondary); margin-top: 6px;">Natural document prose and visual canvas without forced outliner bullet indentation.</p>
+          </div>
+        </div>
+
+        <!-- Technical Comparison Matrix Table -->
+        <div style="margin-bottom: 64px;">
+          <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 18px;">Empirical Architectural Matrix</h2>
+          <div class="table-card">
+            <table class="comp-table">
+              <thead>
+                <tr>
+                  <th style="width: 28%;">Architectural Dimension</th>
+                  <th style="width: 36%;">Logseq (Outliner / Clojure)</th>
+                  <th style="width: 36%;">Sphene Sovereign Hub &amp; PWA</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Underlying Engine</strong></td>
+                  <td>ClojureScript Datascript in-memory database + Electron</td>
+                  <td><span class="check">Compiled Native Go Engine + Embedded SQLite FTS5 WAL</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Active RAM at Rest</strong></td>
+                  <td>800 MB – 1,500 MB</td>
+                  <td><span class="check">&lt; 25 MB RAM (Local) / &lt; 50 MB (with Mesh Relay)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Cold Boot Launch Time</strong></td>
+                  <td>4,000 ms – 10,000 ms (Lengthy re-index cycles)</td>
+                  <td><span class="check">&lt; 15 ms (Instant native launch)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Full-Text Search Latency</strong></td>
+                  <td>80 ms – 300 ms (In-memory Datalog graph query)</td>
+                  <td><span class="check">&lt; 0.20 ms (Embedded SQLite FTS5 in WAL)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Writing Paradigm</strong></td>
+                  <td>Strict outliner (every paragraph forced into a bullet)</td>
+                  <td><span class="check">Document-first markdown + visual canvas + task lists</span></td>
+                </tr>
+                <tr>
+                  <td><strong>AI Agent Interface</strong></td>
+                  <td>No native agent API or protocol</td>
+                  <td><span class="check">Native Model Context Protocol (MCP stdio/SSE)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Agent Safety Timeline</strong></td>
+                  <td>None (blind disk overwrite)</td>
+                  <td><span class="check">The Differential Timeline ("Human Veto" review)</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Hardware Encryption</strong></td>
+                  <td>Plaintext markdown files on disk</td>
+                  <td><span class="check">AES-256-GCM hardware-sealed Aegis partitions</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Mobile Sync Architecture</strong></td>
+                  <td>Complex Git / WebDAV or custom beta sync</td>
+                  <td><span class="check">Instant Offline PWA + Direct KDF Cloud Sync (GDrive/Dropbox)</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Deep Dive Analysis -->
+        <div style="margin-bottom: 60px;">
+          <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 24px;">Key Architectural Differences</h2>
+
+          <div style="margin-bottom: 32px; padding: 28px; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px;">
+            <h3 style="font-size: 20px; font-weight: 700; color: var(--accent-cyan); margin-bottom: 10px;">1. Embedded SQLite FTS5 vs. ClojureScript Datascript</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; font-size: 15px;">
+              Logseq parses and loads its entire knowledge graph into an in-memory Datascript trie inside the browser process. While this allows flexible Datalog queries, it suffers from severe garbage collection pauses, high CPU spikes during re-indexing, and massive RAM consumption. Sphene uses SQLite FTS5 in Write-Ahead Logging (WAL) mode. Queries execute with predictable, bounded execution times (&lt;0.20ms) and use zero excess RAM, regardless of whether your vault has 500 notes or 50,000 notes.
+            </p>
+          </div>
+
+          <div style="margin-bottom: 32px; padding: 28px; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px;">
+            <h3 style="font-size: 20px; font-weight: 700; color: var(--accent-emerald); margin-bottom: 10px;">2. Document-First Prose vs. Rigid Outliner Bullets</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; font-size: 15px;">
+              Many writers and technical thinkers find Logseq's forced-bullet outliner model unnatural when drafting long-form essays, documentation, or technical manuals. In Logseq, exporting clean Markdown often produces awkward nested lists. Sphene preserves standard document Markdown syntax: write flowing paragraphs, headings, KaTeX STEM equations, and Mermaid diagrams naturally.
+            </p>
+          </div>
+
+          <div style="margin-bottom: 32px; padding: 28px; background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border-subtle); border-radius: 12px;">
+            <h3 style="font-size: 20px; font-weight: 700; color: var(--accent-purple); margin-bottom: 10px;">3. Native Agent Protocol (MCP) for the Autonomous AI Era</h3>
+            <p style="color: var(--text-secondary); line-height: 1.7; font-size: 15px;">
+              As autonomous agents become an essential part of development and knowledge synthesis, your notes need an efficient, typed API. Sphene provides an official Model Context Protocol (MCP) implementation over stdio. Claude Desktop, Hermes Agent, and Cursor can search your notes, read specific sections without token waste, and submit patch proposals safely.
+            </p>
+          </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div style="text-align: center; padding: 50px 30px; background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(7, 9, 14, 0.95)); border: 1px solid var(--border-highlight); border-radius: 16px;">
+          <h2 style="font-size: 32px; font-weight: 800; margin-bottom: 12px;">Ready for Sub-Millisecond Speed?</h2>
+          <p style="color: var(--text-secondary); max-width: 580px; margin: 0 auto 28px; font-size: 16px;">
+            Experience the lightning-fast, document-first sovereign knowledge substrate today.
+          </p>
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="https://local.sphene.app" target="_blank" rel="noopener noreferrer" class="btn btn-emerald btn-lg">Launch Local PWA Instantly →</a>
+            <a href="/download/" class="btn btn-primary btn-lg">Install Sphene Core Daemon</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <img src="/assets/sphene-logo.svg" alt="Sphene Logo" width="182" height="42">
+        <span class="footer-copy">© 2026 Sphene. Sovereign Data. All rights reserved.</span>
+      </div>
+      <ul class="footer-links">
+        <li><a href="/">Overview</a></li>
+        <li><a href="/architecture/">Architecture</a></li>
+        <li><a href="/benchmarks/">Benchmarks</a></li>
+        <li><a href="/plugins/">Plugins</a></li>
+        <li><a href="/security/">Security &amp; Partitions</a></li>
+        <li><a href="/privacy/">Privacy Policy</a></li>
+        <li><a href="/terms/">Terms of Service</a></li>
+        <li><a href="/download/">Download</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
