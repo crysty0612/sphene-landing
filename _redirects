@@ -1,17 +1,6 @@
-# Cloudflare Pages Clean Routes
-/download     /download/      301
+# Legacy & Route Aliases
 /downloads    /download/      301
-/pricing      /pricing/       301
 /roadmap      /pricing/       301
-/architecture /architecture/  301
-/benchmarks   /benchmarks/    301
-/plugins      /plugins/       301
-/security     /security/      301
-/privacy      /privacy/       301
-/terms        /terms/         301
-/vs/obsidian  /vs/obsidian/   301
-/vs/notion    /vs/notion/     301
-/vs/logseq    /vs/logseq/     301
 /docs/architecture  /architecture/ 301
 /docs/mcp           /guides/hermes-agent-memory-hub/ 301
 /docs/differential-timeline /guides/agent-safe-note-editing/ 301
