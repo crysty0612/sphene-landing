@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sphene-cache-v1';
+const CACHE_NAME = 'sphene-cache-v2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -10,6 +10,8 @@ const ASSETS = [
   '/assets/sphene-logo.svg',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
+  '/assets/icons/icon-maskable-512.png',
+  '/assets/icons/sphene-icon.svg',
   '/assets/icons/favicon.png',
   '/manifest.json'
 ];

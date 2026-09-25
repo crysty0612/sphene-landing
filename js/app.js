@@ -6,6 +6,97 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // -------------------------------------------------------------
+  // Proactive PWA Installation UX -> Routes to local.sphene.app
+  // -------------------------------------------------------------
+  let landingInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Intercept native browser prompt that would install public presentation site
+    e.preventDefault();
+    landingInstallPrompt = e;
+    showLandingInstallBanner();
+  });
+
+  function showLandingInstallBanner() {
+    const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                         window.navigator.standalone === true;
+    if (isStandalone) return;
+
+    try {
+      const dismissedAt = localStorage.getItem('sphene_landing_pwa_dismissed_time');
+      if (dismissedAt && (Date.now() - parseInt(dismissedAt, 10)) < 7 * 24 * 60 * 60 * 1000) {
+        return;
+      }
+    } catch (_) {}
+
+    if (document.getElementById('sphene-landing-pwa-banner')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'sphene-landing-pwa-banner';
+    banner.className = 'sphene-landing-pwa-banner';
+    banner.innerHTML = `
+      <div class="landing-pwa-card">
+        <button class="landing-pwa-close" id="btn-close-landing-pwa" title="Dismiss" aria-label="Dismiss">✕</button>
+        <div class="landing-pwa-body">
+          <div class="landing-pwa-icon-wrap">
+            <img src="/assets/icons/icon-192.png" alt="Sphene Sovereign Logo" class="landing-pwa-icon" width="42" height="42">
+          </div>
+          <div class="landing-pwa-text">
+            <div class="landing-pwa-title-row">
+              <span class="landing-pwa-title">Install Sphene App</span>
+              <span class="landing-pwa-badge">100% Offline</span>
+            </div>
+            <p class="landing-pwa-desc">Get the native standalone app with zero cloud servers, on-device hardware encryption, and instant launch.</p>
+          </div>
+        </div>
+        <div class="landing-pwa-actions">
+          <button type="button" id="btn-dismiss-landing-pwa" class="btn btn-secondary btn-sm" style="font-size:12px; padding:6px 12px;">Maybe Later</button>
+          <a href="https://local.sphene.app/?install=true" id="btn-install-landing-pwa" class="btn btn-emerald btn-sm" style="font-weight:700; font-size:12.5px; padding:6px 14px; gap:6px;">
+            <span>📲</span> Install App Now
+          </a>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(banner);
+
+    const closeBtn = document.getElementById('btn-close-landing-pwa');
+    const dismissBtn = document.getElementById('btn-dismiss-landing-pwa');
+    const dismissHandler = () => {
+      try {
+        localStorage.setItem('sphene_landing_pwa_dismissed_time', Date.now().toString());
+      } catch (_) {}
+      banner.style.transition = 'all 0.3s ease';
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(20px)';
+      setTimeout(() => banner.remove(), 300);
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', dismissHandler);
+    if (dismissBtn) dismissBtn.addEventListener('click', dismissHandler);
+  }
+
+  // Mobile proactive trigger
+  const isMobileClient = /android|iphone|ipad|ipod/i.test(navigator.userAgent || '');
+  if (isMobileClient) {
+    setTimeout(() => {
+      showLandingInstallBanner();
+    }, 1500);
+  }
+
+  // Standalone detection on sphene.app
+  const isAppStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                          window.navigator.standalone === true;
+  if (isAppStandalone) {
+    const launchBanner = document.createElement('div');
+    launchBanner.style.cssText = 'position:fixed; top:0; left:0; right:0; z-index:99999; background:linear-gradient(90deg,#065f46,#0284c7); color:#fff; padding:10px 16px; text-align:center; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:12px; box-shadow:0 4px 12px rgba(0,0,0,0.5);';
+    launchBanner.innerHTML = `
+      <span>🚀 You are viewing the presentation website in app mode.</span>
+      <a href="https://local.sphene.app/?source=pwa" style="background:#fff; color:#0f172a; padding:4px 12px; border-radius:6px; text-decoration:none; font-weight:700;">Open Sovereign Vault ↗</a>
+    `;
+    document.body.appendChild(launchBanner);
+  }
+
   // Copy to clipboard
   const copyBtns = document.querySelectorAll('.copy-btn');
   copyBtns.forEach(btn => {
