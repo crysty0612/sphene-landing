@@ -184,9 +184,9 @@
               </p>
 
               <div class="terminal-copy" style="width: 100%; padding: 14px 18px; font-size: 14px; margin-bottom: 18px;">
-                <code>curl -fsSL https://sphene.app/install.sh | bash</code>
+                <code>curl -fsSL https://raw.githubusercontent.com/Sphene-app/scripts/main/install.sh | bash</code>
                 <button class="copy-btn" data-target="cmd-install-full">Copy</button>
-                <span id="cmd-install-full" style="display:none;">curl -fsSL https://sphene.app/install.sh | bash</span>
+                <span id="cmd-install-full" style="display:none;">curl -fsSL https://raw.githubusercontent.com/Sphene-app/scripts/main/install.sh | bash</span>
               </div>
 
               <div class="onboarding-feature-list" style="margin-bottom: 24px;">
@@ -200,7 +200,7 @@
 
             <div>
               <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="/install.sh" target="_blank" class="btn btn-secondary btn-sm" style="flex: 1; text-align: center; justify-content: center;">Inspect install.sh</a>
+                <a href="https://github.com/Sphene-app/scripts/blob/main/install.sh" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="flex: 1; text-align: center; justify-content: center;">Inspect install.sh on GitHub ↗</a>
                 <button class="btn btn-primary btn-sm btn-open-connect-modal" style="flex: 1.2; text-align: center; justify-content: center;">Connect to Vault</button>
               </div>
               <div style="font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 10px;">
@@ -274,21 +274,25 @@
                 🔐 Zero-Dependency Offline &amp; Migration Toolkit
               </h3>
               <p style="color: var(--text-secondary); font-size: 14px;">
-                Because Sphene is 100% sovereign, your data never requires our software to be accessed. Download standalone utilities to migrate, decrypt, or encrypt in-place:
+                Because Sphene is 100% sovereign, your data never requires the app or daemon to be accessed. The installer, emergency decryptor, and migration engines are open-source and hosted in the public repository <a href="https://github.com/Sphene-app/scripts" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); font-weight: 600; text-decoration: underline;">Sphene-app/scripts</a>:
               </p>
             </div>
+            <a href="https://github.com/Sphene-app/scripts" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 8px;">
+              <span>View Repository on GitHub</span>
+              <span>↗</span>
+            </a>
           </div>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 18px;">
-            <a href="/migrate_vault.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between; padding: 12px 16px;">
+            <a href="https://raw.githubusercontent.com/Sphene-app/scripts/main/migrate_vault.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between; padding: 12px 16px;">
               <span>📁 migrate_vault.sh (Import Desktop Markdown Vaults)</span>
               <span>⬇</span>
             </a>
-            <a href="/decrypt_vault.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between; padding: 12px 16px;">
-              <span>🔓 decrypt_vault.sh (Offline OpenSSL Decryptor)</span>
+            <a href="https://raw.githubusercontent.com/Sphene-app/scripts/main/decrypt.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between; padding: 12px 16px;">
+              <span>🔓 decrypt.sh (Offline AES-256-GCM Decryptor)</span>
               <span>⬇</span>
             </a>
-            <a href="/encrypt_vault.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between; padding: 12px 16px;">
-              <span>🔒 encrypt_vault.sh (Offline OpenSSL Encryptor)</span>
+            <a href="https://raw.githubusercontent.com/Sphene-app/scripts/main/encrypt.sh" download class="btn btn-secondary btn-sm" style="justify-content: space-between; padding: 12px 16px;">
+              <span>🔒 encrypt.sh (Offline AES-256-GCM Encryptor)</span>
               <span>⬇</span>
             </a>
           </div>
@@ -296,16 +300,16 @@
           <!-- OpenSSL Verification & Zero Lock-in Inspection -->
           <details style="margin-top: 16px; background: rgba(7, 9, 14, 0.6); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 12px 16px; font-size: 13.5px;">
             <summary style="cursor: pointer; font-weight: 600; color: var(--accent-emerald);">
-              🔍 Inspect the OpenSSL Decryption Command &amp; Algorithm (Zero Lock-in Proof)
+              🔍 Inspect the AES-256-GCM Decryption Command &amp; Algorithm (Zero Lock-in Proof)
             </summary>
             <div style="margin-top: 12px; color: var(--text-secondary); line-height: 1.6;">
               <p style="margin: 0 0 8px;">
-                Sphene uses standard, battle-tested OpenSSL primitives with no black-box crypto. The cipher algorithm and key derivation parameters are 100% public and verifiable. You can decrypt any encrypted note on any Mac or Linux machine without installing Sphene:
+                Sphene uses standard, authenticated AES-256-GCM primitives with no black-box crypto. The cipher algorithm and key derivation parameters are 100% public, verifiable, and can be inspected in the <a href="https://github.com/Sphene-app/scripts" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">Sphene-app/scripts</a> repository. You can decrypt any encrypted note on any Mac or Linux machine without having Sphene installed:
               </p>
-              <pre style="background: rgba(0,0,0,0.5); padding: 10px 14px; border-radius: 6px; overflow-x: auto; color: var(--accent-cyan); font-family: var(--font-mono); font-size: 12.5px; margin: 0 0 10px;"><code># Standard OpenSSL in-place decryption:
-openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -k "&lt;YOUR_PASSPHRASE&gt;"</code></pre>
+              <pre style="background: rgba(0,0,0,0.5); padding: 10px 14px; border-radius: 6px; overflow-x: auto; color: var(--accent-cyan); font-family: var(--font-mono); font-size: 12.5px; margin: 0 0 10px;"><code># Standalone zero-lock-in in-place vault decryption:
+curl -fsSL https://raw.githubusercontent.com/Sphene-app/scripts/main/decrypt.sh | bash</code></pre>
               <p style="margin: 0; font-size: 12.5px; color: var(--text-muted);">
-                <code>decrypt_vault.sh</code> is a lightweight 80-line plain-text shell script that iterates through your vault directory and invokes this standard OpenSSL command. View the raw plain-text script anytime at <a href="/decrypt_vault.sh" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">https://sphene.app/decrypt_vault.sh</a>.
+                <code>decrypt.sh</code> is a lightweight, zero-dependency open-source script that iterates through your vault directory, asks for your username and password, and authenticates and decrypts all notes back to open Markdown in-place. Inspect the full code anytime at <a href="https://github.com/Sphene-app/scripts/blob/main/decrypt_vault.py" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">Sphene-app/scripts/decrypt_vault.py</a>.
               </p>
             </div>
           </details>
@@ -414,6 +418,8 @@ openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -k "&lt;YOUR_PASSPHRASE&gt;"</c
         <li><a href="/benchmarks/">Benchmarks</a></li>
         <li><a href="/plugins/">Plugins</a></li>
         <li><a href="/security/">Security &amp; Partitions</a></li>
+        <li><a href="https://github.com/Sphene-app/mcp" target="_blank" rel="noopener noreferrer">MCP Protocol (GitHub)</a></li>
+        <li><a href="https://github.com/Sphene-app/scripts" target="_blank" rel="noopener noreferrer">Sovereign Toolkit (GitHub)</a></li>
         <li><a href="/privacy/">Privacy Policy</a></li>
         <li><a href="/terms/">Terms of Service</a></li>
         <li><a href="/pricing/">Plans</a></li>

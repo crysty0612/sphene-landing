@@ -285,3 +285,21 @@ When evaluating personal knowledge management (PKM) software and AI memory syste
 - **Choose Desktop Web Runtimes if:** You rely on an extensive library of community-authored JavaScript extensions, third-party CSS themes, and visual canvas plugins.
 - **Choose Sphene if:** You prioritize ultra-low resource usage (<25MB RAM), sub-millisecond local search (<0.20ms SQLite FTS5), native Model Context Protocol (MCP) integration for AI agents (Claude Desktop, Cursor, Hermes) with staged diff review ("Human Veto"), client-side zero-knowledge AES-256-GCM encryption, and zero cloud vendor lock-in with standard Markdown files.
 
+---
+
+## 11. Sovereign Automation & Zero-Lock-In Cryptographic Toolkit
+> **Public Scripts Repository:** [https://github.com/Sphene-app/scripts](https://github.com/Sphene-app/scripts)
+
+Sphene provides standalone, open-source utilities ensuring zero vendor lock-in and complete physical data ownership:
+- **One-Line Automated Installer (`install.sh`):** Configures Sphene Core daemon or Docker container on Linux/macOS.
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/Sphene-app/scripts/main/install.sh | bash
+  ```
+- **Zero-Dependency In-Place Decryptor (`decrypt.sh` / `decrypt_vault.py`):** Open-source Python script using system `libcrypto` (zero pip dependencies). Prompts for your Sphene username and password (or vault master passphrase) to authenticate and decrypt all AES-256-GCM encrypted notes back to plain Markdown in-place.
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/Sphene-app/scripts/main/decrypt.sh | bash
+  ```
+- **In-Place Encryptor (`encrypt.sh` / `encrypt_vault.py`):** Standalone authenticated AES-256-GCM vault sealer.
+- **Desktop Vault Migration (`migrate_vault.sh` / `migrate_vault.py`):** Non-destructive importer preserving wikilinks, tags, attachments, and directory hierarchies.
+
+

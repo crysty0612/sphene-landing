@@ -19,6 +19,7 @@
 
 ## Integrations & Playbooks
 - [Model Context Protocol (MCP) Public Repository](https://github.com/Sphene-app/mcp): Public GitHub repository containing open MCP specifications, JSON schemas, and client configuration templates for Claude Desktop, Cursor, Claude Code, Hermes Agent, OpenClaw, and Gemini Antigravity.
+- [Sovereign Automation & Zero-Lock-In Cryptographic Toolkit](https://github.com/Sphene-app/scripts): Public GitHub repository hosting the official one-line installer, standalone AES-256-GCM vault decryptor (100% open-source, zero proprietary binary dependencies), in-place encryptor, and desktop Markdown migration engine.
 - [Hermes Agent Integration](https://sphene.app/integrations/hermes-agent/): Connecting Hermes via stdio MCP proxy without Docker host mounts.
 - [OpenClaw Setup](https://sphene.app/integrations/openclaw/): Using Sphene as an agentic memory store.
 - [Security & Aegis Partitions](https://sphene.app/security/): Zero-knowledge encryption and the 4 Aegis vault zones.

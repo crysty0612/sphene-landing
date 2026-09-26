@@ -310,9 +310,9 @@ if [ -n "$SPHENE_HOST_BIN" ] && [ -f "$SPHENE_HOST_BIN" ]; then
   fi
 fi
 
-# 5. Obsidian Vault Auto-Discovery & Non-Destructive Migration (Skip in update mode)
+# 5. Desktop Markdown Vault Auto-Discovery & Non-Destructive Migration (Skip in update mode)
 if [ $IS_UPDATE -eq 0 ]; then
-  echo -e "\n${BOLD}Scanning for existing Obsidian notes...${NC}"
+  echo -e "\n${BOLD}Scanning for existing Markdown vaults & notes...${NC}"
   DISCOVERED_VAULTS=()
 
   OBS_CONF=""
@@ -372,7 +372,7 @@ if [ $IS_UPDATE -eq 0 ]; then
       if [ "$note_count" -gt 0 ]; then
         FOUND_OBSIDIAN=1
         echo -e "\n${CYAN}══════════════════════════════════════════════════════════════════${NC}"
-        echo -e "${GREEN}${BOLD}  ★ Existing Obsidian Notes Detected!${NC}"
+        echo -e "${GREEN}${BOLD}  ★ Existing Markdown Notes Detected!${NC}"
         echo -e "${CYAN}══════════════════════════════════════════════════════════════════${NC}"
         echo -e "  • Path:        ${BOLD}${vault_path}${NC}"
         echo -e "  • Documents:   ${CYAN}${note_count} Markdown notes found${NC}"
@@ -386,10 +386,10 @@ if [ $IS_UPDATE -eq 0 ]; then
         echo ""
         echo -e "${YELLOW}  Non-Destructive Guarantee:${NC}"
         echo "  Sphene will safely copy your markdown notes into your sovereign vault."
-        echo "  Your original Obsidian files will remain 100% untouched and unmodified."
+        echo "  Your original files will remain 100% untouched and unmodified."
         echo ""
 
-        IMPORT_PROMPT="Do you want Sphene to import a copy of these Obsidian notes? [Y/n]: "
+        IMPORT_PROMPT="Do you want Sphene to import a copy of these notes? [Y/n]: "
         IMPORT_CHOICE=$(read_input "$IMPORT_PROMPT" "Y")
 
         case "$IMPORT_CHOICE" in
@@ -410,7 +410,7 @@ if [ $IS_UPDATE -eq 0 ]; then
             fi
             ;;
           *)
-            echo -e "  Skipped import. (Tip: You can also do this later anytime from Sphene Settings: 'Import Notes from Obsidian / Disk', or via ${CYAN}sphene import \"$vault_path\"${NC})"
+            echo -e "  Skipped import. (Tip: You can also do this later anytime from Sphene Settings: 'Import Notes', or via ${CYAN}sphene import \"$vault_path\"${NC})"
             ;;
         esac
       fi
@@ -418,8 +418,8 @@ if [ $IS_UPDATE -eq 0 ]; then
   fi
 
   if [ "$FOUND_OBSIDIAN" -eq 0 ]; then
-    echo -e "${GREEN}✓ No existing Obsidian installation found (clean slate).${NC}"
-    echo -e "  (Tip: You can import notes anytime later from Sphene Settings: 'Import Notes from Obsidian / Disk', or via ${CYAN}sphene import <path>${NC})"
+    echo -e "${GREEN}✓ Clean slate installation.${NC}"
+    echo -e "  (Tip: You can import notes anytime later from Sphene Settings: 'Import Notes', or via ${CYAN}sphene import <path>${NC})"
   fi
 fi
 
@@ -665,35 +665,35 @@ for cfg_file in candidates:
   fi
 
   if [ -n "$OBSIDIAN_REL_PATH" ]; then
-    echo -e "\n${YELLOW}${BOLD}Obsidian Skill Integration Option:${NC}"
-    echo "Hermes comes bundled with a default Obsidian note-taking skill."
-    echo "Sphene is 100% compatible with Obsidian Markdown vaults, but features <25MB local memory footprint (<50MB with relay),"
-    echo "sub-millisecond SQLite FTS5 index, human veto timeline, and interactive visual Web UI."
+    echo -e "\n${YELLOW}${BOLD}Hermes Knowledge Hub Skill Integration Option:${NC}"
+    echo "Hermes comes bundled with a default note-taking skill."
+    echo "Sphene features <25MB local memory footprint, sub-millisecond SQLite FTS5 index,"
+    echo "human veto timeline, native MCP toolsets, and an interactive visual Web UI."
     echo ""
 
-    PROMPT_OBS="Do you want Hermes to replace Obsidian with Sphene as its primary knowledge store? [Y/n]: "
+    PROMPT_OBS="Do you want Hermes to configure Sphene as its primary knowledge store and native MCP engine? [Y/n]: "
     REPLACE_OBSIDIAN_CHOICE=$(read_input "$PROMPT_OBS" "Y")
 
     case "$REPLACE_OBSIDIAN_CHOICE" in
       [yY][eE][sS]|[yY]|"")
-        echo "Upgrading Hermes Obsidian skill definition to route directly to Sphene..."
+        echo "Configuring Hermes note-taking skill definition to route directly to Sphene..."
         UPGRADED_OBSIDIAN_SKILL='---
 name: obsidian
 description: >-
-  Read, search, create, and edit notes in Sphene Knowledge Hub (the sovereign Obsidian-compatible knowledge substrate).
+  Read, search, create, and edit notes in Sphene Knowledge Hub (the sovereign knowledge substrate).
   Use native Sphene MCP tools for all note-taking, markdown notes, second brain retrieval, intra-document search, and updates.
 version: 2.2.0
 author: Sphene Sovereign Substrate
 platforms: [linux, macos, windows]
 metadata:
   hermes:
-    tags: [Sphene, Obsidian, Notes, Markdown, Vault]
+    tags: [Sphene, Notes, Markdown, KnowledgeHub]
     related_skills: [sphene-knowledge-hub]
 ---
 
-# Sphene Knowledge Hub (Obsidian Replacement)
+# Sphene Knowledge Hub
 
-Obsidian has been completely upgraded to **Sphene Knowledge Hub** (https://sphene.app) — the hardened, sovereign knowledge substrate and second brain running locally with sub-millisecond SQLite FTS5 search (<0.2ms) and native Model Context Protocol (MCP) integration.
+Configured with **Sphene Knowledge Hub** (https://sphene.app) — the hardened, sovereign knowledge substrate and second brain running locally with sub-millisecond SQLite FTS5 search (<0.2ms) and native Model Context Protocol (MCP) integration.
 
 ## 1. Zero Misfires: Direct Native MCP Tool Invocations
 All note-taking, document lookups, and second brain requests MUST use your native Sphene MCP tools directly:
