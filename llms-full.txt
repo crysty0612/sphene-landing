@@ -51,6 +51,7 @@ Sphene is an open, sovereign personal knowledge management (PKM) application, no
 ---
 
 ## 3. Model Context Protocol (MCP) Specification
+> **Public Specification & Client Configs Repository:** [https://github.com/Sphene-app/mcp](https://github.com/Sphene-app/mcp)
 
 Sphene exposes a native Model Context Protocol (MCP) stdio server invoked via `sphene mcp`. The binary functions both directly on the vault directory and as a transparent client proxy when running inside isolated Docker containers (such as Hermes).
 
