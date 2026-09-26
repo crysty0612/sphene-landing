@@ -131,45 +131,45 @@
         </div>
 
         <!-- Benchmark Table -->
-        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 16px;">Comparative Performance Benchmarks (Obsidian &amp; Logseq vs. Sphene)</h2>
+        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 16px;">Comparative Performance Benchmarks: Compiled Native Kernel vs. Heavy Web Runtimes</h2>
         <div class="table-card" style="margin-bottom: 56px;">
           <table class="comp-table">
             <thead>
               <tr>
                 <th style="width: 28%;">Performance Metric</th>
-                <th style="width: 36%;">Legacy Desktop Paradigm (Obsidian &amp; Logseq Electron)</th>
+                <th style="width: 36%;">Heavy Desktop Application Paradigm (Electron / Webview)</th>
                 <th style="width: 36%;">Sphene v2.2 Sovereign Kernel &amp; Standalone PWA</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><strong>Daemon RAM at Rest</strong></td>
-                <td>400 MB – 1.2 GB <span style="color: var(--text-muted); font-size: 13px;">(Obsidian &amp; Logseq Electron runtimes)</span></td>
+                <td>Standard Webview runtime footprint <span style="color: var(--text-muted); font-size: 13px;">(Chromium / V8 / Node.js)</span></td>
                 <td><span class="check">&lt; 25 MB RAM</span> <span style="color: var(--text-muted); font-size: 13px;">(Local daemon; &lt;50MB with WireGuard relay)</span></td>
               </tr>
               <tr>
                 <td><strong>Peak Indexing RAM (10k notes)</strong></td>
-                <td>1.4 GB – 2.6 GB <span style="color: var(--text-muted); font-size: 13px;">(High GC churn &amp; Datalog graph trie)</span></td>
+                <td>High GC churn &amp; in-memory trie graph allocations</td>
                 <td><span class="check">&lt; 25 MB RAM</span> <span style="color: var(--text-muted); font-size: 13px;">(Bounded batch streaming SQLite FTS5)</span></td>
               </tr>
               <tr>
                 <td><strong>Full-Text Search Latency</strong></td>
-                <td>45 ms – 180 ms <span style="color: var(--text-muted); font-size: 13px;">(Obsidian disk scan / Logseq Datascript)</span></td>
+                <td>Sequential disk file scanning or in-memory search</td>
                 <td><span class="check">&lt; 0.20 ms (&lt;180µs)</span> <span style="color: var(--text-muted); font-size: 13px;">(Embedded SQLite FTS5 in WAL mode)</span></td>
               </tr>
               <tr>
                 <td><strong>Intra-Document AST Extraction</strong></td>
-                <td>Full document loaded into context</td>
+                <td>Full document loaded into memory</td>
                 <td><span class="check">&lt; 0.05 ms</span> <span style="color: var(--text-muted); font-size: 13px;">(Pinpoint heading subtree)</span></td>
               </tr>
               <tr>
                 <td><strong>Agent Tool Invocation Roundtrip</strong></td>
-                <td>120 ms – 380 ms <span style="color: var(--text-muted); font-size: 13px;">(Bash subshell / pipe / custom wrapper)</span></td>
+                <td>Subshell piping / custom wrapper latency</td>
                 <td><span class="check">&lt; 1.5 ms</span> <span style="color: var(--text-muted); font-size: 13px;">(Direct Stdio JSON-RPC MCP server)</span></td>
               </tr>
               <tr>
                 <td><strong>AI Mutation Safety &amp; Integrity</strong></td>
-                <td>Blind disk overwrite <span style="color: var(--text-muted); font-size: 13px;">(Silent note corruption risk)</span></td>
+                <td>Direct in-place disk overwrite</td>
                 <td><span class="check">The Differential Timeline</span> <span style="color: var(--text-muted); font-size: 13px;">(Visual Human Veto review)</span></td>
               </tr>
               <tr>
@@ -184,29 +184,29 @@
               </tr>
               <tr>
                 <td><strong>Cold-Boot Startup Time</strong></td>
-                <td>2,500 ms – 6,000 ms <span style="color: var(--text-muted); font-size: 13px;">(Framework initialization)</span></td>
+                <td>Framework &amp; browser engine initialization</td>
                 <td><span class="check">&lt; 15 ms</span> <span style="color: var(--text-muted); font-size: 13px;">(Instant native Go binary)</span></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Competitor Deep Dive Jump Cards -->
+        <!-- Technical Deep Dive Jump Cards -->
         <div class="grid-3" style="margin-bottom: 56px;">
-          <a href="/vs/obsidian/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-cyan); transition: transform 0.2s;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;">Detailed Comparison</div>
-            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Sphene vs. Obsidian →</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Under 25MB RAM vs 1.2GB Electron, native Model Context Protocol (MCP), and 1-click vault migration.</p>
+          <a href="/architecture/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-cyan); transition: transform 0.2s;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;">Technical Deep Dive</div>
+            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Architecture &amp; Subsystems →</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">SQLite WAL indexing, IoC plugin engine, and native Go daemon specifications.</p>
           </a>
-          <a href="/vs/notion/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-emerald); transition: transform 0.2s;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase;">Detailed Comparison</div>
-            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Sphene vs. Notion →</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Sovereign local-first markdown vs closed cloud databases with zero monthly subscription fees.</p>
+          <a href="/security/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-emerald); transition: transform 0.2s;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase;">Technical Deep Dive</div>
+            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Aegis Security &amp; Partitions →</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">AES-256-GCM client-side encryption and 4-zone vault isolation boundaries.</p>
           </a>
-          <a href="/vs/logseq/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-purple); transition: transform 0.2s;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase;">Detailed Comparison</div>
-            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Sphene vs. Logseq →</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Sub-0.20ms SQLite FTS5 WAL query latency vs heavy Clojure/Datascript memory bloat.</p>
+          <a href="/guides/hermes-agent-memory-hub/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-purple); transition: transform 0.2s;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase;">Integration Guide</div>
+            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Model Context Protocol (MCP) →</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Native typed MCP tools for Claude Desktop, Cursor, and Hermes Agent.</p>
           </a>
         </div>
 

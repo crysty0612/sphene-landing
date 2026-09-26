@@ -352,7 +352,7 @@ const SPHENE_PLUGINS = [
     categoryName: "Knowledge & Importers",
     icon: "📁",
     badge: "100% Fidelity",
-    tagline: "Seamlessly imports Obsidian, Logseq, and Foam vaults with zero formatting loss.",
+    tagline: "Seamlessly imports standard desktop Markdown and Foam vaults with zero formatting loss.",
     image: "",
     overview: "Automated ingestion pipeline for importing standard desktop Markdown vaults. Preserves folder structures, frontmatter schemas, [[Wikilinks]], and images while immediately generating SQLite FTS5 search indexes.",
     specs: {

@@ -51,6 +51,16 @@
   Content-Type: application/xml; charset=utf-8
   Cache-Control: public, max-age=86400
 
+/*.sh
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/SHA256SUMS
+  Content-Type: text/plain; charset=utf-8
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
 /assets/fonts/*
   Content-Type: font/woff2
   Access-Control-Allow-Origin: *

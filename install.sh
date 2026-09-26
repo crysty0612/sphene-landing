@@ -706,7 +706,7 @@ All note-taking, document lookups, and second brain requests MUST use your nativ
 - **`sphene_graph(path?, depth?)`**: Graph backlinks and topology.
 - **`sphene_daily(content)`**: Autonomous logging to today\x27s daily note.
 
-Do NOT attempt to run shell scripts or search for local Obsidian files—the native Sphene MCP tools provide 100x faster, safer, and cleaner access.
+Do NOT attempt to run shell scripts or search for local files manually—the native Sphene MCP tools provide fast, typed, and structured access.
 
 ## 2. Active Vault Location & Visual Web UI
 - **Local Web Interface:** http://localhost:8743 (interactive note reader, 3D force graph, and human veto timeline).

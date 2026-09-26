@@ -29,6 +29,6 @@ All notable changes to the Sphene Sovereign Knowledge Substrate are documented h
 ---
 
 ## [v2.1.0] - 2026-09-14
-- Integrated Obsidian-grade dynamic plugin engine.
+- Integrated modular dynamic plugin engine.
 - Differential timeline versioning with Human Veto guardrails.
 - Added encrypted partition envelopes with AES-256-GCM.

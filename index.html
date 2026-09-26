@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sphene — Lightweight Local-First PKM &amp; Agent-Native Markdown Knowledge Base</title>
   <meta name="description" content="Sphene is an ultra-lightweight, local-first Personal Knowledge Management (PKM) app and markdown knowledge base. Engineered with sub-millisecond search, &lt;50MB RAM, and safe Model Context Protocol (MCP) agent integrations.">
-  <meta name="keywords" content="Sphene, PKM, personal knowledge management, note-taking app, local-first, markdown knowledge base, second brain, zero-knowledge encryption, AI memory, LLM agent, markdown vault, Obsidian alternative, Logseq alternative, self-hosted PKM, knowledge graph, Model Context Protocol, Hermes agent">
+  <meta name="keywords" content="Sphene, PKM, personal knowledge management, note-taking app, local-first, markdown knowledge base, second brain, zero-knowledge encryption, AI memory, LLM agent, markdown vault, self-hosted PKM, knowledge graph, Model Context Protocol, Hermes agent">
 
   <!-- Canonical URL -->
   <link rel="canonical" href="https://sphene.app/">
@@ -54,10 +54,10 @@
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "How does Sphene compare to Obsidian?",
+            "name": "How does Sphene compare to traditional note systems?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Sphene consumes under 25MB of RAM at rest compared to Obsidian's 450MB–1.2GB Electron footprint. It features native Model Context Protocol (MCP) for AI agent integration, a Differential Timeline with Human Veto diff staging to protect files from silent overwrites, and sub-millisecond SQLite FTS5 search (<0.20ms)."
+              "text": "Sphene is engineered with a tiny footprint (under 25MB RAM local daemon) and sub-millisecond SQLite FTS5 search (<0.20ms). It features a native Model Context Protocol (MCP) server for direct AI agent integration, and a Differential Timeline with Human Veto diff staging to protect files from unintended overwrites."
             }
           },
           {
@@ -78,7 +78,7 @@
           },
           {
             "@type": "Question",
-            "name": "Can I import my existing Obsidian notes into Sphene?",
+            "name": "Can I import my existing Markdown vaults into Sphene?",
             "acceptedAnswer": {
               "@type": "Answer",
               "text": "Yes. Sphene is 100% compatible with standard desktop Markdown vaults. Its non-destructive vault discovery and migration engine preserves all YAML frontmatter, bidirectional [[Wikilinks]], markdown tags, attachments, and folder hierarchies without altering or locking your source files."
@@ -103,7 +103,7 @@
           "NoteTakingApp",
           "DeveloperApplication"
         ],
-        "isSimilarTo": ["Obsidian", "Notion", "Logseq"],
+        "isSimilarTo": ["Personal Knowledge Management", "Markdown Knowledge Base", "Note Taking Software"],
         "operatingSystem": "Linux, macOS, Windows, iOS, Android, Web",
         "offers": {
           "@type": "Offer",
@@ -128,7 +128,7 @@
           "Aegis 4-Zone Vault Partitions (Workspace, Reference, Private, Drawing)",
           "Zero-knowledge container encryption",
           "Interactive Force-Directed 3D Knowledge Graph",
-          "1-Click Ingestion from Obsidian, Logseq, and standard desktop markdown vaults"
+          "1-Click Ingestion from standard desktop markdown vaults"
         ],
         "screenshot": "https://sphene.app/assets/og-preview.png",
         "softwareHelp": "https://sphene.app/llms.txt",
@@ -383,7 +383,7 @@
             </div>
             <h3>Standard Markdown &amp; Total Privacy</h3>
             <p style="color: var(--text-secondary); font-size: 14.5px; line-height: 1.6;">
-              Every note lives directly on your computer as standard plaintext Markdown (.md). For sensitive journals, finances, or credentials, lock your vault with unbreakable zero-knowledge encryption—complete with an independent recovery runbook so you are never locked out.
+              Every note lives directly on your computer as standard plaintext Markdown (.md). For sensitive journals, finances, or credentials, lock your vault with authenticated client-side AES-256-GCM zero-knowledge encryption—complete with an independent recovery runbook so you are never locked out.
             </p>
             <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text-muted);">
               <div><span style="color: var(--accent-purple); font-weight: 700;">✓</span> Standard human-readable Markdown (.md)</div>
@@ -749,7 +749,7 @@
             </div>
             <div class="gallery-content">
               <h3>Antracite Theme: Mathematical Formulations</h3>
-              <p>Subdued obsidian-slate styling tailored for technical researchers, vector embedding mathematics, and sub-0.20ms benchmark audits.</p>
+              <p>Subdued deep anthracite-slate styling tailored for technical researchers, vector embedding mathematics, and sub-0.20ms benchmark audits.</p>
             </div>
           </div>
 
@@ -855,80 +855,96 @@
             <thead>
               <tr>
                 <th>Architectural Dimension</th>
-                <th>Obsidian &amp; Logseq (Desktop PKM)</th>
-                <th>Notion (Cloud Silo)</th>
+                <th>Heavy Desktop Web Runtimes (Electron / Webview)</th>
+                <th>Centralized Cloud Platforms (SaaS)</th>
                 <th>Sphene Sovereign Hub &amp; PWA</th>
               </tr>
             </thead>
             <tbody>
               <tr>
+                <td><strong>Primary Sweet Spot</strong></td>
+                <td><span class="check">✓ Extensive ecosystem of third-party community scripts, themes &amp; canvas extensions</span></td>
+                <td><span class="check">✓ Dynamic relational databases, accounting rollups, project sprint boards &amp; multi-user workspaces</span></td>
+                <td><span class="check">✓ Raw local speed (&lt;0.20ms search), whisper-quiet footprint (&lt;25MB RAM) &amp; native AI MCP</span></td>
+              </tr>
+              <tr>
+                <td><strong>Physical Data Custody</strong></td>
+                <td><span class="check">✓ Plaintext Markdown (.md) on local disk</span></td>
+                <td>Proprietary cloud database blocks (vendor lock-in)</td>
+                <td><span class="check">✓ Plaintext Markdown (.md) on local disk or browser</span></td>
+              </tr>
+              <tr>
                 <td><strong>Memory &amp; Runtime Footprint</strong></td>
-                <td>Desktop Web Runtime (800MB–1.5GB)</td>
-                <td>Browser Tab (300MB+)</td>
+                <td>Standard desktop web runtime footprint (bundled Chromium / Node.js)</td>
+                <td>Standard browser tab footprint</td>
                 <td><span class="check">✓ &lt;25MB Local-Only (&lt;50MB with Mesh Relay)</span></td>
               </tr>
               <tr>
-                <td><strong>Mobile &amp; Multi-Device Access</strong></td>
-                <td>Paid proprietary sync add-on / manual git</td>
-                <td>Closed mobile client (cloud-dependent)</td>
-                <td><span class="check">✓ Offline-first PWA + Direct GDrive / Dropbox + Mesh</span></td>
-              </tr>
-              <tr>
-                <td><strong>Search Index Latency</strong></td>
-                <td>200ms–1,500ms client scan</td>
-                <td>300ms–800ms server RTT</td>
-                <td><span class="check">✓ &lt;0.20ms (&lt;180µs SQLite FTS5 Index)</span></td>
+                <td><strong>Search Index Latency (10k notes)</strong></td>
+                <td>Directory &amp; filesystem scans</td>
+                <td>Remote network API roundtrip</td>
+                <td><span class="check">✓ &lt;0.20ms (&lt;180µs SQLite FTS5 WAL Index)</span></td>
               </tr>
               <tr>
                 <td><strong>Autonomous Agent Protocol</strong></td>
-                <td>Third-party community REST wrappers</td>
-                <td>Proprietary vendor webhooks</td>
-                <td><span class="check">✓ Native Model Context Protocol (MCP) + stdio</span></td>
+                <td>Custom subshell scripts or third-party community wrappers</td>
+                <td>Proprietary cloud webhooks / hosted AI API fees</td>
+                <td><span class="check">✓ Native Model Context Protocol (MCP) + stdio/SSE</span></td>
               </tr>
               <tr>
                 <td><strong>AI Mutation Governance</strong></td>
-                <td>Direct file mutation</td>
-                <td>Platform revision history</td>
-                <td><span class="check">✓ Differential Timeline ("Human Veto" review)</span></td>
+                <td>Blind silent disk overwrite</td>
+                <td>Server-side workspace revision history</td>
+                <td><span class="check">✓ Differential Timeline ("Human Veto" visual diff review)</span></td>
               </tr>
               <tr>
-                <td><strong>Vault Privacy Isolation</strong></td>
-                <td>Flat filesystem hierarchy</td>
-                <td>Cloud workspace access roles</td>
-                <td><span class="check">✓ Aegis 4-Zone Boundaries (Workspace, Reference, Private, Drawing)</span></td>
+                <td><strong>Structured Databases &amp; Rollups</strong></td>
+                <td>Third-party community query scripts</td>
+                <td><span class="check">✓ Native multi-table rollups, formulas &amp; kanban</span></td>
+                <td>YAML frontmatter + embedded sandboxed query engine</td>
               </tr>
               <tr>
-                <td><strong>Extension Architecture</strong></td>
-                <td>Community dependency tree</td>
-                <td>Closed server-side block formats</td>
-                <td><span class="check">✓ Integrated native suite (zero configuration or plugin maintenance)</span></td>
+                <td><strong>Extension / Plugin Model</strong></td>
+                <td>Community plugins with full host machine execution access</td>
+                <td>Closed server-side platform &amp; integrations</td>
+                <td>Curated, capability-sandboxed IoC plugins (zero privilege escalation)</td>
               </tr>
               <tr>
-                <td><strong>Storage &amp; Cryptography</strong></td>
+                <td><strong>Client-Side Cryptography</strong></td>
                 <td>Unencrypted plaintext files</td>
-                <td>Proprietary vendor-managed keys</td>
-                <td><span class="check">✓ Standard .md + Optional 1-Click Vault Lock</span></td>
+                <td>Proprietary vendor-managed cloud keys</td>
+                <td><span class="check">✓ Standard .md + Optional Client-Side AES-256-GCM Vault Lock</span></td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Competitor Deep Dive Jump Cards -->
+        <!-- Architectural Guidance -->
+        <div style="margin-top: 24px; padding: 22px 26px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle); border-radius: 14px; font-size: 14px; line-height: 1.65; color: var(--text-secondary);">
+          <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 8px; font-size: 15px;">🧭 Which Architectural Paradigm Fits Your Workflow?</div>
+          <ul style="margin: 0; padding-left: 20px;">
+            <li style="margin-bottom: 6px;"><strong>Choose Centralized Cloud Platforms</strong> if you need complex multi-table relational databases, accounting rollups, project sprint boards, and collaborative multi-user team workspaces.</li>
+            <li style="margin-bottom: 6px;"><strong>Choose Heavy Desktop Web Runtimes</strong> if your workflow depends on thousands of community-built desktop themes, canvas plugins, and third-party UI extensions.</li>
+            <li><strong>Choose Sphene Sovereign Hub</strong> if you prioritize raw local speed (&lt;0.20ms search), whisper-quiet memory (&lt;25MB RAM), native AI agent memory (MCP for Claude Desktop, Cursor, Hermes) with staged diff review ("Human Veto"), client-side AES-256-GCM encryption, and zero cloud vendor lock-in. Your notes remain 100% sovereign Markdown (.md) files that can be opened in any text editor at any time.</li>
+          </ul>
+        </div>
+
+        <!-- Architectural Deep Dive Jump Cards -->
         <div class="grid-3" style="margin-top: 32px;">
-          <a href="/vs/obsidian/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-cyan); transition: transform 0.2s;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;">Direct Comparison</div>
-            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Sphene vs. Obsidian →</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Under 25MB RAM vs 1.2GB Electron, native Model Context Protocol (MCP), and 1-click vault migration.</p>
+          <a href="/benchmarks/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-cyan); transition: transform 0.2s;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase;">Performance Audits</div>
+            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Empirical Benchmarks →</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Sub-0.20ms SQLite FTS5 search latency, under 25MB RAM footprint, and instant cold-boot metrics.</p>
           </a>
-          <a href="/vs/notion/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-emerald); transition: transform 0.2s;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase;">Direct Comparison</div>
-            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Sphene vs. Notion →</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Sovereign local-first markdown vs closed cloud databases with zero monthly subscription fees.</p>
+          <a href="/architecture/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-emerald); transition: transform 0.2s;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-emerald); text-transform: uppercase;">Technical Deep Dive</div>
+            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Sovereign Architecture →</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Compiled Go substrate, embedded SQLite WAL indexing, capability sandboxing, and PWA synchronization.</p>
           </a>
-          <a href="/vs/logseq/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-purple); transition: transform 0.2s;">
-            <div style="font-size: 12px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase;">Direct Comparison</div>
-            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Sphene vs. Logseq →</h3>
-            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Sub-0.20ms SQLite FTS5 WAL query latency vs heavy Clojure/Datascript memory bloat.</p>
+          <a href="/security/" class="feature-card" style="text-decoration: none; border-left: 3px solid var(--accent-purple); transition: transform 0.2s;">
+            <div style="font-size: 12px; font-weight: 700; color: var(--accent-purple); text-transform: uppercase;">Zero-Trust Security</div>
+            <h3 style="font-size: 18px; margin: 6px 0 8px; color: var(--text-primary);">Aegis Security &amp; Partitions →</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Client-side AES-256-GCM vault encryption, Ed25519 signatures, and 4-zone vault isolation boundaries.</p>
           </a>
         </div>
       </div>
