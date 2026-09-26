@@ -267,7 +267,7 @@ else
     DOWNLOADED_NAME="$TARGET_BIN"
   elif [ "$OS" = "linux" ] && [ "$ARCH" = "amd64" ] && curl -fsSL "https://sphene.app/bin/sphene" -o "$TMP_DIR/sphene" 2>/dev/null && [ -s "$TMP_DIR/sphene" ]; then
     DOWNLOADED_NAME="sphene"
-  elif curl -fsSL "https://github.com/crysty0612/sphene-landing/releases/download/v2.2.0/${TARGET_BIN}" -o "$TMP_DIR/sphene" 2>/dev/null && [ -s "$TMP_DIR/sphene" ]; then
+  elif curl -fsSL "https://sphene.app/releases/v2.2.0/${TARGET_BIN}" -o "$TMP_DIR/sphene" 2>/dev/null && [ -s "$TMP_DIR/sphene" ]; then
     DOWNLOADED_NAME="$TARGET_BIN"
   fi
 
@@ -1008,7 +1008,7 @@ if [ $IS_UPDATE -eq 0 ]; then
       if [ -f "${SCRIPT_DIR}/sample-notes.tar.gz" ]; then
         cp "${SCRIPT_DIR}/sample-notes.tar.gz" "$SAMPLES_TAR"
       else
-        curl -fsSL "https://sphene.app/sample-notes.tar.gz" -o "$SAMPLES_TAR" 2>/dev/null || curl -fsSL "https://github.com/crysty0612/sphene-landing/raw/main/sample-notes.tar.gz" -o "$SAMPLES_TAR" 2>/dev/null || true
+        curl -fsSL "https://sphene.app/sample-notes.tar.gz" -o "$SAMPLES_TAR" 2>/dev/null || true
       fi
       if [ -s "$SAMPLES_TAR" ]; then
         EXPECTED_SAMPLES_HASH=$(get_expected_sha256 "sample-notes.tar.gz" "$TMP_DIR/SHA256SUMS")
